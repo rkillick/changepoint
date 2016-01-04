@@ -1,0 +1,25 @@
+year <- sub("-.*", "", meta$Date)
+note <- sprintf("R package version %s", meta$Version)
+
+citHeader("The following are references to the package.  You should also reference the individual methods used, as detailed in the reference section of the help files for each function.")
+
+bibentry(bibtype="article",
+  title        = "{changepoint}: An {R} Package for Changepoint Analysis",
+  author       = c(person("Rebecca", "Killick"),person(c("Idris", "A."), "Eckley")),
+  journal      = "Journal of Statistical Software",
+  year         = "2014",
+  volume       = "58",
+  number       = "3",
+  pages        = "1--19",
+  url          = "http://www.jstatsoft.org/v58/i03/",
+)
+
+bibentry(bibtype="Manual",
+         title = "{changepoint}: An {R} package for changepoint analysis",
+         author = c(person("Rebecca", "Killick"),person("Kaylea", "Haynes"), person(c("Idris", "A."), "Eckley")),
+         year         = year,
+         url          = "http://CRAN.R-project.org/package=changepoint",
+         note = note,
+)
+
+citFooter('To get Bibtex entries use: x<-citation("changepoint"); toBibtex(x)')

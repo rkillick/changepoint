@@ -1,0 +1,12 @@
+import(methods)
+import(graphics)
+import(zoo)
+import(stats)
+
+export("cpt.mean", "cpt.meanvar", "cpt.var")
+exportClasses(cpt,cpt.reg,cpt.range)
+exportMethods(plot,summary,show,nseg,logLik,likelihood,data.set,data.set.ts,cpts,cpts.full, cpts.ts,cpttype,distribution,test.stat,
+	method,ncpts,ncpts.max,param.est,param, coef,pen.type,pen.value,pen.value.full, minseglen, seg.len,"cpts<-","cpttype<-","data.set<-","distribution<-","test.stat<-","ncpts.max<-","param.est<-","pen.type<-",
+	"pen.value<-", "method<-", "cpts.full<-", "minseglen<-","pen.value.full<-")
+
+useDynLib(changepoint)
