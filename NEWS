@@ -1,0 +1,233 @@
+Version 2.2.1
+=============
+* Fixed a minor bug where additional arguments to the plot function when diagnostic=TRUE were not passed through to the plot.
+
+Version 2.2
+=============
+* Changed BinSeg and Segneigh to give nice errors when Q=0.
+* Added "ths", Thesis advisor to Idris Eckley (RK advisor) and Paul Fearnhead (KH advisor).
+* Changed penalties such that with a postfix 0 i.e. SIC0 we DO NOT count the changepoint as a parameter (this was previously SIC) and wihtout a postfix i.e. SIC we count the changepoint as a parameter (this was previously SIC1). This change brings the package in line with some theoretical results and empirical evidence that including the change in parameter estimation is preferred.  This also affects the MBIC definition which now also includes the number of changepoints.
+* Fixed minor bug in range_of_penalties code 
+* Removed documentation for accessor and replacement functions to improve usability for new users.  Thanks to Hadley Wickham for suggesting this.
+* Removed the row of zeroes in the cpts.full slot for method="SegNeigh" in the cpt.range class.
+* When method="SegNeigh" the cpt.range class now returns the difference in likelihood in the pen.value.full slots (previously this was the likelihood).  This brings the reporting in line with method="BinSeg".
+* When using test.stat="CSS" or test.stat="CUSUM" there is now a warning that traditional penalty values are not advised.
+* Created a new plot function for cpt.range objects. Behaves in the same way as the plot function for cpt objects but has two extra arguments, ncpts (numeric) and diagnostic (TRUE or FALSE).  
+- The ncpts parameter by default is NA, thus plotting the optimal segmentation according to the penalty.  If the number is specified then the segmentation corresponding to that number is plotted.  
+- The diagnostic plot can aide the decision on the number of changepoints.  It plots the difference in test statistic from adding the change against the number of changepoints.  When adding a true changepoint the cost increases/decreases rapidly, when adding a changepoint due to noise the change is small.  This is similar to a scree plot in principal component analysis.
+* In order to facilitate the above, a new param generic has been created for cpt.range objects that allows parameter estimation for a specified number of changepoints.  This information is not stored when calculated so users may wish to use this function directly for other purposes such as parameter value retrieval.
+* Added package version to the class structures so that an analysis is fully reproducible from a stored cpt* object.
+* Fixed bug where the shape parameter was not recorded if penalty='CROPS'.
+* Added testthat tests for the examples in the help files.
+* Fixed bug whereby using method="AMOC" with penalty="MBIC" wasn't using the modified likelihood and thus actually returned the segmentation for penalty="BIC".
+* Fixed bug whereby the nonparametric test statistics (CUSUM and CSS) were using penalty="BIC" when the default penalty="MBIC" was used.
+* Reformatted the CROPS output to give segmentations NOT including 0 and n to match the BinSeg and Segneigh outputs.
+
+Version 2.1.1
+=============
+* Removed "An R package for" from the title in the description file as requested by Uwe Ligges for CRAN submission.
+
+Version 2.1
+=============
+* Fixed error in penalty values that was introduced in the move to version 2.  Thanks to Craig Wenger for highlighting this.  
+* Corrected speed decrease in PELT and BinSeg functions from the changes made in version 2.  Thanks to Craig Wenger for highlighting this.  
+
+Version 2.0.1
+=============
+* Changed call_function in C to return INFINITY if cost function isn't present.  This is checked for in R but the C function might not have returned something. Requirement for CRAN submission.
+
+Version 2.0
+===========
+* Added new penalties:
+** MBIC, the new default penalty for all cpt.* functions.
+** CROPS, which is used to return multiple segmentations from PELT
+* Added minimum segment length argument to all cpt.* functions.  This lets the user set the minimum distance between changes, default to minimum allowed by theory which was used previously. Not yet implemented for SegNeigh method.
+* Added new cpt.range class which is a sub-class of cpt.  It has two additional slots, cpts.full and pen.value.full.  These contain multiple segmentations and their associated penalty values, as returned by BinSeg, SegNeigh and PELT when using CROPS penalty.
+* Added new nseg function that returns the number of segments (number of cpts +1).
+* Modified single method reporting when class=F to return label conf.level instead of pvalue. Thanks to Matthew Kowgier for the suggestion.
+* Complete back-end change to allow easier addition of penalty and cost functions in the future.  No affect on user interaction. Thanks to Martyn Byng for suggestions to improve this.
+* Thanks to Martyn Byng for suggesting a change to the Poisson cost function which now returns 0 when x=0 instead of previously when it returned Inf.
+* Tidied up the namespace so that only cpt.* functions and class related functions are exported.  The other functions are readily available by downloading the source.
+* Almost a complete back end re-write which includes now having 1 function for PELT and BinSeg regardless of the cost.  This has no effect on the user side but will make it easier to add new cost functions in the future. Thanks to Martyn Byng for many of the suggestions implemented.
+* Changed citation file to use bibentry format.
+* Added Jamie Lee as contractor on authorship list.
+* The Exponential test statistic was refusing to accept 0 values (i.e. data <=0 refused), this has now been changed so that 0 values are allowed (i.e. data <0 refused).  Thanks to Ilya Kipnis for reporting this bug.
+* Changed all "print" references to be "show" to avoid error with ESS.
+
+
+Version 1.1.5
+=============
+Changes to previous version
+
+* Modified citation information
+
+Version 1.1.3
+=============
+Changes to previous version
+
+* Upgraded zoo from "imports" to "depends".  This is needed because more functionality from zoo is required and this also gives users access to the zoo features directly whereas previously they had to library the package separately.
+* The segment neighbourhood algorithm has now been updated to make sure that the changes in variance or mean and variance do not return segments of length 1.  This is now in line with the PELT and BinSeg algorithms.
+* Added citation information.
+* Documentation pages for cpt.mean, cpt.meanvar and cpt.var were updated to be clearer.  Thanks to Toby Hocking for highlighting this.
+
+Version 1.1.2
+=============
+Changes to previous version
+
+* The check introduced in version 1.1.1 was causing problems in older versions as there was a mask between S3 and S4 generics.  Thus we removed the masking effect and incremented the minimum version of R to 3.0.  Thanks go to Philipp Boersch-Supan for highlighting the bug.
+* Added Kaylea Haynes as author of package.
+
+Version 1.1.1
+=============
+Changes to previous version
+
+* Added a check on the generics used to check if the generics "coef" and "logLik" exist and if not to create them.  This was creating problems with backwards R compatibility as "coef" and "logLik" were only introduced as generics in recent versions of R.
+
+Version 1.1
+===========
+Changes to previous version
+
+* Adding printing of p-value to single changepoint likelihood-based functions.  Thanks go to anonymous reviewers for this suggestion.
+* Changed all Segment Neighbourhood and Binary Segmentation functions to print a warning if the number of changes/segments identified equals Q.
+
+Version 1.0.6
+=============
+Changes to previous version
+
+* Fixed bug where the likelihood & logLik generics returns an error when there are no changes.  This was due to using the cpts generic which no longer returns the length of the data as a change (since version 1.0).  Thanks go to Gia-Thuy Pham for highlighting this bug.
+* Corrected calculation of segment scale parameter estimates for Gamma models (used in cpt.meanvar(...,test.stat='Gamma')).  Previously this was dividing by seg.length+1 when it should be dividing by seg.length.  Thanks go to Martyn Byng for highlighting the error.
+
+Version 1.0.5
+=============
+Changes to previous version
+
+* Added journal references to PELT documentation. Thanks go to Martyn Byng for pointing out that this required updating.
+* Added checks on minimum lengths of data input (minimum for mean is 1 per segment, for variance / mean & variance it is 2 observations per segment).  Thanks go to Toby Hocking for highlighting the error.
+
+Version 1.0.4
+=============
+Changes to previous version
+
+* Changed all the Binary Segmentation multiple changepoint algorithms to have a default oldmax parameter of Inf.  The old default (1000) was causing problems when users were wanting to do elbow plots for penalty choice.  Thanks go to Brian Jessop for highlighting the problem.  Note: There was no problem with the changepoints returned by the previous code.  This change purely relates to elbow plot penalty choice.
+
+Version 1.0.3
+=============
+Changes to previous version
+
+* Changed a few commands where na.rm=F to na.rm=T.  This was causing problems when users entered constant data as some test statistics could produce NAs.  Thanks go to Harutyun Khachatryan for pointing out this bug.
+
+Version 1.0.2
+=============
+Changes to previous version
+
+* Changed argument name in cpt.mean, cpt.var and cpt.meanvar.  Previously was named 'dist', now named 'test.stat'.  Not backwards compatible.  This is in line with the major changes in version 1.0 to the class structure.
+
+Version 1.0.1
+=============
+Changes to previous version
+
+* Corrected naming of columns returned by logLik and likelihood generics.  These return the scaled negative likelihood and scaled negative likelihood + penalty.
+
+Version 1.0
+===========
+Changes to previous version
+
+* Removed printing and plotting of the last observation as the last cpt
+* The distribution class slot for the cpt class has been rename to test.stat (backwards compatibility remains - for now)
+* Changed value parameter in all functions to be pen.value (no backwards compatibility for named variables but ordering of arguments remains the same)
+* The data.set slot of the cpt class is now a ts object, the repercussions of this are:
+		** the data.set() extractor function still returns a vector (for backwards compatibility)
+		** a new data.set.ts() extractor function has been created that returns the ts object
+		** the plot method associated with the cpt object uses the ts structure and thus the plot method for ts objects (i.e. automatic line plots)
+* Created a coef method for cpt objects that returns the same as the param.est() extractor function (which remains for backwards compatibility)
+* Created a logLik method for cpt objects that returns the same as the likelihood() method (which remains for backwards compatibility)
+* The cpts() extractor function no longer returns the length of the data as the final changepoint.  Instead it returns the changepoints only or an empty vector to indicate no changepoints.
+
+Version 0.8
+===========
+Changes to previous version
+
+* Restructured C implementation of PELT to remove unnecessary function calls (minor speed improvement)
+* Updated FTSE100 data
+* Added Lai2005fig3 and Lai2005fig4 data
+
+Version 0.7.1
+=============
+Changes to previous version
+
+* added BIC1, SIC1, AIC1, Hannan-Quinn1 penalties (counting the changepoint as a parameter in contrast to BIC, SIC, AIC, Hannan-Quinn which do not)
+
+Version 0.7
+===========
+Changes to previous version
+
+* added change in Poisson distribution to cpt.meanvar
+
+Version 0.6.1
+=============
+Changes to previous version
+
+* removed plotting of "n" as a changepoint for changes in variance
+* changed array allocation to calloc in PELT C code
+* added checks to C code for user interruption (including appropriate memory handling)
+
+Version 0.6
+===========
+Changes to previous version
+
+* PELT algorithms now run using C code
+* Binary Segmentation algorithms now run using C code
+
+Version 0.5
+===========
+Changes to previous version
+
+* added namespace to comply with R 2.13
+
+Version 0.4.2
+=============
+Changes to previous version
+
+* corrected mismatch in default values for mu
+
+Version 0.4.1
+=============
+Changes to previous version
+
+* changed default value of the mu parameter from -1000 to NA
+
+Version 0.4
+===========
+Changes to previous version
+
+* removed regression for Normal distributed errors
+* added cusum for change in mean
+* added cusum of squares for change in variance
+* added some datasets
+* corrected plotting of Gamma and Exponential distributions in cpt.meanvar
+
+Version 0.3
+===========
+Changes to previous version
+
+* added change in regression for Normal distributed errors
+
+Version 0.2.1
+=============
+Changes to previous version
+
+* fixed multiple optimal changepoint bug in multiple algorithms
+
+Version 0.2
+===========
+Changes to previous version
+
+* added change in scale parameter of Gamma distribution to cpt.meanvar
+* added change in Exponential distribution to cpt.meanvar
+* added ncpts function to cpt and cpt.reg classes
+
+Version 0.1: Original
+
+Rebecca Killick
+Lancaster University
+www.lancs.ac.uk/~killick
