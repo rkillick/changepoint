@@ -1,6 +1,7 @@
 Version 2.2.1
 =============
 * Fixed a minor bug where additional arguments to the plot function when diagnostic=TRUE were not passed through to the plot.
+* Changed single.var.norm function to add the mean to the param.est slot when class=TRUE. This was changed previously for multiple changes but single changes were missed.
 
 Version 2.2
 =============
