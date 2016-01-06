@@ -103,70 +103,37 @@ single.mean.norm<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.esti
 
 
 
-single.var.norm.calc <-
-function(data,know.mean=FALSE,mu=NA,extrainf=TRUE,minseglen){
-  singledim=function(data,know.mean=FALSE,mu=-1000,extrainf=TRUE,minseglen){
-    n=length(data)
-    if((know.mean==FALSE)&(is.na(mu))){
-    	mu=mean(data)
-    }
-    y=c(0,cumsum((data-mu)^2))
-    null=n*log(y[n+1]/n)
-    taustar=minseglen:(n-minseglen+1)
-    sigma1=y[taustar+1]/taustar
-    neg=sigma1<=0
-    sigma1[neg==TRUE]=1*10^(-10)
-    sigman=(y[n+1]-y[taustar+1])/(n-taustar)
-    neg=sigman<=0
-    sigman[neg==TRUE]=1*10^(-10)
-    tmp=taustar*log(sigma1) + (n-taustar)*log(sigman)
-    
-    tau=which(tmp==min(tmp,na.rm=T))[1]+minseglen-1
-    taulike=tmp[tau]
-    if(extrainf==TRUE){
-      out=c(tau,null,taulike)
-      names(out)=c('cpt','null','alt')
-      return(out)
-    }
-    else{
-      return(tau)
-    }
-  }
-    
-
-  if(is.null(dim(data))==TRUE){
-    # single data set
-    cpt=singledim(data,know.mean,mu,extrainf,minseglen)
-    return(cpt)
+single.var.norm.calc <- function(data,mu,extrainf=TRUE,minseglen){
+  n=length(data)
+  y=c(0,cumsum((data-mu)^2))
+  null=n*log(y[n+1]/n)
+  taustar=minseglen:(n-minseglen+1)
+  sigma1=y[taustar+1]/taustar
+  neg=sigma1<=0
+  sigma1[neg==TRUE]=1*10^(-10)
+  sigman=(y[n+1]-y[taustar+1])/(n-taustar)
+  neg=sigman<=0
+  sigman[neg==TRUE]=1*10^(-10)
+  tmp=taustar*log(sigma1) + (n-taustar)*log(sigman)
+  
+  tau=which(tmp==min(tmp,na.rm=T))[1]+minseglen-1
+  taulike=tmp[tau]
+  if(extrainf==TRUE){
+    out=c(tau,null,taulike)
+    names(out)=c('cpt','null','alt')
+    return(out)
   }
   else{
-    rep=nrow(data)
-    n=ncol(data)
-    if(length(mu)==1){
-	    mu=rep(mu,rep)
-    }
-    cpt=NULL
-    if(extrainf==FALSE){
-      for(i in 1:rep){
-        cpt[i]=singledim(data[i,],know.mean,mu[i],extrainf,minseglen)
-      }
-    }
-    else{
-      cpt=matrix(0,ncol=3,nrow=rep)
-      for(i in 1:rep){
-        cpt[i,]=singledim(data[i,],know.mean,mu[i],extrainf,minseglen)
-      }
-      colnames(cpt)=c('cpt','null','alt')
-    }
-    return(cpt)
+    return(tau)
   }
-}
+}    
 
 
 single.var.norm<-function(data,penalty="MBIC",pen.value=0,know.mean=FALSE,mu=NA,class=TRUE,param.estimates=TRUE,minseglen){
   if(is.null(dim(data))==TRUE){
     # single dataset
     n=length(data)
+    mu=mu[1]
   }
   else{
     n=ncol(data)
@@ -176,13 +143,18 @@ single.var.norm<-function(data,penalty="MBIC",pen.value=0,know.mean=FALSE,mu=NA,
   pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck="var.norm", method="AMOC")
   
   if(is.null(dim(data))==TRUE){
-		tmp=single.var.norm.calc(coredata(data),know.mean,mu,extrainf=TRUE,minseglen)
+    if((know.mean==FALSE)&(is.na(mu))){
+      mu=mean(coredata(data))
+    }
+    tmp=single.var.norm.calc(coredata(data),mu,extrainf=TRUE,minseglen)
 		if(penalty=="MBIC"){
 		  tmp[3]=tmp[3]+log(tmp[1])+log(n-tmp[1]+1)
 		}
 		ans=decision(tmp[1],tmp[2],tmp[3],penalty,n,diffparam=1,pen.value)
 		if(class==TRUE){
-		  return(class_input(data, cpttype="variance", method="AMOC", test.stat="Normal", penalty=penalty, pen.value=pen.value, minseglen=minseglen, param.estimates=param.estimates, out=c(0, ans$cpt)))
+		  out=class_input(data, cpttype="variance", method="AMOC", test.stat="Normal", penalty=penalty, pen.value=pen.value, minseglen=minseglen, param.estimates=param.estimates, out=c(0, ans$cpt))
+		  param.est(out)=c(param.est(out),mean=mu)
+		  return(out)
 		}
 		else{ 
 		  alogn=sqrt(2*log(log(n)))
@@ -193,17 +165,28 @@ single.var.norm<-function(data,penalty="MBIC",pen.value=0,know.mean=FALSE,mu=NA,
 		}
 	}
 	else{ 
-		tmp=single.var.norm.calc(data,know.mean,mu,extrainf=TRUE,minseglen)
-		if(penalty=="MBIC"){
+	  rep=nrow(data)
+	  tmp=matrix(0,ncol=3,nrow=rep)
+	  if(length(mu)!=rep){
+	    mu=rep(mu,rep)
+	  }
+    for(i in 1:rep){
+      if((know.mean==FALSE)&(is.na(mu[i]))){
+        mu=mean(coredata(data[i,]))
+      }
+      tmp[i,]=single.var.norm.calc(data[i,],mu[i],extrainf=TRUE,minseglen)
+    }
+
+    if(penalty=="MBIC"){
 		  tmp[,3]=tmp[,3]+log(tmp[,1])+log(n-tmp[,1]+1)
 		}
 		ans=decision(tmp[,1],tmp[,2],tmp[,3],penalty,n,diffparam=1,pen.value)
 		if(class==TRUE){
-			rep=nrow(data)
 			out=list()
 			for(i in 1:rep){
           out[[i]] = class_input(data, cpttype="variance", method="AMOC", test.stat="Normal", penalty=penalty, pen.value=ans$pen, minseglen=minseglen, param.estimates=param.estimates, out=c(0, ans$cpt[i]))
- 			}
+          param.est(out[[i]])=c(param.est(out[[i]]),mean=mu[i])
+			}
 			return(out)
 		}
 		else{ 
