@@ -102,8 +102,6 @@ range_of_penalties <- function(sumstat,cost = "mean.norm",PELT = T,min_pen=log(l
         tmplastchangecpts <- array(0,n+1)
         tmplastchangelike <- array(0,n+1)
         
-        
-        #index=((1:(length(data) + 1))[ansnumchangecpts[[i]]== ansnumchangecpts[[j]]] && ansnumchangecpts[[i]] > 0)
         index=(1:(n + 1))[ansnumchangecpts[[i]]== ansnumchangecpts[[j]]]
         #  browser()
         if (length(index) > 0){
@@ -114,7 +112,6 @@ range_of_penalties <- function(sumstat,cost = "mean.norm",PELT = T,min_pen=log(l
         }
         
         
-        # index=(1:(length(data) + 1))[ansnumchangecpts[[i]]== ansnumchangecpts[[j]]+1 && (ansnumchangecpts[[i]] > 0 || ansnumchangecpts[[j]] > 0)]
         index=(1:(n + 1))[ansnumchangecpts[[i]]== ansnumchangecpts[[j]]+1 ]
         if(length(index)>0){
           a= anslastchangelike[[i]][index] +  (tmppen_interval - test_penalties[i]) * (ansnumchangecpts[[i]][index]-1)
@@ -134,7 +131,8 @@ range_of_penalties <- function(sumstat,cost = "mean.norm",PELT = T,min_pen=log(l
     
     if(length(pen_interval)>0){
       for(k in length(pen_interval):1){ 
-        if(min(abs(pen_interval[k]-test_penalties))<1e-8) {
+        index <- which.min(abs(pen_interval[k]-test_penalties)) 
+        if (isTRUE(all.equal(pen_interval[k], test_penalties[index]))){
           numchangecpts[[k]]= NULL
           lastchangelike[[k]]= NULL
           lastchangecpts[[k]]= NULL
