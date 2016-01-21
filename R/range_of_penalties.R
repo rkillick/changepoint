@@ -27,8 +27,8 @@ range_of_penalties <- function(sumstat,cost = "mean.norm",PELT = T,min_pen=log(l
       
       ans<- PELT(sumstat,pen=pen_interval[b], cost_func = cost , shape = shape, minseglen = minseglen)
       resultingcpts <- ans[[2]]
+      new_numcpts[b] <- length(resultingcpts)
       new_cpts[b] <- list(resultingcpts[-length(resultingcpts)])
-      new_cpts[b] <- list(resultingcpts)
       new_penalty[b] <- ans[[3]][n+1]-(ans[[4]][n+1]-1)*pen_interval[b]
     }
     
