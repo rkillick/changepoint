@@ -1,3 +1,7 @@
+Version 2.2.2
+=============
+
+
 Version 2.2.1
 =============
 * Fixed a minor bug where additional arguments to the plot function when diagnostic=TRUE were not passed through to the plot.
