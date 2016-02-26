@@ -14,14 +14,7 @@ range_of_penalties <- function(sumstat,cost = "mean.norm",PELT = T,min_pen=log(l
   b_between <- array() 
   
   ##### Want to store and use Func, M and CP in PELT 
-  
-  anslastchangelike<- NULL
-  ansnumchangecpts <- NULL
-  anslastchangecpts <- NULL
-  lastchangelike <- list(array(0,n+1),array(0,n+1))
-  numchangecpts <- list(array(0,n+1),array(0,n+1))
-  lastchangecpts <- list(array(0,n+1),array(0,n+1))
-  
+
   count <- 0
   
   while (length(pen_interval) > 0){
@@ -32,13 +25,9 @@ range_of_penalties <- function(sumstat,cost = "mean.norm",PELT = T,min_pen=log(l
     
     for (b in 1:length(pen_interval)) {
       
-      ans<- PELT(sumstat,pen=pen_interval[b], cost_func = cost , shape = shape, minseglen = minseglen,lastchangelike = lastchangelike[[b]],lastchangecpts = lastchangecpts[[b]], numchangecpts = numchangecpts[[b]])
-      resultingcpts <- ans[[2]] 
+      ans<- PELT(sumstat,pen=pen_interval[b], cost_func = cost , shape = shape, minseglen = minseglen)
+      resultingcpts <- ans[[2]]
       new_numcpts[b] <- length(resultingcpts)
-      lastchangelike[[b]] <- ans[[3]]
-      numchangecpts[[b]] <- ans[[4]]
-      lastchangecpts[[b]] <- ans[[1]]
-      cost.test <- array()
       new_cpts[b] <- list(resultingcpts[-length(resultingcpts)])
       new_penalty[b] <- ans[[3]][n+1]-(ans[[4]][n+1]-1)*pen_interval[b]
     }
@@ -64,16 +53,10 @@ range_of_penalties <- function(sumstat,cost = "mean.norm",PELT = T,min_pen=log(l
     numberofchangepoints <- -sort(-new_numcpts) ##can use sort to re-order 
     penal <- sort(new_penalty)
     
-    anslastchangelike <- c(anslastchangelike, lastchangelike)
-    ansnumchangecpts <- c( ansnumchangecpts, numchangecpts)
-    anslastchangecpts <- c( anslastchangecpts, lastchangecpts)
-    
     ls <- array()
     
     for (l in 1:length(new_cpts)){
-      #  ls[l] <- length(new_cpts[[l]])
-      ls[l] <- -anslastchangelike[[l]][n+1]
-      
+      ls[l] <- length(new_cpts[[l]])    
     } 
     
     
@@ -82,66 +65,25 @@ range_of_penalties <- function(sumstat,cost = "mean.norm",PELT = T,min_pen=log(l
     
     
     segmentations <- new_cpts[c(ls1)]
-    anslastchangelike <- anslastchangelike[c(ls1)]
-    ansnumchangecpts <-  ansnumchangecpts[c(ls1)]
-    anslastchangecpts <-  anslastchangecpts[c(ls1)]
     
     pen_interval <- NULL
     tmppen_interval <- NULL
-    lastchangelike <-   NULL
-    numchangecpts <-   NULL
-    lastchangecpts <-  NULL
     
     for (i in 1:(length(test_penalties)-1)){
       if(abs(numberofchangepoints[i]-numberofchangepoints[i+1])>1){ ##only need to add a beta if difference in cpts>1
         j <- i+1
         tmppen_interval <- (penal[j] - penal[i]) * (((numberofchangepoints[i]) - (numberofchangepoints[j]))^-1)
         pen_interval <- c(pen_interval, tmppen_interval )
-        
-        tmpnumchangecpts <- array(0,n+1)
-        tmplastchangecpts <- array(0,n+1)
-        tmplastchangelike <- array(0,n+1)
-        
-        
-        #index=((1:(length(data) + 1))[ansnumchangecpts[[i]]== ansnumchangecpts[[j]]] && ansnumchangecpts[[i]] > 0)
-        index=(1:(n + 1))[ansnumchangecpts[[i]]== ansnumchangecpts[[j]]]
-        #  browser()
-        if (length(index) > 0){
-          tmpnumchangecpts[index] <-  ansnumchangecpts[[i]][index]
-          tmplastchangecpts[index] <- anslastchangecpts[[i]][index]
-          tmplastchangelike[index] <- anslastchangelike[[i]][index] + (tmppen_interval - test_penalties[i]) * (ansnumchangecpts[[i]][index]-1)
-          
-        }
-        
-        
-        # index=(1:(length(data) + 1))[ansnumchangecpts[[i]]== ansnumchangecpts[[j]]+1 && (ansnumchangecpts[[i]] > 0 || ansnumchangecpts[[j]] > 0)]
-        index=(1:(n + 1))[ansnumchangecpts[[i]]== ansnumchangecpts[[j]]+1 ]
-        if(length(index)>0){
-          a= anslastchangelike[[i]][index] +  (tmppen_interval - test_penalties[i]) * (ansnumchangecpts[[i]][index]-1)
-          b= anslastchangelike[[j]][index] +  (tmppen_interval - test_penalties[j]) * (ansnumchangecpts[[j]][index]-1)
-          
-          tmplastchangelike[index]=pmin(a,b)
-          tmpnumchangecpts[index]= (ansnumchangecpts[[i]][index])*(a<b)+ (ansnumchangecpts[[j]][index])*(a>=b)
-          tmplastchangecpts[index]= anslastchangecpts[[i]][index]*(a<b)+ anslastchangecpts[[j]][index]*(a>=b)
-        }
-        
-        numchangecpts <- c(numchangecpts,list(tmpnumchangecpts))
-        lastchangelike <- c(lastchangelike,list(tmplastchangelike))
-        lastchangecpts <- c(lastchangecpts, list(tmplastchangecpts))
       }
     }
     
-    
     if(length(pen_interval)>0){
       for(k in length(pen_interval):1){ 
-        if(min(abs(pen_interval[k]-test_penalties))<1e-8) {
-          numchangecpts[[k]]= NULL
-          lastchangelike[[k]]= NULL
-          lastchangecpts[[k]]= NULL
+        index <- which.min(abs(pen_interval[k]-test_penalties)) 
+        if (isTRUE(all.equal(pen_interval[k], test_penalties[index]))){
           pen_interval=pen_interval[-k]
         }
       }
-      
     }
   }
   
@@ -153,9 +95,6 @@ range_of_penalties <- function(sumstat,cost = "mean.norm",PELT = T,min_pen=log(l
       test_penalties=test_penalties[-j]
       penal=penal[-j]
       segmentations = segmentations[-j]
-      ansnumchangecpts =  ansnumchangecpts[-j]
-      anslastchangelike = anslastchangelike[-j]
-      anslastchangecpts =  anslastchangecpts[-j]
     }
   }
   

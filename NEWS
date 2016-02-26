@@ -2,6 +2,10 @@ Version 2.2.1
 =============
 * Fixed a minor bug where additional arguments to the plot function when diagnostic=TRUE were not passed through to the plot.
 * Changed single.var.norm function to add the mean to the param.est slot when class=TRUE. This was changed previously for multiple changes but single changes were missed.
+* Fixed bug in CROPS which was running more iterations of the algorithm than what it said the maximum was.
+* Added version number on zoo dependency. Thanks to Gerald Ogola for highlighting the bug.
+* Changed plotting function for cpt.range objects.  In v2.2 a bug was introduced which meant the mean lines were not plotted.  Thanks go to Joel Sebold for highlighting this.
+* Added BugReports and URL to the Description file.
 
 Version 2.2
 =============

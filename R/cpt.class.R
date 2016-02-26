@@ -679,7 +679,7 @@
 	    else{
 	      stop('Invalid Changepoint test statistic')
 	    }
-	    nseg=ncpts+1
+	    nseg=length(means)
 	    cpts.to.plot=c(0,cpts.to.plot,length(data.set(x)))
 	    for(i in 1:nseg){
 	      segments(index(data.set.ts(x))[cpts.to.plot[i]+1],means[i],index(data.set.ts(x))[cpts.to.plot[i+1]],means[i],col=cpt.col,lwd=cpt.width,lty=cpt.style)
