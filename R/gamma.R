@@ -251,7 +251,7 @@ multiple.meanvar.gamma=function(data,shape=1,mul.method="PELT",penalty="MBIC",pe
 	}
 	if(penalty!="MBIC"){
 	  if(mul.method=="SegNeigh"){
-	    stop('MBIC penalty not implemented for SegNeigh method, please choose an alternative penalty')
+	    stop(paste(penalty, 'penalty not implemented for SegNeigh method, please choose an alternative penalty'))
 	  }
 	  costfunc = "meanvar.gamma"
 	}else{
