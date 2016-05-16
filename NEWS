@@ -4,6 +4,7 @@ Version 2.2.2
 * Updated all functions with minseglen arguments to error when minseglen is set too large for a change to be included in the data, e.g. n=14, minseglen=10.  Thanks to Simon Taylor for spotting this bug.
 * minseglen added to nonparametric Binary Segmentation functions.
 * Initialization of candidate log-likelihood values in C is set to -Inf instead of 0.
+* Fixed bug whereby if a non-MBIC penalty was use with SegNeigh it errored saying "MBIC not implemented for SegNeigh" this was supposed to be displaying for MBIC penalty only.  Thanks to github user cwenger for spotting this.
 
 Version 2.2.1
 =============

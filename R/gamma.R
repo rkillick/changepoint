@@ -251,12 +251,11 @@ multiple.meanvar.gamma=function(data,shape=1,mul.method="PELT",penalty="MBIC",pe
 	if(!((mul.method=="PELT")||(mul.method=="BinSeg")||(mul.method=="SegNeigh"))){
 		stop("Multiple Method is not recognised")
 	}
-	if(penalty!="MBIC"){
+  costfunc = "meanvar.gamma"
+  if(penalty=="MBIC"){
 	  if(mul.method=="SegNeigh"){
 	    stop('MBIC penalty not implemented for SegNeigh method, please choose an alternative penalty')
 	  }
-	  costfunc = "meanvar.gamma"
-	}else{
 	  costfunc = "meanvar.gamma.mbic"
 	}
 	diffparam=1

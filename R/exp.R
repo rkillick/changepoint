@@ -258,12 +258,11 @@ multiple.meanvar.exp=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,
   if(!((mul.method=="PELT")||(mul.method=="BinSeg")||(mul.method=="SegNeigh"))){
     stop("Multiple Method is not recognised")
   }
-  if(penalty!="MBIC"){
+  costfunc = "meanvar.exp"
+  if(penalty=="MBIC"){
     if(mul.method=="SegNeigh"){
       stop('MBIC penalty not implemented for SegNeigh method, please choose an alternative penalty')
     }
-    costfunc = "meanvar.exp"
-  }else{
     costfunc = "meanvar.exp.mbic"
   }
   
