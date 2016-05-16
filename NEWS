@@ -1,6 +1,9 @@
 Version 2.2.2
 =============
-
+* Updated R dependency, thanks to Mateusz Konieczny to identifying the problem (and solution).
+* Updated all functions with minseglen arguments to error when minseglen is set too large for a change to be included in the data, e.g. n=14, minseglen=10.  Thanks to Simon Taylor for spotting this bug.
+* minseglen added to nonparametric Binary Segmentation functions.
+* Initialization of candidate log-likelihood values in C is set to -Inf instead of 0.
 
 Version 2.2.1
 =============

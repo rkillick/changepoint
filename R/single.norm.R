@@ -55,6 +55,8 @@ single.mean.norm<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.esti
     n=ncol(data)
   }
   if(n<2){stop('Data must have atleast 2 observations to fit a changepoint model.')}
+  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
+  
   pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck="mean.norm", method="AMOC")
   if(is.null(dim(data))==TRUE){ # single dataset
 		tmp=single.mean.norm.calc(coredata(data),extrainf=TRUE,minseglen)
@@ -139,6 +141,7 @@ single.var.norm<-function(data,penalty="MBIC",pen.value=0,know.mean=FALSE,mu=NA,
     n=ncol(data)
   }
   if(n<4){stop('Data must have atleast 4 observations to fit a changepoint model.')}
+  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck="var.norm", method="AMOC")
   
@@ -268,6 +271,8 @@ single.meanvar.norm<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.e
     n=ncol(data)
   } 
   if(n<4){stop('Data must have atleast 4 observations to fit a changepoint model.')}
+  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
+  
   pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck="meanvar.norm", method="AMOC")
   
   if(is.null(dim(data))==TRUE){

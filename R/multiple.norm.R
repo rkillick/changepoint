@@ -508,6 +508,7 @@ multiple.var.norm=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,Q=5
     n=ncol(data)
   }
   if(n<4){stop('Data must have atleast 4 observations to fit a changepoint model.')}
+  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam, asymcheck=costfunc, method=mul.method)
 
@@ -573,6 +574,7 @@ multiple.mean.norm=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,Q=
   else{
     n=ncol(data)
   }
+  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam, asymcheck = costfunc, method=mul.method)
 
@@ -625,6 +627,8 @@ multiple.meanvar.norm=function(data,mul.method="PELT",penalty="MBIC",pen.value=0
   else{
     n=ncol(data)
   }
+  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
+  
   pen.value = penalty_decision(penalty, pen.value, n, diffparam, asymcheck = costfunc, method=mul.method)
 
     if(is.null(dim(data))==TRUE){

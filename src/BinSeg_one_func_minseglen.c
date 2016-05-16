@@ -27,6 +27,9 @@ void binseg(cost_func,sumstat,n,pen,Q,cptsout,minseglen,likeout,op_cps, shape)
 {  
      double oldmax=1.7E+308,null,lambda[*n],maxout;
      int q,p,i,j,whichout,st,end;
+     for(i=0;i<*n;i++){
+       lambda[i]=-INFINITY;
+     }
      int tau[*Q+2]; // max ncpts is Q, +2 is for 0 and n
      tau[0]=0;
      tau[1]= *n;
