@@ -72,9 +72,9 @@ test_that('mean8',expect_equal(cpts(ans[[2]]),numeric()))
 # Example of a change in scale parameter (mean and variance) at 100 in simulated gamma data
 set.seed(1)
 x=c(rgamma(100,shape=1,rate=1),rgamma(100,shape=1,rate=5))
-test_that('meanvar2',expect_equivalent(cpt.meanvar(x,penalty="SIC",method="AMOC",test.stat="Gamma",class=FALSE,shape=1),97))
+test_that('meanvar2',expect_equivalent(cpt.meanvar(x,penalty="SIC",method="AMOC",test.stat="Gamma",class=FALSE,shape=1),98))
 ans=cpt.meanvar(x,penalty="AIC",method="AMOC",test.stat="Gamma",shape=1)
-test_that('meanvar3',expect_equivalent(cpts(ans),97))
+test_that('meanvar3',expect_equivalent(cpts(ans),98))
 
 # Example of multiple changes in mean and variance at 50,100,150 in simulated normal data
 set.seed(1)
