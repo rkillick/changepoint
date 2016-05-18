@@ -5,6 +5,8 @@ Version 2.2.2
 * minseglen added to nonparametric Binary Segmentation functions.
 * Initialization of candidate log-likelihood values in C is set to -Inf instead of 0.
 * Fixed bug whereby if a non-MBIC penalty was use with SegNeigh it errored saying "MBIC not implemented for SegNeigh" this was supposed to be displaying for MBIC penalty only.  Thanks to github user cwenger for spotting this.
+* Fixed bug whereby the AMOC method with Gamma, Exponential or Poisson test statistic was returning the position of the change in a vector of potential changes rather than the actual changepoint location.  This did not affect methods other than AMOC.
+* Changed cpt.meanvar so that if test.stat="Poisson" or test.stat="Exponential" you can have a minseglen=1 (previously minimum was 2).  Thanks to Craig Wenger for the suggestion.
 
 Version 2.2.1
 =============

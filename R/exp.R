@@ -9,6 +9,7 @@ single.meanvar.exp.calc <-
       
       tau=which(tmp==min(tmp,na.rm=T))[1]
       taulike=tmp[tau]
+      tau=tau+minseglen-1 # correcting for the fact that we are starting at minseglen
       if(extrainf==TRUE){
         out=c(tau,null,taulike)
         names(out)=c('cpt','null','alt')

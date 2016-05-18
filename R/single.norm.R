@@ -8,8 +8,9 @@ function(data,extrainf=TRUE,minseglen){
     taustar=minseglen:(n-minseglen+1)
     tmp=y2[taustar+1]-y[taustar+1]^2/taustar + (y2[n+1]-y2[taustar+1]) - ((y[n+1]-y[taustar+1])^2)/(n-taustar)
     
-    tau=which(tmp==min(tmp,na.rm=T))[1]+minseglen-1
+    tau=which(tmp==min(tmp,na.rm=T))[1]
     taulike=tmp[tau]
+    tau=tau+minseglen-1 # correcting for the fact that we are starting at minseglen
     if(extrainf==TRUE){
       out=c(tau,null,taulike)
       names(out)=c('cpt','null','alt')
@@ -118,8 +119,9 @@ single.var.norm.calc <- function(data,mu,extrainf=TRUE,minseglen){
   sigman[neg==TRUE]=1*10^(-10)
   tmp=taustar*log(sigma1) + (n-taustar)*log(sigman)
   
-  tau=which(tmp==min(tmp,na.rm=T))[1]+minseglen-1
+  tau=which(tmp==min(tmp,na.rm=T))[1]
   taulike=tmp[tau]
+  tau=tau+minseglen-1 # correcting for the fact that we are starting at minseglen
   if(extrainf==TRUE){
     out=c(tau,null,taulike)
     names(out)=c('cpt','null','alt')
@@ -224,8 +226,9 @@ function(data,extrainf=TRUE,minseglen){
     sigman[neg==TRUE]=1*10^(-10)
     tmp=taustar*log(sigma1) + (n-taustar)*log(sigman)
     
-    tau=which(tmp==min(tmp,na.rm=T))[1]+minseglen-1
+    tau=which(tmp==min(tmp,na.rm=T))[1]
     taulike=tmp[tau]
+    tau=tau+minseglen-1 # correcting for the fact that we are starting at minseglen
     if(extrainf==TRUE){
       out=c(tau,null,taulike)
       names(out)=c('cpt','null','alt')

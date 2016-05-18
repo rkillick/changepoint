@@ -126,7 +126,10 @@ cpt.var=function(data,penalty="MBIC",pen.value=0,know.mean=FALSE, mu=NA,method="
 cpt.meanvar=function(data,penalty="MBIC",pen.value=0,method="AMOC",Q=5,test.stat="Normal",class=TRUE,param.estimates=TRUE,shape=1,minseglen=2){
   checkData(data)
   if(method=="SegNeigh" & minseglen>2){stop("minseglen not yet implemented for SegNeigh method, use PELT instead.")}
-  if(minseglen<2){minseglen=2;warning('Minimum segment length for a change in mean and variance is 2, automatically changed to be 2.')}
+  if(minseglen<2){
+    if(!(minseglen==1 & (test.stat=="Poisson"|test.stat=="Exponential"))){
+      minseglen=2;warning('Minimum segment length for a change in mean and variance is 2, automatically changed to be 2.')}
+    }
   if(penalty == "CROPS"){
     if(is.numeric(pen.value)){
       if(length(pen.value) == 2){
