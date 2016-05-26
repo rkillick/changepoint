@@ -7,6 +7,8 @@ Version 2.2.2
 * Fixed bug whereby if a non-MBIC penalty was use with SegNeigh it errored saying "MBIC not implemented for SegNeigh" this was supposed to be displaying for MBIC penalty only.  Thanks to github user cwenger for spotting this.
 * Fixed bug whereby the AMOC method with Gamma, Exponential or Poisson test statistic was returning the position of the change in a vector of potential changes rather than the actual changepoint location.  This did not affect methods other than AMOC.
 * Changed cpt.meanvar so that if test.stat="Poisson" or test.stat="Exponential" you can have a minseglen=1 (previously minimum was 2).  Thanks to Craig Wenger for the suggestion.
+* Minor changes to PELT and BinSeg functions in preparation for user defined cost functions (coming soon).
+* We now export the BINSEG, PELT, decision, penalty_decision and class_input functions.  This is to allow other packages to make use of these functions (previously these were replicated in other packages).  They are NOT designed for general use, they are for developer use only.
 
 Version 2.2.1
 =============
