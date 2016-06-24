@@ -2,6 +2,7 @@
 \docType{methods}
 \alias{logLik-methods}
 \alias{logLik,cpt-method}
+\alias{logLik,cpt.reg-method}
 \alias{logLik,cpt.range-method}
 \title{ ~~ Methods for Function logLik  ~~}
 \description{
@@ -11,7 +12,7 @@
 \describe{
 
 \item{\code{signature(object = "cpt")}}{
-	Returns the log-likelihood of the data with the fitted changepoints, two values are returned, the raw scaled negative log-likelihood and the scaled negative log-likelihood + penalty.  Only valid for cpttype="mean","variance" or "mean and variance".
+	Returns the -2*log-likelihood of the data with the fitted changepoints, two values are returned, the raw twice negative log-likelihood and twice negative log-likelihood + penalty.  Only valid for cpttype="mean","variance" or "mean and variance".
 }
 }}
 \examples{
