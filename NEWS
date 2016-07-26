@@ -12,6 +12,7 @@ Version 2.2.2
 * added acf generic which returns the acf for each segment.
 * changed logLik to return -2*log-likelihood of the models, previously this was a scaled version.
 * changed the prototype of the cpt class to include a default of "Not Set" for cpttype.
+* change y axis on plot(.,diagnostic=TRUE) to be labelled "Penalty Value", previously it was incorrectly labelled "Difference in Test Statistic".
 
 Version 2.2.1
 =============
