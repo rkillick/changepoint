@@ -1,4 +1,11 @@
 language: r
-sudo: required
+sudo: false
 warnings_are_errors: true
-r_check_revdep: false
+r_check_revdep: true
+cache: packages
+r:
+  - release
+  - oldrel
+  - devel
+r_check_args: --as-cran
+_R_CHECK_CRAN_INCOMING=true
