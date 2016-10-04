@@ -761,8 +761,8 @@
 	    cat('done.\n')
 	  }
 		plot(data.set.ts(x),...)
-		if(cpttype(x)=="variance"){
-			abline(v=index(data.set.ts(x))[cpts(x)],col=cpt.col,lwd=cpt.width,lty=cpt.style)
+		if(cpttype(x)=="variance" || cpttype(x)=="nonparametric (empirical_distribution)"){
+		  abline(v=index(data.set.ts(x))[cpts(x)],col=cpt.col,lwd=cpt.width,lty=cpt.style)
 		}
 		else if(cpttype(x)=="mean"  ||  cpttype(x)=="mean and variance"){
 			#nseg=length(cpts(x))+1
