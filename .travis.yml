@@ -1,6 +1,5 @@
 language: r
 sudo: required
-cache: packages
 warnings_are_errors: true
 r_check_revdep: true
 cache: packages
