@@ -9,6 +9,7 @@ single.meanvar.exp.calc <-
       
       tau=which(tmp==min(tmp,na.rm=T))[1]
       taulike=tmp[tau]
+      tau=tau+minseglen-1 # correcting for the fact that we are starting at minseglen
       if(extrainf==TRUE){
         out=c(tau,null,taulike)
         names(out)=c('cpt','null','alt')
@@ -55,6 +56,8 @@ single.meanvar.exp<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.es
     n=ncol(data)
   }
   if(n<4){stop('Data must have atleast 4 observations to fit a changepoint model.')}
+  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
+  
   penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck="meanvar.exp", method="AMOC")
   if(is.null(dim(data))==TRUE){
     tmp=single.meanvar.exp.calc(coredata(data),extrainf=TRUE,minseglen)
@@ -256,12 +259,11 @@ multiple.meanvar.exp=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,
   if(!((mul.method=="PELT")||(mul.method=="BinSeg")||(mul.method=="SegNeigh"))){
     stop("Multiple Method is not recognised")
   }
-  if(penalty!="MBIC"){
+  costfunc = "meanvar.exp"
+  if(penalty=="MBIC"){
     if(mul.method=="SegNeigh"){
       stop('MBIC penalty not implemented for SegNeigh method, please choose an alternative penalty')
     }
-    costfunc = "meanvar.exp"
-  }else{
     costfunc = "meanvar.exp.mbic"
   }
   
@@ -273,6 +275,8 @@ multiple.meanvar.exp=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,
   else{
     n=ncol(data)
   }
+  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
+  
   pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck=costfunc, method=mul.method)
 
     if(is.null(dim(data))==TRUE){

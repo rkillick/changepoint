@@ -55,7 +55,7 @@ segneigh.var.css=function(data,Q=5,pen=0){
 
 
 
-binseg.var.css=function(data,Q=5,pen=0){
+binseg.var.css=function(data,Q=5,pen=0,minseglen=2){
   n=length(data)
   if(n<4){stop('Data must have atleast 4 observations to fit a changepoint model.')}
   if(Q>((n/2)+1)){stop(paste('Q is larger than the maximum number of segments',(n/2)+1))}
@@ -73,7 +73,9 @@ binseg.var.css=function(data,Q=5,pen=0){
       if(j==end){
         st=end+1;i=i+1;end=tau[i+1]
       }else{
-        lambda[j]=sqrt((end-st+1)/2)*((y2[j+1]-y2[st])/(y2[end+1]-y2[st]) -(j-st+1)/(end-st+1))
+        if(((j-st)>=minseglen)&((end-j)>=minseglen)){
+          lambda[j]=sqrt((end-st+1)/2)*((y2[j+1]-y2[st])/(y2[end+1]-y2[st]) -(j-st+1)/(end-st+1))
+        }
       }
     }
     k=which.max(abs(lambda))
@@ -119,6 +121,8 @@ multiple.var.css=function(data,mul.method="BinSeg",penalty="MBIC",pen.value=0,Q=
   else{
     n=ncol(data)
   }
+  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
+  
   pen.value = penalty_decision(penalty, pen.value, n, diffparam, asymcheck = costfunc, method=mul.method)
   if(is.null(dim(data))==TRUE){
     # single dataset
@@ -233,9 +237,10 @@ segneigh.mean.cusum=function(data,Q=5,pen=0){
 }
 
 
-binseg.mean.cusum=function(data,Q=5,pen=0){
+binseg.mean.cusum=function(data,Q=5,pen=0,minseglen=1){
   n=length(data)
   if(n<2){stop('Data must have atleast 2 observations to fit a changepoint model.')}
+  
   if(Q>((n/2)+1)){stop(paste('Q is larger than the maximum number of segments',(n/2)+1))}
   
   y=c(0,cumsum(data))
@@ -258,7 +263,9 @@ binseg.mean.cusum=function(data,Q=5,pen=0){
       if(j==end){
         st=end+1;i=i+1;end=tau[i+1]
       }else{
-        lambda[j]=((y[j+1]-y[st])-((j-st+1)/(end-st+1))*(y[end+1]-y[st]))/(end-st+1)
+        if(((j-st)>=minseglen)&((end-j)>=minseglen)){
+          lambda[j]=((y[j+1]-y[st])-((j-st+1)/(end-st+1))*(y[end+1]-y[st]))/(end-st+1)
+        }
       }
     }
     k=which.max(abs(lambda))
@@ -305,6 +312,8 @@ multiple.mean.cusum=function(data,mul.method="BinSeg",penalty="Asymptotic",pen.v
   else{
     n=ncol(data)
   }
+  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
+  
   pen.value = penalty_decision(penalty, pen.value, n, diffparam, asymcheck = costfunc, method=mul.method)
   if(is.null(dim(data))==TRUE){
     # single dataset

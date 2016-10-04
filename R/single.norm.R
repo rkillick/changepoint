@@ -8,8 +8,9 @@ function(data,extrainf=TRUE,minseglen){
     taustar=minseglen:(n-minseglen+1)
     tmp=y2[taustar+1]-y[taustar+1]^2/taustar + (y2[n+1]-y2[taustar+1]) - ((y[n+1]-y[taustar+1])^2)/(n-taustar)
     
-    tau=which(tmp==min(tmp,na.rm=T))[1]+minseglen-1
+    tau=which(tmp==min(tmp,na.rm=T))[1]
     taulike=tmp[tau]
+    tau=tau+minseglen-1 # correcting for the fact that we are starting at minseglen
     if(extrainf==TRUE){
       out=c(tau,null,taulike)
       names(out)=c('cpt','null','alt')
@@ -55,6 +56,8 @@ single.mean.norm<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.esti
     n=ncol(data)
   }
   if(n<2){stop('Data must have atleast 2 observations to fit a changepoint model.')}
+  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
+  
   pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck="mean.norm", method="AMOC")
   if(is.null(dim(data))==TRUE){ # single dataset
 		tmp=single.mean.norm.calc(coredata(data),extrainf=TRUE,minseglen)
@@ -116,8 +119,9 @@ single.var.norm.calc <- function(data,mu,extrainf=TRUE,minseglen){
   sigman[neg==TRUE]=1*10^(-10)
   tmp=taustar*log(sigma1) + (n-taustar)*log(sigman)
   
-  tau=which(tmp==min(tmp,na.rm=T))[1]+minseglen-1
+  tau=which(tmp==min(tmp,na.rm=T))[1]
   taulike=tmp[tau]
+  tau=tau+minseglen-1 # correcting for the fact that we are starting at minseglen
   if(extrainf==TRUE){
     out=c(tau,null,taulike)
     names(out)=c('cpt','null','alt')
@@ -139,6 +143,7 @@ single.var.norm<-function(data,penalty="MBIC",pen.value=0,know.mean=FALSE,mu=NA,
     n=ncol(data)
   }
   if(n<4){stop('Data must have atleast 4 observations to fit a changepoint model.')}
+  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck="var.norm", method="AMOC")
   
@@ -221,8 +226,9 @@ function(data,extrainf=TRUE,minseglen){
     sigman[neg==TRUE]=1*10^(-10)
     tmp=taustar*log(sigma1) + (n-taustar)*log(sigman)
     
-    tau=which(tmp==min(tmp,na.rm=T))[1]+minseglen-1
+    tau=which(tmp==min(tmp,na.rm=T))[1]
     taulike=tmp[tau]
+    tau=tau+minseglen-1 # correcting for the fact that we are starting at minseglen
     if(extrainf==TRUE){
       out=c(tau,null,taulike)
       names(out)=c('cpt','null','alt')
@@ -268,6 +274,8 @@ single.meanvar.norm<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.e
     n=ncol(data)
   } 
   if(n<4){stop('Data must have atleast 4 observations to fit a changepoint model.')}
+  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
+  
   pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck="meanvar.norm", method="AMOC")
   
   if(is.null(dim(data))==TRUE){

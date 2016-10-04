@@ -72,9 +72,9 @@ test_that('mean8',expect_equal(cpts(ans[[2]]),numeric()))
 # Example of a change in scale parameter (mean and variance) at 100 in simulated gamma data
 set.seed(1)
 x=c(rgamma(100,shape=1,rate=1),rgamma(100,shape=1,rate=5))
-test_that('meanvar2',expect_equivalent(cpt.meanvar(x,penalty="SIC",method="AMOC",test.stat="Gamma",class=FALSE,shape=1),97))
+test_that('meanvar2',expect_equivalent(cpt.meanvar(x,penalty="SIC",method="AMOC",test.stat="Gamma",class=FALSE,shape=1),98))
 ans=cpt.meanvar(x,penalty="AIC",method="AMOC",test.stat="Gamma",shape=1)
-test_that('meanvar3',expect_equivalent(cpts(ans),97))
+test_that('meanvar3',expect_equivalent(cpts(ans),98))
 
 # Example of multiple changes in mean and variance at 50,100,150 in simulated normal data
 set.seed(1)
@@ -197,8 +197,7 @@ test_that('class9',expect_equivalent(cpts(x),c(10,50,100)))
 set.seed(1)
 x=c(rnorm(100,0,1),rnorm(100,0,10))
 ans=cpt.var(x) 
-test_that('class10',expect_equivalent(logLik(ans),c(997.63378247668,1006.84412284867)))
-
+test_that('class10',expect_equivalent(logLik(ans),c(1003.2283241358,1012.438665)))
 
 
 
@@ -245,7 +244,7 @@ test_that('class16',expect_equivalent(cpts(x),10))
 
 # From cpttype.Rd
 x=new("cpt") # new cpt object
-test_that('class17',expect_equivalent(cpttype(x),character())) # retrieves the cpttype slot from x
+test_that('class17',expect_equivalent(cpttype(x),"Not Set")) # retrieves the cpttype slot from x
 
 
 
@@ -409,7 +408,7 @@ set.seed(1)
 x=c(rnorm(100,0,1),rnorm(100,0,10))
 ans=cpt.var(x,penalty="Asymptotic",pen.value=0.01,method="AMOC",param.estimates=FALSE)
 ans=param(ans) # fills the param.est slot with the parameter estimes.
-test_that('class34',expect_equivalent(param.est(ans),list(variance=c(0.8067621, 91.7532312))))
+test_that('class34',expect_equivalent(param.est(ans),list(variance=c(0.7986945, 90.8356989))))
 
 
 

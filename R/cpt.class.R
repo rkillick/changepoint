@@ -1,4 +1,4 @@
-	setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character", 	test.stat="character",pen.type="character",pen.value="numeric",minseglen="numeric",cpts="numeric",ncpts.max="numeric",param.est="list",date="character",version="character"),prototype=prototype(date=date(),version=as(packageVersion("changepoint"),'character')))
+	setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character", 	test.stat="character",pen.type="character",pen.value="numeric",minseglen="numeric",cpts="numeric",ncpts.max="numeric",param.est="list",date="character",version="character"),prototype=prototype(cpttype="Not Set",date=date(),version=as(packageVersion("changepoint"),'character')))
 
 	setClass("cpt.reg",slots=list(data.set="matrix", cpttype="character", method="character", test.stat="character",pen.type="character",pen.value="numeric",minseglen="numeric",cpts="numeric",ncpts.max="numeric",param.est="list",date="character",version="character"),prototype=prototype(cpttype="regression",date=date(),version=as(packageVersion("changepoint"),"character")))
   
@@ -337,8 +337,13 @@
 	
 	setGeneric("cpts<-", function(object, value) standardGeneric("cpts<-"))
 	setReplaceMethod("cpts", "cpt", function(object, value) {
-    if(value[length(value)]==length(object@data.set)){object@cpts <- value}
-    else{		object@cpts <- c(value,length(object@data.set))  }
+	  if((cpttype(object)=="meanar")|(cpttype(object)=="trendar")){
+	    n=length(object@data.set)-1
+	  }
+	  else{n=length(object@data.set)}
+	  
+    if(value[length(value)]==n){object@cpts <- value}
+    else{		object@cpts <- c(value,n)  }
 		return(object)
 	})
 	setReplaceMethod("cpts", "cpt.reg", function(object, value) {
@@ -401,10 +406,12 @@
 			cpts=c(0,object@cpts)
 			#nseg=length(cpts)-1
 			data=data.set(object)
+			seglen=seg.len(object)
 			tmpvar=NULL
 			for(j in 1:nseg(object)){
 				tmpvar[j]=var(data[(cpts[j]+1):(cpts[j+1])])
 			}
+			tmpvar=tmpvar*(seglen-1)/seglen # correctly for the fact that the MLE estimate is /n but the var function is /n-1
 			return(tmpvar)
 		}
 		param.scale=function(object,shape){
@@ -417,6 +424,46 @@
 				tmpscale[j]=(y[(cpts[j+1]+1)]-y[(cpts[j]+1)])/((cpts[j+1]-cpts[j])*shape)
 			}
 			return(tmpscale)			
+		}
+		param.trend=function(object){
+		  cpts=c(0,object@cpts)
+		  seglen=seg.len(object)
+		  data=data.set(object)
+		  n=length(data)
+		  sumstat=cbind(cumsum(c(0,data)),cumsum(c(0,data*c(1:n))))
+		  cptsumstat=matrix(sumstat[object@cpts+1,]-sumstat[c(0,cpts(object))+1,],ncol=2)
+		  cptsumstat[,2]=cptsumstat[,2]-cptsumstat[,1]*c(0,cpts(object)) # i.e. creating newx3
+		  
+		  thetaS=(2*cptsumstat[,1]*(2*seglen + 1) - 6*cptsumstat[,2]) / (2*seglen*(2*seglen + 1) - 3*seglen*(seglen+1))
+		  thetaT=(6*cptsumstat[,2])/((seglen+1)*(2*seglen+1)) + (thetaS * (1-((3*seglen)/((2*seglen)+1))))
+		  return(cbind(thetaS,thetaT))
+		}
+		param.meanar=function(object){
+		  seglen=seg.len(object)
+		  data=data.set(object)
+		  n=length(data)-1
+		  sumstat=cbind(cumsum(c(0,data[-1])),cumsum(c(0,data[-(n+1)])),cumsum(c(0,data[-1]*data[-(n+1)])),cumsum(c(0,data[-1]^2)),cumsum(c(0,data[-(n+1)]^2)))
+		  cptsumstat=matrix(sumstat[object@cpts+1,]-sumstat[c(0,cpts(object))+1,],ncol=5)
+		  beta2=(2*seglen*cptsumstat[,3]-cptsumstat[,1]*cptsumstat[,2])/(2*seglen*cptsumstat[,5]*(1-cptsumstat[,2]^2));
+		  beta1=(2*cptsumstat[,1]-beta2*cptsumstat[,2])/(2*seglen);
+		  
+		  return(cbind(beta1,beta2))
+		}
+		param.trendar=function(object){
+		  seglen=seg.len(object)
+		  data=data.set(object)
+		  n=length(data)-1
+		  sumstat=cbind(cumsum(c(0,data[-1])),cumsum(c(0,data[-(n+1)])),cumsum(c(0,data[-1]*data[-(n+1)])),cumsum(c(0,data[-1]*c(1:n))),cumsum(c(0,data[-(n+1)]*c(0:(n-1)))),cumsum(c(0,data[-1]^2)),cumsum(c(0,data[-(n+1)]^2)))
+		  cptsumstat=matrix(sumstat[object@cpts+1,]-sumstat[c(0,cpts(object))+1,],ncol=7)
+		  cptsumstat[,4]=cptsumstat[,4]-cptsumstat[,1]*c(0,cpts(object)) # i.e. creating newx4
+		  cptsumstat[,5]=cptsumstat[,5]-cptsumstat[,2]*c(0,cpts(object)) # i.e. creating newx5
+		  betatop=seglen*(seglen-1)*(seglen*(seglen-1)*cptsumstat[,3] + 2*(2*seglen+1)*cptsumstat[,1]*(cptsumstat[,5]-seglen*cptsumstat[,2]) + 6*cptsumstat[,4]*(cptsumstat[,2]-cptsumstat[,5]))
+		  betabottom=seglen*(seglen-1)*cptsumstat[,7] + 2*(2*seglen+1)*cptsumstat[,2]*(seglen*cptsumstat[,2]-cptsumstat[,5]) + 6*cptsumstat[,5]*(cptsumstat[,5]-cptsumstat[,2]);
+		  beta=betatop/betabottom;  
+		  thetajpo=(6*(seglen+2)*(cptsumstat[,4]-beta*cptsumstat[,5]))/((seglen+1)*(2*seglen+1)) - 2*(cptsumstat[,1]-beta*cptsumstat[,2])
+		  thetaj=(2*(2*seglen+1)*(cptsumstat[,1]-beta*cptsumstat[,2])-6*(cptsumstat[,4]-beta*cptsumstat[,5]))/(seglen-1)
+		  
+		  return(cbind(beta,thetajpo,thetaj))
 		}
 		if(cpttype(object)=="mean"){
 			param.est(object)<-list(mean=param.mean(object))
@@ -441,8 +488,35 @@
 				stop("Unknown test statistic for a change in mean and variance")
 			}
 		}
+		else if(cpttype(object)=="trend"){
+		  if(test.stat(object)=="Normal"){
+		    tmp=param.trend(object)
+		    param.est(object)<-list(thetaS=tmp[,1],thetaT=tmp[,2])
+		  }
+		  else{
+		    stop("Unknown test statistic for a change in trend")
+		  }
+		}
+		else if(cpttype(object)=="trendar"){
+		  if(test.stat(object)=="Normal"){
+		    tmp=param.trendar(object)
+		    param.est(object)<-list(beta=tmp[,1],thetajpo=tmp[,2],thetaj=tmp[,3])
+		  }
+		  else{
+		    stop("Unknown test statistic for a change in trend+ar")
+		  }
+		}
+		else if(cpttype(object)=="meanar"){
+		  if(test.stat(object)=="Normal"){
+		    tmp=param.meanar(object)
+		    param.est(object)<-list(beta1=tmp[,1],beta2=tmp[,2])
+		  }
+		  else{
+		    stop("Unknown test statistic for a change in mean+ar")
+		  }
+		}
 		else{
-			stop("Unknown changepoint type, must be 'mean', 'variance' or 'mean and variance'")
+			stop("Unknown changepoint type, must be 'mean', 'variance', 'mean and variance', 'trend', 'meanar' or 'trendar'.")
 		}
 		return(object)
 	})
@@ -472,10 +546,12 @@
 	  param.var=function(object,cpts){
 	    nseg=length(cpts)-1
 	    data=data.set(object)
+	    seglen=seg.len(object)
 	    tmpvar=NULL
 	    for(j in 1:nseg){
 	      tmpvar[j]=var(data[(cpts[j]+1):(cpts[j+1])])
 	    }
+	    tmpvar=tmpvar*(seglen-1)/seglen
 	    return(tmpvar)
 	  }
 	  param.scale=function(object,cpts,shape){
@@ -487,6 +563,46 @@
 	      tmpscale[j]=(y[(cpts[j+1]+1)]-y[(cpts[j]+1)])/((cpts[j+1]-cpts[j])*shape)
 	    }
 	    return(tmpscale)			
+	  }
+	  param.trend=function(object){
+	    cpts=c(0,object@cpts)
+	    seglen=seg.len(object)
+	    data=data.set(object)
+	    n=length(data)
+	    sumstat=cbind(cumsum(c(0,data)),cumsum(c(0,data*c(1:n))))
+	    cptsumstat=matrix(sumstat[object@cpts+1,]-sumstat[c(0,cpts(object))+1,],ncol=2)
+	    cptsumstat[,2]=cptsumstat[,2]-cptsumstat[,1]*c(0,cpts(object)) # i.e. creating newx3
+	    
+	    thetaS=(2*cptsumstat[,1]*(2*seglen + 1) - 6*cptsumstat[,2]) / (2*seglen*(2*seglen + 1) - 3*seglen*(seglen+1))
+	    thetaT=(6*cptsumstat[,2])/((seglen+1)*(2*seglen+1)) + (thetaS * (1-((3*seglen)/((2*seglen)+1))))
+	    return(cbind(thetaS,thetaT))
+	  }
+	  param.meanar=function(object){
+	    seglen=seg.len(object)
+	    data=data.set(object)
+	    n=length(data)-1
+	    sumstat=cbind(cumsum(c(0,data[-1])),cumsum(c(0,data[-(n+1)])),cumsum(c(0,data[-1]*data[-(n+1)])),cumsum(c(0,data[-1]^2)),cumsum(c(0,data[-(n+1)]^2)))
+	    cptsumstat=matrix(sumstat[object@cpts+1,]-sumstat[c(0,cpts(object))+1,],ncol=5)
+	    beta2=(2*seglen*cptsumstat[,3]-cptsumstat[,1]*cptsumstat[,2])/(2*seglen*cptsumstat[,5]*(1-cptsumstat[,2]^2));
+	    beta1=(2*cptsumstat[,1]-beta2*cptsumstat[,2])/(2*seglen);
+	    
+	    return(cbind(beta1,beta2))
+	  }
+	  param.trendar=function(object){
+	    seglen=seg.len(object)
+	    data=data.set(object)
+	    n=length(data)-1
+	    sumstat=cbind(cumsum(c(0,data[-1])),cumsum(c(0,data[-(n+1)])),cumsum(c(0,data[-1]*data[-(n+1)])),cumsum(c(0,data[-1]*c(1:n))),cumsum(c(0,data[-(n+1)]*c(0:(n-1)))))
+	    cptsumstat=matrix(sumstat[object@cpts+1,]-sumstat[c(0,cpts(object))+1,],ncol=7)
+	    cptsumstat[,4]=cptsumstat[,4]-cptsumstat[,1]*c(0,cpts(object)) # i.e. creating newx4
+	    cptsumstat[,5]=cptsumstat[,5]-cptsumstat[,2]*c(0,cpts(object)) # i.e. creating newx5
+	    betatop=seglen*(seglen-1)*(seglen*(seglen-1)*cptsumstat[,3] + 2*(2*seglen+1)*cptsumstat[,1]*(cptsumstat[,5]-seglen*cptsumstat[,2]) + 6*cptsumstat[,4]*(cptsumstat[,2]-cptsumstat[,5]))
+	    betabottom=seglen*(seglen-1)*cptsumstat[,7] + 2*(2*seglen+1)*cptsumstat[,2]*(seglen*cptsumstat[,2]-cptsumstat[,5]) + 6*cptsumstat[,5]*(cptsumstat[,5]-cptsumstat[,2]);
+	    beta=betatop/betabottom;  
+	    thetajpo=(6*(seglen+2)*(cptsumstat[,4]-beta*cptsumstat[,5]))/((seglen+1)*(2*seglen+1)) - 2*(cptsumstat[,1]-beta*cptsumstat[,2])
+	    thetaj=(2*(2*seglen+1)*(cptsumstat[,1]-beta*cptsumstat[,2])-6*(cptsumstat[,4]-beta*cptsumstat[,5]))/(seglen-1)
+	    
+	    return(cbind(beta,thetajpo,thetaj))
 	  }
 	  
 	  if(cpttype(object)=="mean"){
@@ -512,8 +628,35 @@
 	      stop("Unknown test statistic for a change in mean and variance")
 	    }
 	  }
+	  else if(cpttype(object)=="trend"){
+	    if(test.stat(object)=="Normal"){
+	      tmp=param.trend(object)
+	      param.est(object)<-list(thetaS=tmp[,1],thetaT=tmp[,2])
+	    }
+	    else{
+	      stop("Unknown test statistic for a change in trend")
+	    }
+	  }
+	  else if(cpttype(object)=="trendar"){
+	    if(test.stat(object)=="Normal"){
+	      tmp=param.trendar(object)
+	      param.est(object)<-list(beta=tmp[,1],thetajpo=tmp[,2],thetaj=tmp[,3])
+	    }
+	    else{
+	      stop("Unknown test statistic for a change in trend+ar")
+	    }
+	  }
+	  else if(cpttype(object)=="meanar"){
+	    if(test.stat(object)=="Normal"){
+	      tmp=param.meanar(object)
+	      param.est(object)<-list(beta1=tmp[,1],beta2=tmp[,2])
+	    }
+	    else{
+	      stop("Unknown test statistic for a change in mean+ar")
+	    }
+	  }
 	  else{
-	    stop("Unknown changepoint type, must be 'mean', 'variance' or 'mean and variance'")
+	    stop("Unknown changepoint type, must be 'mean', 'variance', 'mean and variance', 'trend', 'meanar' or 'trendar'")
 	  }
 	  if(is.na(ncpts)){
 	    param.est(object)=param.est
@@ -526,18 +669,27 @@
 	
 	setMethod("param", "cpt.reg", function(object,shape,...) {			
 		param.norm=function(object){
-			cpts=c(0,cpts(object))
+			cpts=c(0,object@cpts)
 		#	nseg=length(cpts)-1 #nseg(object)
 			data=data.set(object)
 			p=ncol(data)-1
 			tmpbeta=matrix(NA,ncol=p,nrow=nseg(object))
+			tmpsigma=rep(NA,nseg(object))
 			for(j in 1:nseg(object)){
-				tmpbeta[j,]=solve(t(data[(cpts[j]+1):cpts[j+1],2:(p+1)])%*%data[(cpts[j]+1):cpts[j+1],2:(p+1)],t(data[(cpts[j]+1):cpts[j+1],2:(p+1)])%*%data[(cpts[j]+1):cpts[j+1],1])
+			  formula=paste('-1+data[',cpts[j]+1,':',cpts[j+1],',2]',sep='')
+			  if(p>1){
+			    for(i in 2:p){
+			      formula=paste(formula,'+data[',(cpts[j]+1),':',cpts[j+1],',',i+1,']',sep='')
+			    }
+			  }
+			  tmpfit=eval(parse(text=paste('lm(data[',(cpts[j]+1),':',cpts[j+1],',1]~',formula,')',sep='')))
+			  tmpbeta[j,]=tmpfit$coefficients
+			  tmpsigma[j]=var(tmpfit$residuals)
 			}
-			return(tmpbeta)
+			return(list(beta=tmpbeta,sig2=tmpsigma))
 		}
 		if(test.stat(object)=="Normal"){
-			param.est(object)<-list(beta=param.norm(object))
+			param.est(object)<-param.norm(object)
 		}
 		else{
 			stop("Unknown test statistic, must be 'Normal'")
@@ -603,9 +755,14 @@
 
 # plot functions
 	setMethod("plot","cpt",function(x,cpt.col='red',cpt.width=1,cpt.style=1,...){
+	  if(length(param.est(x))==0){# i.e. parameter.estimates=FALSE in call
+	    cat('Calculating parameter estimates...')
+	    object=param(x)
+	    cat('done.\n')
+	  }
 		plot(data.set.ts(x),...)
-		if(cpttype(x)=="variance"){
-			abline(v=index(data.set.ts(x))[cpts(x)],col=cpt.col,lwd=cpt.width,lty=cpt.style)
+		if(cpttype(x)=="variance" || cpttype(x)=="nonparametric (empirical_distribution)"){
+		  abline(v=index(data.set.ts(x))[cpts(x)],col=cpt.col,lwd=cpt.width,lty=cpt.style)
 		}
 		else if(cpttype(x)=="mean"  ||  cpttype(x)=="mean and variance"){
 			#nseg=length(cpts(x))+1
@@ -629,6 +786,17 @@
 				segments(index(data.set.ts(x))[cpts[i]+1],means[i],index(data.set.ts(x))[cpts[i+1]],means[i],col=cpt.col,lwd=cpt.width,lty=cpt.style)
 			}
 		}
+	  else if(cpttype(x)=="trend"){
+	    cpts=c(0,x@cpts)
+	    intercept=rep(param.est(x)$thetaS,x@cpts-c(0,cpts(x)))
+	    slope=rep(param.est(x)$thetaT-param.est(x)$thetaS,x@cpts-c(0,cpts(x)))/rep(x@cpts-c(0,cpts(x)),x@cpts-c(0,cpts(x)))
+	    cptn=rep(c(0,cpts(x)),x@cpts-c(0,cpts(x)))
+	    n=length(data.set(x))
+	    means=intercept+slope*((1:n)-cptn)
+	    for(i in 1:nseg(x)){
+	      segments(index(data.set.ts(x))[cpts[i]+1],means[cpts[i]+1],index(data.set.ts(x))[cpts[i+1]],means[cpts[i+1]],col=cpt.col,lwd=cpt.width,lty=cpt.style)
+	    }
+	  }
 		else{
 			stop('Invalid Changepoint Type for plotting.\n Can only plot mean, variance, mean and variance')
 		}
@@ -636,7 +804,7 @@
 
 	setMethod("plot","cpt.range",function(x,ncpts=NA,diagnostic=FALSE,cpt.col='red',cpt.width=1,cpt.style=1,...){
 	  if(diagnostic==TRUE){
-      return(plot(apply(cpts.full(x),1,function(x){sum(x>0,na.rm=TRUE)}),pen.value.full(x),type='l',xlab='Number of Changepoints',ylab='Difference in Test Statistic',...))
+      return(plot(apply(cpts.full(x),1,function(x){sum(x>0,na.rm=TRUE)}),pen.value.full(x),type='l',xlab='Number of Changepoints',ylab='Penalty Value',...))
 	  }
 	  plot(data.set.ts(x),...)
 	  if(is.na(ncpts)){
@@ -691,110 +859,120 @@
 	})
 	
 	setMethod("plot","cpt.reg",function(x,cpt.col='red',cpt.width=1,cpt.style=1,...){
-		if(dim(data.set(x))[2]>3){
-			stop("A plot function for regression of more than one regressor is not available")
-		}
-		else if(dim(data.set(x))[2]==3){
-			if(data.set(x)[1,2]==1){
-				#nseg=length(cpts(x))+1
-				cpts=c(0,x@cpts)
-				betas=param.est(x)$beta
-				plot(data.set(x[,3]),data.set(x[,1]),...)
-				for(i in 1:nseg(x)){
-					segments(cpts[i]+1,betas[i,1]*data.set(x)[cpts[i]+1,2]+betas[i,2]*data.set(x)[cpts[i]+1,3],cpts[i+1],betas[i,1]*data.set(x)[cpts[i+1],2]+betas[i,2]*data.set(x)[cpts[i+1],3],col=cpt.col,lwd=cpt.width,lty=cpt.style)
-				}
-			}
-			if(data.set(x)[1,3]==1){
-				#nseg=length(cpts(x))+1
-				cpts=c(0,x@cpts)
-				betas=param.est(x)$beta
-				plot(data.set(x[,2]),data.set(x[,1]),...)
-				for(i in 1:nseg(x)){
-					segments(cpts[i]+1,betas[i,2]*data.set(x)[cpts[i]+1,3]+betas[i,1]*data.set(x)[cpts[i]+1,2],cpts[i+1],betas[i,2]*data.set(x)[cpts[i+1],3]+betas[i,1]*data.set(x)[cpts[i+1],2],col=cpt.col,lwd=cpt.width,lty=cpt.style)
-				}
-			}
-			else{
-				stop("A plot function for regression of more than one regressor is not available")
-			}
-		}
-		else{
-			#nseg=length(cpts(x))+1
-			cpts=c(0,x@cpts)
-			betas=param.est(x)$beta
-			plot(data.set(x[,2]),data.set(x[,1]),...)
-			for(i in 1:nseg(x)){
-				segments(cpts[i]+1,betas[i,1]*data.set(x)[cpts[i]+1,2],cpts[i+1],betas[i,2]+betas[i,1]*data.set(x)[cpts[i+1],2],col=cpt.col,lwd=cpt.width,lty=cpt.style)
-			}
-		}
+	  if(length(param.est(x))==0){# i.e. parameter.estimates=FALSE in call
+	    cat('Calculating parameter estimates...')
+	    object=param(x)
+	    cat('done.\n')
+	  }
+	  plot(data.set(x)[,1],type='l',...)
+	  if(test.stat(x)=="Normal"){
+	    cpts=c(0,x@cpts)
+	    betas=param.est(x)$beta
+	    for(i in 1:nseg(x)){
+	      lines((cpts[i]+1):cpts[i+1],betas[i,]%*%t(data.set(x)[(cpts[i]+1):cpts[i+1],-1]),col=cpt.col,lwd=cpt.width,lty=cpt.style)
+	    }
+	  }
+	  else{
+	    stop('Invalid Changepoint test statistic')
+	  }
 	})
 
 # likelihood functions
 	setMethod("logLik", "cpt", function(object) {
+	  if(length(param.est(object))==0){# i.e. parameter.estimates=FALSE in call
+	    cat('Calculating parameter estimates...')
+	    object=param(object)
+	    cat('done.\n')
+	  }
 		if(test.stat(object)=="Normal"){
 			if(cpttype(object)=="mean"){
-				mll.mean=function(x2,x,n){
-				  return( x2-(x^2)/n)
-				}
-				y2=c(0,cumsum(data.set(object)^2))
-				y=c(0,cumsum(data.set(object)))
-				cpts=c(0,object@cpts)
-				#nseg=length(cpts)-1
-				tmplike=0
-				for(j in 1:nseg(object)){
-			    tmplike=tmplike+mll.mean(y2[cpts[j+1]+1]-y2[cpts[j]+1],y[cpts[j+1]+1]-y[cpts[j]+1],cpts[j+1]-cpts[j])
-				}
-				##c(tmplike, tmplike+(nseg-2)*pen.value(object)+sum(log(cpts[-1]-cpts[-(nseg+1)])))
-        if(pen.type(object)=="MBIC"){
-          like=c(tmplike, tmplike+(nseg(object)-2)*pen.value(object)+sum(log(cpts[-1]-cpts[-(nseg(object)+1)])))
-        }else{
-				  like=c(tmplike,tmplike+(nseg(object)-1)*pen.value(object))
+        		means=rep(param.est(object)$mean,object@cpts-c(0,cpts(object)))
+        		rss=sum((data.set(object)-means)^2)
+        		n=length(data.set(object))
+        		like=n*(log(2*pi)+log(rss/n)+1) # -2*loglik
+        		if(pen.type(object)=="MBIC"){
+        		  like=c(like, like+(nseg(object)-2)*pen.value(object)+sum(log(cpts[-1]-cpts[-(nseg(object)+1)])))
+        		}else{
+				  like=c(like,like+(nseg(object)-1)*pen.value(object))
         }
-				names(like)=c("-like","-likepen")
 			}
 			else if(cpttype(object)=="variance"){
-				mll.var=function(x,n){
-					neg=x<=0
-					x[neg==TRUE]=0.00000000001    
-					return( n*(log(2*pi)+log(x/n)+1))
-				}
-				y2=c(0,cumsum(data.set(object)^2))
-				cpts=c(0,object@cpts)
-				#nseg=length(cpts)-1
-				tmplike=0
-				for(j in 1:nseg(object)){
-					tmplike=tmplike+mll.var(y2[cpts[j+1]+1]-y2[cpts[j]+1],cpts[j+1]-cpts[j])
-				}
+        		rss=c(0,cumsum((data.set(object)-param.est(object)$mean)^2))
+		        cpts=c(0,object@cpts)
+        		n=length(data.set(object))
+		        seglen=seg.len(object)
+		        sigmas=(rss[cpts[-1]+1]-rss[cpts[-length(cpts)]+1])/seglen
+        		like=n*log(2*pi)+sum(seglen*log(sigmas))+n
 				if(pen.type(object)=="MBIC"){
-				  like=c(tmplike, tmplike+(nseg(object)-2)*pen.value(object)+sum(log(cpts[-1]-cpts[-(nseg(object)+1)])))
+				  like=c(like, like+(nseg(object)-2)*pen.value(object)+sum(log(seglen)))
 				}else{
-				  like=c(tmplike,tmplike+(nseg(object)-1)*pen.value(object))
+				  like=c(like,like+(nseg(object)-1)*pen.value(object))
 				}
-				names(like)=c("-like","-likepen")
 			}
 			else if(cpttype(object)=="mean and variance"){
-				mll.meanvar=function(x2,x,n){
-					sigmasq=(1/n)*(x2-(x^2)/n)
-					neg=sigmasq<=0
-					sigmasq[neg==TRUE]=0.00000000001
-					return( n*(log(2*pi)+log(sigmasq)+1))
-				}
-				y2=c(0,cumsum(data.set(object)^2))
-				y=c(0,cumsum(data.set(object)))
-				cpts=c(0,object@cpts)
-				#nseg=length(cpts)-1
-				tmplike=0
-				for(j in 1:nseg(object)){
-					tmplike=tmplike+mll.meanvar(y2[cpts[j+1]+1]-y2[cpts[j]+1],y[cpts[j+1]+1]-y[cpts[j]+1],cpts[j+1]-cpts[j])
-				}
+			  means=rep(param.est(object)$mean,object@cpts-c(0,cpts(object)))
+			  rss=sum((data.set(object)-means)^2)
+			  n=length(data.set(object))
+			  cpts=c(0,object@cpts)
+			  seglen=seg.len(object)
+			  sigmas=param.est(object)$variance
+			  like=n*log(2*pi)+sum(seglen*log(sigmas))+n
 				if(pen.type(object)=="MBIC"){
-				  like=c(tmplike, tmplike+(nseg(object)-2)*pen.value(object)+sum(log(cpts[-1]-cpts[-(nseg(object)+1)])))
+				  like=c(like,like+(nseg(object)-2)*pen.value(object)+sum(log(seglen)))
 				}else{
-				  like=c(tmplike,tmplike+(nseg(object)-1)*pen.value(object))
+				  like=c(like,like+(nseg(object)-1)*pen.value(object))
 				}
-				names(like)=c("-like","-likepen")
 			}
+		  else if(cpttype(object)=="trend"){
+		    intercept=rep(param.est(object)$thetaS,object@cpts-c(0,cpts(object)))
+		    slope=rep(param.est(object)$thetaT-param.est(object)$thetaS,object@cpts-c(0,cpts(object)))/rep(object@cpts-c(0,cpts(object)),object@cpts-c(0,cpts(object)))
+		    cptn=rep(c(0,cpts(object)),object@cpts-c(0,cpts(object)))
+		    n=length(data.set(object))
+		    means=intercept+slope*((1:n)-cptn)
+		    rss=sum((data.set(object)-means)^2)
+		    like=n*(log(2*pi)+log(rss/n)+1) # -2*loglik
+		    if(pen.type(object)=="MBIC"){
+		      like=c(like, like+(nseg(object)-2)*pen.value(object)+sum(log(seg.len(object))))
+		    }else{
+		      like=c(like,like+(nseg(object)-1)*pen.value(object))
+		    }
+		  }
+		  else if(cpttype(object)=="trendar"){
+		    seglen=seg.len(object)
+		    intercept=rep(param.est(object)$thetaj,seglen)
+		    slope=rep(param.est(object)$thetajpo-param.est(object)$thetaj,seglen)/rep(seglen,seglen)
+		    ar=rep(param.est(object)$beta,seglen)
+		    cptn=rep(c(0,cpts(object)),seglen)
+		    n=length(data.set(object))
+		    means=NULL;means[1]=0
+		    for(i in 2:n){means[i]=intercept+slope*((1:n)-cptn)+ar*means[i-1]}
+		    means=means[-1]
+		    rss=sum((data.set(object)[-1]-means)^2)
+		    like=n*(log(2*pi)+log(rss/n)+1) # -2*loglik
+		    if(pen.type(object)=="MBIC"){
+		      like=c(like, like+(nseg(object)-2)*pen.value(object)+sum(log(seg.len(object))))
+		    }else{
+		      like=c(like,like+(nseg(object)-1)*pen.value(object))
+		    }
+		  }
+		  else if(cpttype(object)=="meanar"){
+		    seglen=seg.len(object)
+		    intercept=rep(param.est(object)$beta1,seglen)
+		    ar=rep(param.est(object)$beta2,seglen)
+		    cptn=rep(c(0,cpts(object)),seglen)
+		    n=length(data.set(object))
+		    means[1]=0;for(i in 2:n){means[i]=intercept+ar*means[i-1]}
+		    means=means[-1]
+		    rss=sum((data.set(object)[-1]-means)^2)
+		    like=n*(log(2*pi)+log(rss/n)+1) # -2*loglik
+		    if(pen.type(object)=="MBIC"){
+		      like=c(like, like+(nseg(object)-2)*pen.value(object)+sum(log(seg.len(object))))
+		    }else{
+		      like=c(like,like+(nseg(object)-1)*pen.value(object))
+		    }
+		  }
 			else{
-				stop("Unknown changepoint type, must be 'mean', 'variance' or 'mean and variance'")
+				stop("Unknown changepoint type, must be 'mean', 'variance', 'mean and variance', 'trend', 'meanar' or 'trendar'")
 			}
 		}
 		else if(test.stat(object)=="Gamma"){
@@ -802,6 +980,7 @@
 				stop("Unknown changepoint type for test.stat='Gamma', must be 'mean and variance'")
 			}
 			else{
+			  warning("Not changed to be -2*logLik")
 			  mll.meanvarg=function(x,n,shape){
 			    return(n*shape*log(n*shape)-n*shape*log(x))
 			  }
@@ -814,11 +993,10 @@
 					tmplike=tmplike+mll.meanvarg(y[cpts[j+1]+1]-y[cpts[j]+1],cpts[j+1]-cpts[j],shape)
 				}
 				if(pen.type(object)=="MBIC"){
-				  like=c(tmplike, tmplike+(nseg(object)-2)*pen.value(object)+sum(log(cpts[-1]-cpts[-(nseg(object)+1)])))
+				  like=c(tmplike, tmplike+(nseg(object)-2)*pen.value(object)+sum(log(seg.len(object))))
 				}else{
 				  like=c(tmplike,tmplike+(nseg(object)-1)*pen.value(object))
 				}
-				names(like)=c("-like","-likepen")
 			}
 		}
 		else if(test.stat(object)=="Exponential"){
@@ -826,6 +1004,7 @@
 				stop("Unknown changepoint type for test.stat='Exponential', must be 'mean and variance'")
 			}
 			else{
+			  warning("Not changed to be -2*logLik")
 			  mll.meanvare=function(x,n){
 			    return(n*log(n)-n*log(x))
 			  }
@@ -837,11 +1016,10 @@
 					tmplike=tmplike+mll.meanvare(y[cpts[j+1]+1]-y[cpts[j]+1],cpts[j+1]-cpts[j])
 				}
 				if(pen.type(object)=="MBIC"){
-				  like=c(tmplike, tmplike+(nseg(object)-2)*pen.value(object)+sum(log(cpts[-1]-cpts[-(nseg(object)+1)])))
+				  like=c(tmplike, tmplike+(nseg(object)-2)*pen.value(object)+sum(log(seg.len(object))))
 				}else{
 				  like=c(tmplike,tmplike+(nseg(object)-1)*pen.value(object))
 				}
-				names(like)=c("-like","-likepen")
 			}
 		}
 		else if(test.stat(object)=="Poisson"){
@@ -849,6 +1027,7 @@
 		    stop("Unknown changepoint type for test.stat='Poisson', must be 'mean and variance'")
 		  }
 		  else{
+		    warning("Not changed to be -2*logLik")
 		    mll.meanvarp=function(x,n){
 		      return(x*log(x)-x*log(n))
 		    }
@@ -860,18 +1039,19 @@
 		      tmplike=tmplike+mll.meanvarp(y[cpts[j+1]+1]-y[cpts[j]+1],cpts[j+1]-cpts[j])
 		    }
 		    if(pen.type(object)=="MBIC"){
-		      like=c(tmplike, tmplike+(nseg(object)-2)*pen.value(object)+sum(log(cpts[-1]-cpts[-(nseg(object)+1)])))
+		      like=c(tmplike, tmplike+(nseg(object)-2)*pen.value(object)+sum(log(seg.len(object))))
 		    }else{
 		      like=c(tmplike,tmplike+(nseg(object)-1)*pen.value(object))
 		    }
-		    names(like)=c("-like","-likepen")
 		  }
 		}
 		else{stop("logLik is only valid for distributional assumptions, not CUSUM or CSS")}
-		return(like)
+	  names(like)=c("-2*logLik","-2*Loglike+pen")
+	  return(like)
 	})
 
 	setMethod("logLik", "cpt.range", function(object,ncpts=NA) {
+	  warning("Not changed to be -2*logLik")
 	  if(is.na(ncpts)){
 	    if(pen.type(object)=="CROPS"){
 	      stop('CROPS does not supply an optimal set of changepoints, set ncpts argument to the desired segmentation to plot or use diagnostic=TRUE to identify an appropriate number of changepoints')
@@ -903,7 +1083,7 @@
 	      }
 	      ##c(tmplike, tmplike+(nseg-2)*pen.value(object)+sum(log(cpts[-1]-cpts[-(nseg+1)])))
 	      if(pen.type(object)=="MBIC"){
-	        like=c(tmplike, tmplike+(nseg-2)*pen.value+sum(log(cpts[-1]-cpts[-(nseg+1)])))
+	        like=c(tmplike, tmplike+(nseg-2)*pen.value+sum(log(seg.len(object))))
 	      }else{
 	        like=c(tmplike,tmplike+(nseg-1)*pen.value)
 	      }
@@ -921,7 +1101,7 @@
 	        tmplike=tmplike+mll.var(y2[cpts[j+1]+1]-y2[cpts[j]+1],cpts[j+1]-cpts[j])
 	      }
 	      if(pen.type(object)=="MBIC"){
-	        like=c(tmplike, tmplike+(nseg-2)*pen.value+sum(log(cpts[-1]-cpts[-(nseg+1)])))
+	        like=c(tmplike, tmplike+(nseg-2)*pen.value+sum(log(seg.len(object))))
 	      }else{
 	        like=c(tmplike,tmplike+(nseg-1)*pen.value)
 	      }
@@ -941,7 +1121,7 @@
 	        tmplike=tmplike+mll.meanvar(y2[cpts[j+1]+1]-y2[cpts[j]+1],y[cpts[j+1]+1]-y[cpts[j]+1],cpts[j+1]-cpts[j])
 	      }
 	      if(pen.type(object)=="MBIC"){
-	        like=c(tmplike, tmplike+(nseg-2)*pen.value+sum(log(cpts[-1]-cpts[-(nseg+1)])))
+	        like=c(tmplike, tmplike+(nseg-2)*pen.value+sum(log(seg.len(object))))
 	      }else{
 	        like=c(tmplike,tmplike+(nseg-1)*pen.value)
 	      }
@@ -968,7 +1148,7 @@
 	        tmplike=tmplike+mll.meanvarg(y[cpts[j+1]+1]-y[cpts[j]+1],cpts[j+1]-cpts[j],shape)
 	      }
 	      if(pen.type(object)=="MBIC"){
-	        like=c(tmplike, tmplike+(nseg-2)*pen.value+sum(log(cpts[-1]-cpts[-(nseg+1)])))
+	        like=c(tmplike, tmplike+(nseg-2)*pen.value+sum(log(seg.len(object))))
 	      }else{
 	        like=c(tmplike,tmplike+(nseg-1)*pen.value)
 	      }
@@ -991,7 +1171,7 @@
 	        tmplike=tmplike+mll.meanvare(y[cpts[j+1]+1]-y[cpts[j]+1],cpts[j+1]-cpts[j])
 	      }
 	      if(pen.type(object)=="MBIC"){
-	        like=c(tmplike, tmplike+(nseg-2)*pen.value+sum(log(cpts[-1]-cpts[-(nseg+1)])))
+	        like=c(tmplike, tmplike+(nseg-2)*pen.value+sum(log(seg.len(object))))
 	      }else{
 	        like=c(tmplike,tmplike+(nseg-1)*pen.value)
 	      }
@@ -1014,7 +1194,7 @@
 	        tmplike=tmplike+mll.meanvarp(y[cpts[j+1]+1]-y[cpts[j]+1],cpts[j+1]-cpts[j])
 	      }
 	      if(pen.type(object)=="MBIC"){
-	        like=c(tmplike, tmplike+(nseg-2)*pen.value+sum(log(cpts[-1]-cpts[-(nseg+1)])))
+	        like=c(tmplike, tmplike+(nseg-2)*pen.value+sum(log(seg.len(object))))
 	      }else{
 	        like=c(tmplike,tmplike+(nseg-1)*pen.value)
 	      }
@@ -1025,7 +1205,55 @@
 	  return(like)
 	})
 
+	setMethod("logLik", "cpt.reg", function(object) {
+	  if(length(param.est(object))==0){# i.e. parameter.estimates=FALSE in call
+	    cat('Calculating parameter estimates...')
+	    object=param(object)
+	    cat('done.\n')
+	  }
+	  if(test.stat(object)=="Normal"){
+	    cpts=c(0,object@cpts)
+	    seglen=seg.len(object)
+	    data=data.set(object)
+	    beta=param.est(object)$beta
+	    sigmas=param.est(object)$sig2
+	    rss=NULL
+	    for(i in 1:length(seglen)){
+	      rss[i]=sum((data[(cpts[i]+1):cpts[i+1],1]-data[(cpts[i]+1):cpts[i+1],-1]%*%beta[i,])^2)
+	    }
+      like=sum(seglen*log(2*pi*sigmas))+sum(rss/sigmas)
+      if(pen.type(object)=="MBIC"){
+        like=c(like, like+(nseg(object)-2)*pen.value(object)+sum(log(seg.len(object))))
+      }else{
+        like=c(like,like+(nseg(object)-1)*pen.value(object))
+      }
+	  }
+	  else{stop("logLik is only valid for Normal distributional assumption.")}
+	  return(like)
+	})
+	
 	setGeneric("likelihood", function(object) standardGeneric("likelihood"))
 	setMethod("likelihood", "cpt", function(object) {
 		return(logLik(object))
 	})
+
+# acf functions
+	setGeneric("acf", function(object,...) standardGeneric("acf"))
+	setMethod("acf", "cpt", function(object,lag.max=NULL,...) {
+    cpts=c(0,object@cpts)
+    nseg=nseg(object)
+    data=data.set(object)
+    for(i in 1:nseg){
+      stats::acf(data[(cpts[i]+1):cpts[i+1]],main=paste("Series part:",(cpts[i]+1),":",cpts[i+1]),...)
+    }
+	})
+	
+	setMethod("acf", "cpt.reg", function(object,lag.max=NULL,...) {
+	  cpts=c(0,object@cpts)
+	  nseg=nseg(object)
+	  data=data.set(object)[,1]
+	  for(i in 1:nseg){
+	    stats::acf(data[(cpts[i]+1):cpts[i+1]],main=paste("Series part:",(cpts[i]+1),"-",cpts[i+1]),...)
+	  }
+	})
+	

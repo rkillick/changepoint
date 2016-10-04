@@ -1,3 +1,19 @@
+Version 2.2.2
+=============
+* Updated R dependency, thanks to Mateusz Konieczny to identifying the problem (and solution).
+* Updated all functions with minseglen arguments to error when minseglen is set too large for a change to be included in the data, e.g. n=14, minseglen=10.  Thanks to Simon Taylor for spotting this bug.
+* minseglen added to nonparametric Binary Segmentation functions.
+* Initialization of candidate log-likelihood values in C is set to -Inf instead of 0.
+* Fixed bug whereby if a non-MBIC penalty was use with SegNeigh it errored saying "MBIC not implemented for SegNeigh" this was supposed to be displaying for MBIC penalty only.  Thanks to Craig Wenger for spotting this.
+* Fixed bug whereby the AMOC method with Gamma, Exponential or Poisson test statistic was returning the position of the change in a vector of potential changes rather than the actual changepoint location.  This did not affect methods other than AMOC.
+* Changed cpt.meanvar so that if test.stat="Poisson" or test.stat="Exponential" you can have a minseglen=1 (previously minimum was 2).  Thanks to Craig Wenger for the suggestion.
+* Minor changes to PELT and BinSeg functions in preparation for user defined cost functions (coming soon).
+* We now export the BINSEG, PELT, decision, penalty_decision and class_input functions.  This is to allow other packages to make use of these functions (previously these were replicated in other packages).  They are NOT designed for general use, they are for developer use only.
+* added acf generic which returns the acf for each segment.
+* changed logLik to return -2*log-likelihood of the models, previously this was a scaled version.
+* changed the prototype of the cpt class to include a default of "Not Set" for cpttype.
+* change y axis on plot(.,diagnostic=TRUE) to be labelled "Penalty Value", previously it was incorrectly labelled "Difference in Test Statistic".
+
 Version 2.2.1
 =============
 * Fixed a minor bug where additional arguments to the plot function when diagnostic=TRUE were not passed through to the plot.

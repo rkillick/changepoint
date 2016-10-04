@@ -9,6 +9,7 @@ function(data,shape=1,extrainf=TRUE,minseglen){
     
     tau=which(tmp==min(tmp,na.rm=T))[1]
     taulike=tmp[tau]
+    tau=tau+minseglen-1 # correcting for the fact that we are starting at minseglen
     if(extrainf==TRUE){
       out=c(tau,null,taulike)
       names(out)=c('cpt','null','alt')
@@ -58,6 +59,8 @@ single.meanvar.gamma<-function(data,shape=1,penalty="MBIC",pen.value=0,class=TRU
 	  n=ncol(data)
 	}
 	if(n<4){stop('Data must have atleast 4 observations to fit a changepoint model.')}
+  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
+  
 	pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck="meanvar.gamma", method="AMOC")
 	if(is.null(dim(data))==TRUE){
 		tmp=single.meanvar.gamma.calc(coredata(data),shape,extrainf=TRUE,minseglen)
@@ -249,12 +252,11 @@ multiple.meanvar.gamma=function(data,shape=1,mul.method="PELT",penalty="MBIC",pe
 	if(!((mul.method=="PELT")||(mul.method=="BinSeg")||(mul.method=="SegNeigh"))){
 		stop("Multiple Method is not recognised")
 	}
-	if(penalty!="MBIC"){
+  costfunc = "meanvar.gamma"
+  if(penalty=="MBIC"){
 	  if(mul.method=="SegNeigh"){
 	    stop('MBIC penalty not implemented for SegNeigh method, please choose an alternative penalty')
 	  }
-	  costfunc = "meanvar.gamma"
-	}else{
 	  costfunc = "meanvar.gamma.mbic"
 	}
 	diffparam=1
@@ -266,7 +268,8 @@ multiple.meanvar.gamma=function(data,shape=1,mul.method="PELT",penalty="MBIC",pe
 	else{
 		n=ncol(data)
 	}
-  
+	if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
+	
 	pen.value = penalty_decision(penalty, pen.value, n, diffparam, asymcheck = costfunc, method=mul.method)
 	
 	if(is.null(dim(data))==TRUE){
