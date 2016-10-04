@@ -10,4 +10,5 @@ r:
   - release
   - devel
 r_check_args: --as-cran
-_R_CHECK_CRAN_INCOMING=true
+env:
+  - _R_CHECK_CRAN_INCOMING=true
