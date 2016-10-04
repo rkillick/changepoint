@@ -2,7 +2,7 @@ Package: changepoint
 Type: Package
 Title: Methods for Changepoint Detection
 Version: 2.2.2
-Date: 2016-05-05
+Date: 2016-10-04
 Authors@R: c(person("Rebecca", "Killick",
         role=c("aut","cre"),email="r.killick@lancs.ac.uk"),
 				person("Kaylea", "Haynes", role="aut"),        
@@ -16,4 +16,4 @@ Depends: R(>= 3.1), methods, stats, zoo(>= 0.9-1)
 Suggests: testthat
 License: GPL
 LazyLoad: yes
-Packaged: 2016-05-05 12:36:29 UTC; killick
+Packaged: 2016-10-04 12:36:29 UTC; killick
