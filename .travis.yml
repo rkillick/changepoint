@@ -1,10 +1,9 @@
 language: r
 sudo: required
 warnings_are_errors: true
-r_check_revdep: true
+r_check_revdep: false
 r:
   - 3.1
   - oldrel
   - release
   - devel
-r_check_args: --as-cran
