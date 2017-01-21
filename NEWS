@@ -17,7 +17,6 @@ Version 2.2.3
 * Removed a feature from the direct call to "segnigh.XX.YY" functions where a vector of penalties could be supplied.  This caused a warning to occur in a dependency.
 * Re-evaluated the maximum Q that could be given to all segneigh functions.  Thanks to Aaron Lowther for highlighting.
 
-
 Version 2.2.2
 =============
 * Updated R dependency, thanks to Mateusz Konieczny to identifying the problem (and solution).
