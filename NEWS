@@ -1,3 +1,8 @@
+Version 2.2.4
+=============
+* Corrected parameter estimation for cpt.reg class so that sig2 contains the variance MLE per segment. This addresses a consistency issue with lm when evaluating logLik when no changepoints are found.  Thanks to Simon Taylor for spotting this.
+* Correction bug in parameter estimation for cpt.var with cpt.range class when ncpts!=NA.  Previously this was using seg.len() function which returned NA for CROPS and incorrect segments lengths for BinSeg.  Thanks to David Krider for asking a question which led to this bug being identified.
+
 Version 2.2.3
 =============
 * Updated documentation to reflect that the changepoint is the last observation of a segment, not the first observation of a new segment as previously described. Thanks to Alex Bertram for reporting this.
