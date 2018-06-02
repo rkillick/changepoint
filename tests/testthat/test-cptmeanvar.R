@@ -33,7 +33,6 @@ data <- list(singmeanvardata,mulmeanvardata, mulmeanvarexpdata, mulmeanvarpoisda
 # meanvardata <-  list(singmeanvardata, mulmeanvardata, nochangedata)
 
 methods <- c("AMOC", "PELT", "BinSeg") #might want to change code to convert to uppercase so less likely to break code
-#Segneigh taking too long and deprecation, so leaving until very last.
 #methods <- c("AMOC")
 
 penalties <- c("None", "SIC", "BIC", "AIC", "Hannan-Quinn", "Asymptotic", "Manual", "MBIC") #CROPS segfaulting 
@@ -208,7 +207,7 @@ for(d in 1:length(data)){
   if(is.element(NA, data[[d]])){
     test_that(paste0("Test #",t," :data=",d,"penalty=",penalties[p],", method=",methods[m],",class=",cl,", param=",pe,", test.stat=",testStats[ts]), {
       
-      expect_that(cpt.meanvar(data=data[[d]]),throws_error('Missing value: NA is not allowed in the data as changepoint methods are only sensible for regularly spaced data.'))
+      expect_that(cpt.meanvar(data=data[[d]]),throws_error('Missing value: NA is not allowed in the data as changepoint methods assume regularly spaced data.'))
       #not user friendly error : Error in if (teststat >= pen.value) { : 
       #       missing value where TRUE/FALSE needed
       #       In addition: Warning message:
@@ -281,8 +280,8 @@ for(d in 1:length(data)){
                     }
                     
                   }else{
-                    #Q values only necessary when method is BINSEG or SEGNEIGH
-                    if(methods[m] == "BinSeg" || methods[m] == "SegNeigh"){
+                    #Q values only necessary when method is BINSEG
+                    if(methods[m] == "BinSeg"){
                       for(v in 1:length(QValues)){
                         #causing a slight problem with when CSS and Asymptotic as cpt.meanvar throws wrong error
                         #if statement to get around it? if(teststat=CSS and pen=asymptotic)? loses tests?

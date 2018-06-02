@@ -97,76 +97,14 @@ single.meanvar.poisson<-function(data,penalty="MBIC",pen.value=0,class=TRUE,para
 }
 
 
-segneigh.meanvar.poisson=function(data,Q=5,pen=0){
-  if((sum(data<0)>0)){stop('Poisson test statistic requires positive data')}
-  if(sum(as.integer(data)==data)!=length(data)){stop('Poisson test statistic requires integer data')}
-  n=length(data)
-  if(n<4){stop('Data must have atleast 4 observations to fit a changepoint model.')}
-  if(Q>((n/2)+1)){stop(paste('Q is larger than the maximum number of segments',(n/2)+1))}
-  all.seg=matrix(0,ncol=n,nrow=n)
-  for(i in 1:n){
-    sumx=0
-    for(j in i:n){
-      len=j-i+1
-      sumx=sumx+data[j]
-      if(sumx==0){
-        all.seg[i,j]=-Inf
-      }
-      else{
-        all.seg[i,j]=sumx*log(sumx)-sumx*log(len)
-      }
-    }
-  }
-  like.Q=matrix(0,ncol=n,nrow=Q)
-  like.Q[1,]=all.seg[1,]
-  cp=matrix(NA,ncol=n,nrow=Q)
-  for(q in 2:Q){
-    for(j in q:n){
-      like=NULL
-      if((j-2-q)<0){v=q}
-      else{v=(q):(j-2)}
-      like=like.Q[q-1,v]+all.seg[v+1,j]
-      
-      like.Q[q,j]= max(like,na.rm=TRUE)
-      cp[q,j]=which(like==max(like,na.rm=TRUE))[1]+(q-1)
-    }
-    
-  }
-  cps.Q=matrix(NA,ncol=Q,nrow=Q)
-  for(q in 2:Q){
-    cps.Q[q,1]=cp[q,n]
-    for(i in 1:(q-1)){
-      cps.Q[q,(i+1)]=cp[(q-i),cps.Q[q,i]]
-    }
-  }
-  
-  op.cps=NULL
-  k=0:(Q-1)
-  
-  for(i in 1:length(pen)){
-    criterion=-2*like.Q[,n]+k*pen[i]
-    
-    op.cps=c(op.cps,which(criterion==min(criterion,na.rm=T))-1)
-  }
-  if(op.cps==(Q-1)){warning('The number of segments identified is Q, it is advised to increase Q to make sure changepoints have not been missed.')}
-  if(op.cps==0){cpts=n}
-  else{cpts=c(sort(cps.Q[op.cps+1,][cps.Q[op.cps+1,]>0]),n)}
-  
-  return(list(cps=t(apply(cps.Q,1,sort,na.last=TRUE)),cpts=cpts,op.cpts=op.cps,pen=pen,like=criterion[op.cps+1],like.Q=like.Q[,n]))
-}
-
-
 multiple.meanvar.poisson=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,Q=5,class=TRUE,param.estimates=TRUE,minseglen){
   if((sum(data<0)>0)){stop('Poisson test statistic requires positive data')}
   if(sum(as.integer(data)==data)!=length(data)){stop('Poisson test statistic requires integer data')}
-  if(!((mul.method=="PELT")||(mul.method=="BinSeg")||(mul.method=="SegNeigh"))){
-    stop("Multiple Method is not recognised")
+  if(!((mul.method=="PELT")||(mul.method=="BinSeg"))){
+    stop("Multiple Method is not recognised, must be PELT or BinSeg.")
   }
   costfunc = "meanvar.poisson"
   if(penalty=="MBIC"){
-    if(mul.method=="SegNeigh"){
-      stop('MBIC penalty not implemented for SegNeigh method, please choose an alternative penalty')
-    }
     costfunc = "meanvar.poisson.mbic"
   }
   

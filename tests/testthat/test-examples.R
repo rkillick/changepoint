@@ -32,8 +32,6 @@ x=c(rnorm(100,0,1),rnorm(100,10,1))
 test_that('mean2',expect_equivalent(cpt.mean(x,penalty="SIC",method="AMOC",class=FALSE),c(100,1)))
 ans=cpt.mean(x,penalty="Asymptotic",pen.value=0.01,method="AMOC") 
 test_that('mean3',expect_identical(cpts(ans),100))
-ans=cpt.mean(x,penalty="Manual",pen.value=0.8,method="AMOC",test.stat="CUSUM")
-test_that('mean4',expect_equivalent(cpts(ans),101))
 
 # Example of multiple changes in mean at 50,100,150 in simulated normal data
 set.seed(1)
@@ -57,10 +55,7 @@ set.seed(1)
 x=c(rnorm(50,0,1),rnorm(50,5,1),rnorm(50,10,1),rnorm(50,3,1))
 y=rnorm(200,0,1)
 z=rbind(x,y)
-test_that('mean6',expect_equal(cpt.mean(z,penalty="Asymptotic",pen.value=0.01,method="SegNeigh",Q=5,class=FALSE),list(c(50,100,150,200),200)))
-ans=cpt.mean(z,penalty="Asymptotic",pen.value=0.01,method="PELT") 
-test_that('mean7',expect_equal(cpts(ans[[1]]),c(50,100,150)))
-test_that('mean8',expect_equal(cpts(ans[[2]]),numeric()))
+test_that('mean6',expect_equal(cpt.mean(z,penalty="Asymptotic",pen.value=0.01,method="PELT",Q=5,class=FALSE),list(c(50,100,150,200),200)))
 
 
 
@@ -98,10 +93,7 @@ set.seed(1)
 x=c(rnorm(50,0,1),rnorm(50,5,3),rnorm(50,10,1),rnorm(50,3,10))
 y=rnorm(200,0,1)
 z=rbind(x,y)
-test_that('meanvar5',expect_equivalent(cpt.meanvar(z,penalty="Asymptotic",pen.value=0.01,method="SegNeigh",Q=5,class=FALSE),list(c(50,100,150,200),200)))
-ans=cpt.meanvar(z,penalty="Asymptotic",pen.value=0.01,method="PELT") 
-test_that('meanvar6',expect_equivalent(cpts(ans[[1]]),c(50,100,150)))
-test_that('meanvar7',expect_equivalent(cpts(ans[[2]]),numeric()))
+test_that('meanvar5',expect_equivalent(cpt.meanvar(z,penalty="Asymptotic",pen.value=0.01,method="PELT",Q=5,class=FALSE),list(c(50,100,150,200),200)))
 
 
 
@@ -150,16 +142,7 @@ test_that('var2',expect_equivalent(cpt.var(x,penalty="SIC",method="AMOC",class=F
 ans=cpt.var(x,penalty="Asymptotic",pen.value=0.01,method="AMOC") 
 test_that('var3',expect_equivalent(cpts(ans),100))
 
-# Example of multiple changes in variance at 50,100,150 in simulated data
-set.seed(1)
-x=c(rnorm(50,0,1),rnorm(50,0,10),rnorm(50,0,5),rnorm(50,0,1))
-out=cpt.var(x,penalty="Manual",pen.value="log(2*log(n))",method="BinSeg",test.stat="CSS",Q=5,
-            class=FALSE)
-truth=list();truth$cps=matrix(c(99,53,150,50,140,3.156304,3.156304,3.156304,3.074743,1.254542),byrow=T,nrow=2)
-truth$cpts=c(50,53,99,150,200);truth$op.cpts=4;truth$pen=2.360536
-test_that('var4',expect_equal(out,truth,tolerance=0.00001))
-
-# Example of using CROPS in the above example
+# Example of multiple changes in variance at 50,100,150 using CROPS
 set.seed(1)
 x=c(rnorm(50,0,1),rnorm(50,0,10),rnorm(50,0,5),rnorm(50,0,1))
 out=cpt.var(x,pen.value=c(log(length(x)),100*log(length(x))),penalty="CROPS",method="PELT")
@@ -176,10 +159,7 @@ x=c(rnorm(50,0,1),rnorm(50,0,10),rnorm(50,0,5),rnorm(50,0,1))
 y=rnorm(200,0,1)
 z=rbind(x,y)
 truth=list();truth[[1]]=c(50,100,149,200);truth[[2]]=200
-test_that('var7',expect_equivalent(cpt.var(z,penalty="Asymptotic",pen.value=0.01,method="SegNeigh",Q=5,class=FALSE),truth))
-ans=cpt.var(z,penalty="Asymptotic",pen.value=0.01,method="PELT") 
-test_that('var8',expect_equivalent(cpts(ans[[1]]),c(50,100,149)))
-test_that('var9',expect_equivalent(cpts(ans[[2]]),numeric()))
+test_that('var7',expect_equivalent(cpt.var(z,penalty="Asymptotic",pen.value=0.01,method="PELT",Q=5,class=FALSE),truth))
 
 
 

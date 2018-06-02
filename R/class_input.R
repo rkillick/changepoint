@@ -1,5 +1,5 @@
 class_input <- function(data, cpttype, method, test.stat, penalty, pen.value, minseglen, param.estimates, out=list(), Q=NA, shape=NA){
-  if(method=="BinSeg" || method=="SegNeigh" || penalty=="CROPS"){
+  if(method=="BinSeg" || penalty=="CROPS"){
     ans=new("cpt.range")
   }else{
     ans=new("cpt")
@@ -37,9 +37,6 @@ class_input <- function(data, cpttype, method, test.stat, penalty, pen.value, mi
     
     cpts.full(ans)=m
     pen.value.full(ans)=out$cps[2,]
-  }else if(method=="SegNeigh"){
-    cpts.full(ans)=out$cps[-1,]
-    pen.value.full(ans)=-diff(out$like.Q)
   }else if(penalty=="CROPS"){
     m = t(sapply(out[[2]], '[', 1:max(sapply(out[[2]], length))))
     

@@ -27,13 +27,13 @@ test.stat="Normal",class=TRUE,param.estimates=TRUE,minseglen=2)
 	Only required for test.stat="Normal".  Numerical value of the true mean of the data.  Either single value or vector of length nrow(data).  If data is a matrix and mu is a single value, the same mean is used for each row.
 }
   \item{method}{
-	Choice of "AMOC", "PELT", "SegNeigh" or "BinSeg".
+	Choice of "AMOC", "PELT" or "BinSeg".
 }
   \item{Q}{
-	The maximum number of changepoints to search for using the "BinSeg" method.  The maximum number of segments (number of changepoints + 1) to search for using the "SegNeigh" method.
+	The maximum number of changepoints to search for using the "BinSeg" method.
 }
   \item{test.stat}{
-	The assumed test statistic / distribution of the data.  Currently only "Normal" and "CSS" supported.
+	The assumed test statistic / distribution of the data.  Currently only "Normal" is supported.
 }
   \item{class}{
 	Logical.  If TRUE then an object of class \code{cpt} is returned.
@@ -46,8 +46,7 @@ test.stat="Normal",class=TRUE,param.estimates=TRUE,minseglen=2)
   }
 }
 \details{
-	This function is used to find changes in variance for data using the test statistic specified in the test.stat parameter.  The changes are found using the method supplied which can be single changepoint (AMOC) or multiple changepoints using exact (PELT or SegNeigh) or approximate (BinSeg) methods.  A changepoint is denoted as the last observation of the segment / regime.
-  Note that for the test.stat="CSS" option the preset penalties are log(.) to allow comparison with test.stat="Normal".  
+	This function is used to find changes in variance for data using the test statistic specified in the test.stat parameter.  The changes are found using the method supplied which can be single changepoint (AMOC) or multiple changepoints using exact (PELT) or approximate (BinSeg) methods.  A changepoint is denoted as the last observation of the segment / regime.
 }
 \value{
 	If \code{class=TRUE} then an object of S4 class "cpt" is returned.  The slot \code{cpts} contains the changepoints that are returned.  For \code{class=FALSE} the structure is as follows.
@@ -61,11 +60,6 @@ test.stat="Normal",class=TRUE,param.estimates=TRUE,minseglen=2)
   If the penalty is CROPS then a list is returned with elements:
   \item{cpt.out}{A data frame containing the value of the penalty value where the number of segmentations changes, the number of segmentations and the value of the cost at that penalty value.}
   \item{segmentations}{The optimal segmentations for the different penalty values starting with the lowest penalty value}
-	If method is SegNeigh then a list is returned with elements:
-	\item{cps}{Matrix containing the changepoint positions for 1,...,Q changepoints.}
-	\item{op.cpts}{The optimal changepoint locations for the penalty supplied.}
-  \item{pen}{Penalty used to find the optimal number of changepoints.}
-	\item{like}{Value of the -2*log(likelihood ratio) + penalty for the optimal number of changepoints selected.}
 	If method is BinSeg then a list is returned with elements:
 	\item{cps}{2xQ Matrix containing the changepoint positions on the first row and the test statistic on the second row.}
 	\item{op.cpts}{The optimal changepoint locations for the penalty supplied.}
@@ -74,15 +68,11 @@ test.stat="Normal",class=TRUE,param.estimates=TRUE,minseglen=2)
 \references{
 Normal: Chen, J. and Gupta, A. K. (2000) \emph{Parametric statistical change point analysis}, Birkhauser
 
-CSS: C. Inclan, G. C. Tiao (1994) Use of Cumulative Sums of Squares for Retrospective Detection of Changes of Variance, \emph{Journal of the American Statistical Association} \bold{89(427)}, 913--923
-
 PELT Algorithm: Killick R, Fearnhead P, Eckley IA (2012) Optimal detection of changepoints with a linear computational cost, \emph{JASA} \bold{107(500)}, 1590--1598
 
 CROPS: Haynes K, Eckley IA, Fearnhead P (2014) Efficient penalty search for multiple changepoint problems (in submission), arXiv:1412.3617
 
 Binary Segmentation: Scott, A. J. and Knott, M. (1974) A Cluster Analysis Method for Grouping Means in the Analysis of Variance, \emph{Biometrics} \bold{30(3)}, 507--512
-
-Segment Neighbourhoods: Auger, I. E. And Lawrence, C. E. (1989) Algorithms for the Optimal Identification of Segment Neighborhoods, \emph{Bulletin of Mathematical Biology} \bold{51(1)}, 39--54
 
 MBIC: Zhang, N. R. and Siegmund, D. O. (2007) A Modified Bayes Information Criterion with Applications to the Analysis of Comparative Genomic Hybridization Data. \emph{Biometrics} \bold{63}, 22-32.
 }
@@ -104,13 +94,7 @@ ans=cpt.var(x,penalty="Asymptotic",pen.value=0.01,method="AMOC")
 cpts(ans)# returns 100 to show that the null hypothesis was rejected, the change in variance is at
 #100 and we are 99% confident of this result
 
-# Example of multiple changes in variance at 50,100,150 in simulated data
-set.seed(1)
-x=c(rnorm(50,0,1),rnorm(50,0,10),rnorm(50,0,5),rnorm(50,0,1))
-cpt.var(x,penalty="Manual",pen.value="log(2*log(n))",method="BinSeg",test.stat="CSS",Q=5,
-class=FALSE) # returns optimal number of changepoints is 4, locations are 50,53,99,150.
-
-# Example of using CROPS in the above example
+# Example of multiple changes in variance at 50,100,150 using CROPS
 set.seed(1)
 x=c(rnorm(50,0,1),rnorm(50,0,10),rnorm(50,0,5),rnorm(50,0,1))
 out=cpt.var(x,pen.value=c(log(length(x)),100*log(length(x))),penalty="CROPS",method="PELT")
@@ -129,12 +113,9 @@ set.seed(10)
 x=c(rnorm(50,0,1),rnorm(50,0,10),rnorm(50,0,5),rnorm(50,0,1))
 y=rnorm(200,0,1)
 z=rbind(x,y)
-cpt.var(z,penalty="Asymptotic",pen.value=0.01,method="SegNeigh",Q=5,class=FALSE) # returns list that
+cpt.var(z,penalty="Asymptotic",pen.value=0.01,method="PELT",Q=5,class=FALSE) # returns list that
 #has two elements, the first has 3 changes in variance at 50,100,149 and the second has no changes
 #in variance
-ans=cpt.var(z,penalty="Asymptotic",pen.value=0.01,method="PELT") 
-cpts(ans[[1]]) # same results as for the SegNeigh method.
-cpts(ans[[2]]) # same results as for the SegNeigh method.
 }
 
 \keyword{methods}

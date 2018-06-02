@@ -1,3 +1,8 @@
+Version 2.3
+===========
+* Removed SegNeigh option from package.  This gives the same answer as PELT but in much longer computational time.  It was originally included to allow time comparisons but is no longer required.
+* CUSUM and CSS test statistics have moved to the changepoint.np package.
+
 Version 2.2.4
 =============
 * Corrected parameter estimation for cpt.reg class so that sig2 contains the variance MLE per segment. This addresses a consistency issue with lm when evaluating logLik when no changepoints are found.  Thanks to Simon Taylor for spotting this.

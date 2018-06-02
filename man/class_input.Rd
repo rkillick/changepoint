@@ -43,7 +43,7 @@ param.estimates, out=list(), Q=NA, shape=NA)
   List of output from \code{\link{BINSEG}}, \code{\link{PELT}} or other \code{method} used.  Function assumes that \code{method} and format of \code{out} match.
 }
   \item{Q}{
-	The value of \code{Q} used in the \code{BinSeg} or \code{SegNeigh} methods.
+	The value of \code{Q} used in the \code{BinSeg} method.
 }
   \item{shape}{
 	Value of the assumed known shape parameter required when test.stat="Gamma".

@@ -33,7 +33,6 @@ data <- list(singvardata,mulvardata, nochangedata, constantdata, NAdata, shortda
 # meanvardata <-  list(singmeanvardata, mulmeanvardata, nochangedata)
 
 methods <- c("AMOC", "PELT", "BinSeg") #might want to change code to convert to uppercase so less likely to break code
-#Segneigh taking too long and deprecation, so leaving until very last.
 #methods <- c("AMOC")
 
 penalties <- c("None", "SIC", "BIC", "AIC", "Hannan-Quinn", "Asymptotic", "Manual", "MBIC", "CROPS") 
@@ -44,7 +43,7 @@ manpenval <- list(-1, "boston bob") #don't have varaibles so returns false test
 QValues <- list(3, -1, 'jamie', 200000) 
 #QValues <- c(3, 5)
 
-testStats <- c("Normal", "CSS") #add CSS and its error of only using certain values 
+testStats <- c("Normal")
 #asym and cusum return user defined "no asymptotic penalty" && "asymptotic penalties not implemented"
 
 knowmean <- c(FALSE) #need to deal with TRUE values
@@ -53,7 +52,6 @@ muValues <- c(NA)
 class <- c(TRUE, FALSE)
 param.estimates <- c(TRUE, FALSE)
 
-cssAlphas <- c(0.01,0.05,0.1,0.25,0.5,0.75,0.9,0.95)
 cropspenval = list(c(2,2.5), c(3,1), c(5,5,6), c("a", "b"), 5, "a")
 
 t = 0 #count for number of iterations
@@ -106,10 +104,7 @@ checkAsymptoticPenalty <- function(methodLog){
       }else if(asympenval[[apv]] <= 0 || asympenval[[apv]] > 1){
         expect_that(cpt.var(data=data[[d]], penalty=penalties[p], pen.value=asympenval[[apv]], method=methods[m], Q=aQv, test.stat=testStats[ts], class=cl, param.estimates=pe, know.mean=km, mu=muValues[muv]), throws_error("Asymptotic penalty values must be > 0 and <= 1"))
         
-      }else if(testStats[ts] == "CSS" && is.element(asympenval[[apv]], cssAlphas) == FALSE){
-        expect_that(cpt.var(data=data[[d]], penalty=penalties[p], pen.value=asympenval[[apv]], method=methods[m], Q=aQv, test.stat=testStats[ts], class=cl, param.estimates=pe, know.mean=km, mu=muValues[muv]), throws_error("Only alpha values of"))
-      }
-      else if(methods[m] == "PELT" || methods[m] == "BinSeg"){
+      }else if(methods[m] == "PELT" || methods[m] == "BinSeg"){
           expect_warning(cpt.var(data=data[[d]], penalty=penalties[p], pen.value=asympenval[[apv]], method=methods[m], Q=aQv, test.stat=testStats[ts], class=cl, param.estimates=pe,know.mean=km,mu=muValues[muv])) 
       }
       else{
@@ -209,7 +204,7 @@ for(d in 1:length(data)){
   if(is.element(NA, data[[d]])){
     test_that(paste0("Test #",t," :data=",d,", penalty=",penalties[p],", method=",methods[m],",class=",cl,", param=",pe,", test.stat=",testStats[ts]), {
       
-      expect_that(cpt.var(data=data[[d]]),throws_error('Missing value: NA is not allowed in the data as changepoint methods are only sensible for regularly spaced data.'))
+      expect_that(cpt.var(data=data[[d]]),throws_error('Missing value: NA is not allowed in the data as changepoint methods assume regularly spaced data.'))
       #not user friendly error : Error in if (teststat >= pen.value) { : 
       #       missing value where TRUE/FALSE needed
       #       In addition: Warning message:
@@ -247,8 +242,8 @@ for(d in 1:length(data)){
                   if(penalties[p] == "CROPS"){
                     checkCROPS()
                   }else{
-                    #Q values only necessary when method is BINSEG or SEGNEIGH
-                    if(methods[m] == "BinSeg" || methods[m] == "SegNeigh"){
+                    #Q values only necessary when method is BINSEG
+                    if(methods[m] == "BinSeg"){
                       for(v in 1:length(QValues)){
                         #causing a slight problem with when CSS and Asymptotic as cpt.var throws wrong error
                         #if statement to get around it? if(teststat=CSS and pen=asymptotic)? loses tests?
@@ -271,37 +266,18 @@ for(d in 1:length(data)){
                           checkManualPenalty(TRUE)
                         }else if(penalties[p] == "Asymptotic"){
                           checkAsymptoticPenalty(TRUE)
-                        }else if(penalties[p]=="MBIC"){
-                          if(testStats[ts]=="CUSUM"||testStats[ts]=="CSS"){
-                            test_that(paste0("Test #",t," :data=", d, "penalty=",penalties[p],", method=",methods[m],",class=",cl,", param=",pe,", test.stat=",testStats[ts],"QVal=",Qv),expect_error(cpt.mean(data=data[[d]],penalty=penalties[p],method=methods[m],Q=aQv,test.stat=testStats[ts],class=cl,param.estimates=pe)))
-                          }else{
-                            checkOtherPenalties(TRUE)
-                          }
                         }else{
                           checkOtherPenalties(TRUE)
                         }  
                       } 
                     }else{
                       #Normal and Asymptotic penalty pen values
-                      if(methods[m] == "PELT" && testStats[ts] == "CSS"){
-                        test_that("", {
-                          expect_that(cpt.var(data=data[[d]], penalty=penalties[p], method=methods[m], Q=QValues[[v]], test.stat=testStats[ts], class=cl, param.estimates=pe, know.mean=km, mu=muValues[muv]), throws_error("CSS does not satisfy the assumptions of PELT, use SegNeigh or BinSeg instead."))
-                          t = t + 1
-                        })
+                      if(penalties[p] == "Manual" ){
+                        checkManualPenalty(FALSE)
+                      }else if(penalties[p] == "Asymptotic"){
+                        checkAsymptoticPenalty(FALSE)
                       }else{
-                        if(penalties[p] == "Manual" ){
-                          checkManualPenalty(FALSE)
-                        }else if(penalties[p] == "Asymptotic"){
-                          checkAsymptoticPenalty(FALSE)
-                        }else if(penalties[p]=="MBIC"){
-                          if(testStats[ts]=="CUSUM"||testStats[ts]=="CSS"){
-                            test_that(paste0("Test #",t," :data=", d, "penalty=",penalties[p],", method=",methods[m],",class=",cl,", param=",pe,", test.stat=",testStats[ts],"QVal=",Qv),expect_error(cpt.mean(data=data[[d]],penalty=penalties[p],method=methods[m],Q=aQv,test.stat=testStats[ts],class=cl,param.estimates=pe)))
-                          }else{
-                            checkOtherPenalties(FALSE)
-                          }
-                        }else{
-                          checkOtherPenalties(FALSE)
-                        }
+                        checkOtherPenalties(FALSE)
                       }
                     }
                   }
