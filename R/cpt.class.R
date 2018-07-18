@@ -801,11 +801,15 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		}
 	})
 
-	setMethod("plot","cpt.range",function(x,ncpts=NA,diagnostic=FALSE,cpt.col='red',cpt.width=1,cpt.style=1,...){
-	  if(diagnostic==TRUE){
-      return(plot(apply(cpts.full(x),1,function(x){sum(x>0,na.rm=TRUE)}),pen.value.full(x),type='l',xlab='Number of Changepoints',ylab='Penalty Value',...))
+	setMethod("plot","cpt.range",function(x,ncpts=NA,diagnostic=FALSE,cpt.col='red',cpt.width=1,cpt.style=1,...,type="l"){
+	  if (diagnostic) {
+	    n.changepoints = apply(cpts.full(x), 1, function(x) sum(x > 0, na.rm = TRUE))
+	    penalty.values = pen.value.full(x)
+	    plot(x = n.changepoints, y = penalty.values, type = type, 
+	         xlab = 'Number of Changepoints', ylab = 'Penalty Value', ...)
+	    return(invisible(NULL))
 	  }
-	  plot(data.set.ts(x),...)
+	  plot(data.set.ts(x), ..., type = type)
 	  if(is.na(ncpts)){
 	    if(pen.type(x)=="CROPS"){
 	      stop('CROPS does not supply an optimal set of changepoints, set ncpts to the desired segmentation to plot or use diagnostic=TRUE to identify an appropriate number of changepoints')
