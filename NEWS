@@ -2,6 +2,7 @@ Version 2.3
 ===========
 * Removed SegNeigh option from package.  This gives the same answer as PELT but in much longer computational time.  It was originally included to allow time comparisons but is no longer required.
 * CUSUM and CSS test statistics have moved to the changepoint.np package.
+* Fixed bug that meant logLik(.) was erroring when used on output from cpt.mean(.).
 
 Version 2.2.4
 =============

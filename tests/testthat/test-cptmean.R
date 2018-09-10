@@ -36,7 +36,7 @@ data <- list(singmeandata,mulmeandata, nochangedata, constantdata, NAdata, short
 
 methods <- c("AMOC", "PELT", "BinSeg") #might want to change code to convert to uppercase so less likely to break code
 
-penalties <- c("None", "SIC", "BIC", "AIC", "Hannan-Quinn", "Asymptotic", "Manual", "MBIC", "CROPS") 
+penalties <- c("None", "SIC", "BIC", "AIC", "Hannan-Quinn", "Asymptotic", "Manual", "MBIC")#, "CROPS") 
 
 asympenval <- list(1, 0.756, 0.234, 'return', -1, 0) #need to add character string and -1 and 0
 #manpenval <- list("2+log(n)", "log(n)", "3*n", -1, "diffparam-1") #null, alt, tau*2 don't work (comes back with user defind error "your manual cannot be evaluated")
@@ -227,8 +227,8 @@ for(d in 1:length(data)){
   }
   else{
     for(p in 1:length(penalties)){
-        for(m in 1:length(methods)){
-            for(ts in 1:length(testStats)){
+      for(m in 1:length(methods)){
+        for(ts in 1:length(testStats)){
           for(cl in class){
             for(pe in param.estimates){ 
               Qv = 5
@@ -258,7 +258,7 @@ for(d in 1:length(data)){
                     if(penalties[p] == "Manual" ){
                       checkManualPenalty(TRUE)
                     }else if(penalties[p] == "Asymptotic"){
-                        checkAsymptoticPenalty(TRUE)
+                      checkAsymptoticPenalty(TRUE)
                     }else{
                       checkOtherPenalties(TRUE)
                     }  

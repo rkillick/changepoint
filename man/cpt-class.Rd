@@ -92,7 +92,7 @@ Rebecca Killick
 }
 
 \seealso{
-\code{\link{data.set-methods}},\code{\link{cpts-methods}},\code{\linkS4class{cpt.reg}},\code{\link{cpt.mean}},\code{\link{cpt.var}},\code{\link{cpt.meanvar}}
+\code{\link{data.set-methods}},\code{\link{cpts-methods}},\code{\link{cpt.mean}},\code{\link{cpt.var}},\code{\link{cpt.meanvar}}
 }
 \examples{
 showClass("cpt") # shows the structure of the cpt class

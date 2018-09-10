@@ -35,7 +35,7 @@ data <- list(singvardata,mulvardata, nochangedata, constantdata, NAdata, shortda
 methods <- c("AMOC", "PELT", "BinSeg") #might want to change code to convert to uppercase so less likely to break code
 #methods <- c("AMOC")
 
-penalties <- c("None", "SIC", "BIC", "AIC", "Hannan-Quinn", "Asymptotic", "Manual", "MBIC", "CROPS") 
+penalties <- c("None", "SIC", "BIC", "AIC", "Hannan-Quinn", "Asymptotic", "Manual", "MBIC")#, "CROPS") 
 
 asympenval <- list(1, 0.756, 0.234, 'return', -1, 0) 
 manpenval <- list(-1, "boston bob") #don't have varaibles so returns false test
