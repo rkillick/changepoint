@@ -1,6 +1,6 @@
 setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character", 	test.stat="character",pen.type="character",pen.value="numeric",minseglen="numeric",cpts="numeric",ncpts.max="numeric",param.est="list",date="character",version="character"),prototype=prototype(cpttype="Not Set",date=date(),version=as(packageVersion("changepoint"),'character')))
 
-	# setClass("cpt.reg",slots=list(data.set="matrix", cpttype="character", method="character", test.stat="character",pen.type="character",pen.value="numeric",minseglen="numeric",cpts="numeric",ncpts.max="numeric",param.est="list",date="character",version="character"),prototype=prototype(cpttype="regression",date=date(),version=as(packageVersion("changepoint"),"character")))
+setClass("cpt.reg",slots=list(data.set="matrix", cpttype="character", method="character", test.stat="character",pen.type="character",pen.value="numeric",minseglen="numeric",cpts="numeric",ncpts.max="numeric",param.est="list",date="character",version="character"),prototype=prototype(cpttype="regression",date=date(),version=as(packageVersion("changepoint"),"character")))
   
 #   setClass("cpt", representation(), prototype())
 # # cpts is the optimal segementation
@@ -21,7 +21,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		setGeneric("data.set", fun)
 	}
 	setMethod("data.set","cpt",function(object) coredata(object@data.set))
-	# setMethod("data.set","cpt.reg",function(object) coredata(object@data.set))
+	setMethod("data.set","cpt.reg",function(object) coredata(object@data.set))
 
 	if(!isGeneric("data.set.ts")) {
 	  if (is.function("data.set.ts")){
@@ -46,7 +46,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		setGeneric("cpttype", fun)
 	}
 	setMethod("cpttype","cpt",function(object) object@cpttype)
-	# setMethod("cpttype","cpt.reg",function(object) object@cpttype)
+	setMethod("cpttype","cpt.reg",function(object) object@cpttype)
 
 	if(!isGeneric("method")) {
 		if (is.function("method")){
@@ -59,7 +59,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		setGeneric("method", fun)
 	}
 	setMethod("method","cpt",function(object) object@method)
-	# setMethod("method","cpt.reg",function(object) object@method)
+	setMethod("method","cpt.reg",function(object) object@method)
 	
 	# distribution remains for backwards compatability, changed to test.stat version 1.0
 	if(!isGeneric("distribution")) {
@@ -73,7 +73,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	  setGeneric("distribution", fun)
 	}
 	setMethod("distribution","cpt",function(object) object@test.stat)
-	# setMethod("distribution","cpt.reg",function(object) object@test.stat)
+	setMethod("distribution","cpt.reg",function(object) object@test.stat)
 	
   if(!isGeneric("test.stat")) {
 		if (is.function("test.stat")){
@@ -86,7 +86,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		setGeneric("test.stat", fun)
 	}
 	setMethod("test.stat","cpt",function(object) object@test.stat)
-	# setMethod("test.stat","cpt.reg",function(object) object@test.stat)
+	setMethod("test.stat","cpt.reg",function(object) object@test.stat)
 	
 	if(!isGeneric("pen.type")) {
 		if (is.function("pen.type")){
@@ -99,7 +99,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		setGeneric("pen.type", fun)
 	}
 	setMethod("pen.type","cpt",function(object) object@pen.type)
-	# setMethod("pen.type","cpt.reg",function(object) object@pen.type)
+	setMethod("pen.type","cpt.reg",function(object) object@pen.type)
 	
 	if(!isGeneric("pen.value")) {
 		if (is.function("pen.value")){
@@ -112,7 +112,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		setGeneric("pen.value", fun)
 	}
 	setMethod("pen.value","cpt",function(object) object@pen.value)
-	# setMethod("pen.value","cpt.reg",function(object) object@pen.value)
+	setMethod("pen.value","cpt.reg",function(object) object@pen.value)
 
 	if(!isGeneric("pen.value.full")) {
 	  if (is.function("pen.value.full")){
@@ -149,7 +149,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		setGeneric("cpts", fun)
 	}
 	setMethod("cpts","cpt",function(object) object@cpts[-length(object@cpts)])
-	# setMethod("cpts","cpt.reg",function(object) object@cpts[-length(object@cpts)])
+	setMethod("cpts","cpt.reg",function(object) object@cpts[-length(object@cpts)])
 	
 	if(!isGeneric("cpts.full")) {
 	  if (is.function("cpts.full")){
@@ -186,7 +186,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		setGeneric("ncpts.max", fun)
 	}
 	setMethod("ncpts.max","cpt",function(object) object@ncpts.max)
-	# setMethod("ncpts.max","cpt.reg",function(object) object@ncpts.max)
+	setMethod("ncpts.max","cpt.reg",function(object) object@ncpts.max)
 
 	if(!isGeneric("param.est")) {
 		if (is.function("param.est")){
@@ -199,11 +199,11 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		setGeneric("param.est", fun)
 	}
 	setMethod("param.est","cpt",function(object) object@param.est)
-	# setMethod("param.est","cpt.reg",function(object) object@param.est)
+	setMethod("param.est","cpt.reg",function(object) object@param.est)
 
 
   setMethod("coef","cpt",function(object) object@param.est)
-	# setMethod("coef","cpt.reg",function(object) object@param.est)
+	setMethod("coef","cpt.reg",function(object) object@param.est)
 	
 # ncpts function
 	if(!isGeneric("ncpts")) {
@@ -217,7 +217,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		setGeneric("ncpts", fun)
 	}
 	setMethod("ncpts","cpt",function(object) length(cpts(object)))
-	# setMethod("ncpts","cpt.reg",function(object) length(cpts(object)))
+	setMethod("ncpts","cpt.reg",function(object) length(cpts(object)))
 
 # seg.len function
 	if(!isGeneric("seg.len")) {
@@ -231,7 +231,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		setGeneric("seg.len", fun)
 	}
 	setMethod("seg.len","cpt",function(object){object@cpts-c(0,object@cpts[-length(object@cpts)])})
-	# setMethod("seg.len","cpt.reg",function(object){object@cpts-c(0,object@cpts[-length(object@cpts)])})
+	setMethod("seg.len","cpt.reg",function(object){object@cpts-c(0,object@cpts[-length(object@cpts)])})
 #i.e. if there is a changepoint in the data, return segment length. If not, return length of the data
 	
   # nseg function
@@ -246,7 +246,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	  setGeneric("nseg", fun)
 	}
 	setMethod("nseg","cpt",function(object){ncpts(object)+1})
-	# setMethod("nseg","cpt.reg",function(object){ncpts(object)+1})
+	setMethod("nseg","cpt.reg",function(object){ncpts(object)+1})
   
   
 # replacement functions for slots
@@ -255,30 +255,30 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		if(is.ts(value)){object@data.set <- value}else{object@data.set <- ts(value)}
 		return(object)
 	})
-	# setReplaceMethod("data.set", "cpt.reg", function(object, value) {
-	# 	object@data.set <- value
-	# 	return(object)
-	# })
+	setReplaceMethod("data.set", "cpt.reg", function(object, value) {
+		object@data.set <- value
+		return(object)
+	})
 	
 	setGeneric("cpttype<-", function(object, value) standardGeneric("cpttype<-"))
 	setReplaceMethod("cpttype", "cpt", function(object, value) {
 		object@cpttype <- value
 		return(object)
 	})
-	# setReplaceMethod("cpttype", "cpt.reg", function(object, value) {
-	# 	object@cpttype <- value
-	# 	return(object)
-	# })
+	setReplaceMethod("cpttype", "cpt.reg", function(object, value) {
+		object@cpttype <- value
+		return(object)
+	})
 	
 	setGeneric("method<-", function(object, value) standardGeneric("method<-"))
 	setReplaceMethod("method", "cpt", function(object, value) {
 		object@method <- value
 		return(object)
 	})
-	# setReplaceMethod("method", "cpt.reg", function(object, value) {
-	# 	object@method <- value
-	# 	return(object)
-	# })
+	setReplaceMethod("method", "cpt.reg", function(object, value) {
+		object@method <- value
+		return(object)
+	})
 	
   # distribution remains for backwards compatability, changed to test.stat version 1.0
 	setGeneric("distribution<-", function(object, value) standardGeneric("distribution<-"))
@@ -286,40 +286,40 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	  object@test.stat <- value
 	  return(object)
 	})
-	# setReplaceMethod("distribution", "cpt.reg", function(object, value) {
-	#   object@test.stat <- value
-	#   return(object)
-	# })
+	setReplaceMethod("distribution", "cpt.reg", function(object, value) {
+	  object@test.stat <- value
+	  return(object)
+	})
 
   setGeneric("test.stat<-", function(object, value) standardGeneric("test.stat<-"))
 	setReplaceMethod("test.stat", "cpt", function(object, value) {
 		object@test.stat <- value
 		return(object)
 	})
-	# setReplaceMethod("test.stat", "cpt.reg", function(object, value) {
-	# 	object@test.stat <- value
-	# 	return(object)
-	# })
+	setReplaceMethod("test.stat", "cpt.reg", function(object, value) {
+		object@test.stat <- value
+		return(object)
+	})
 	
 	setGeneric("pen.type<-", function(object, value) standardGeneric("pen.type<-"))
 	setReplaceMethod("pen.type", "cpt", function(object, value) {
 		object@pen.type <- value
 		return(object)
 	})
-	# setReplaceMethod("pen.type", "cpt.reg", function(object, value) {
-	# 	object@pen.type <- value
-	# 	return(object)
-	# })
+	setReplaceMethod("pen.type", "cpt.reg", function(object, value) {
+		object@pen.type <- value
+		return(object)
+	})
 	
 	setGeneric("pen.value<-", function(object, value) standardGeneric("pen.value<-"))
 	setReplaceMethod("pen.value", "cpt", function(object, value) {
 		object@pen.value <- value
 		return(object)
 	})
-	# setReplaceMethod("pen.value", "cpt.reg", function(object, value) {
-	# 	object@pen.value <- value
-	# 	return(object)
-	# })
+	setReplaceMethod("pen.value", "cpt.reg", function(object, value) {
+		object@pen.value <- value
+		return(object)
+	})
 
 	setGeneric("minseglen<-", function(object, value) standardGeneric("minseglen<-"))
 	setReplaceMethod("minseglen", "cpt", function(object, value) {
@@ -330,10 +330,10 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	  object@minseglen <- value
 	  return(object)
 	})
-	# setReplaceMethod("minseglen", "cpt.reg", function(object, value) {
-	#   object@minseglen <- value
-	#   return(object)
-	# })
+	setReplaceMethod("minseglen", "cpt.reg", function(object, value) {
+	  object@minseglen <- value
+	  return(object)
+	})
 	
 	setGeneric("cpts<-", function(object, value) standardGeneric("cpts<-"))
 	setReplaceMethod("cpts", "cpt", function(object, value) {
@@ -346,31 +346,31 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
     else{		object@cpts <- c(value,n)  }
 		return(object)
 	})
-	# setReplaceMethod("cpts", "cpt.reg", function(object, value) {
-	#   if(value[length(value)]==nrow(object@data.set)){object@cpts <- value}
-	#   else{  	object@cpts <- c(value,nrow(object@data.set))  }
-	#   return(object)
-	# })
+	setReplaceMethod("cpts", "cpt.reg", function(object, value) {
+	  if(value[length(value)]==nrow(object@data.set)){object@cpts <- value}
+	  else{  	object@cpts <- c(value,nrow(object@data.set))  }
+	  return(object)
+	})
 
 	setGeneric("ncpts.max<-", function(object, value) standardGeneric("ncpts.max<-"))
 	setReplaceMethod("ncpts.max", "cpt", function(object, value) {
 		object@ncpts.max <- value
 		return(object)
 	})
-	# setReplaceMethod("ncpts.max", "cpt.reg", function(object, value) {
-	# 	object@ncpts.max <- value
-	# 	return(object)
-	# })
-	
+	setReplaceMethod("ncpts.max", "cpt.reg", function(object, value) {
+		object@ncpts.max <- value
+		return(object)
+	})
+
 	setGeneric("param.est<-", function(object, value) standardGeneric("param.est<-"))
 	setReplaceMethod("param.est", "cpt", function(object, value) {
 		object@param.est <- value
 		return(object)
 	})
-	# setReplaceMethod("param.est", "cpt.reg", function(object, value) {
-	# 	object@param.est <- value
-	# 	return(object)
-	# })
+	setReplaceMethod("param.est", "cpt.reg", function(object, value) {
+		object@param.est <- value
+		return(object)
+	})
   
 	setGeneric("cpts.full<-", function(object, value) standardGeneric("cpts.full<-"))
 	setReplaceMethod("cpts.full", "cpt.range", function(object, value) {
@@ -382,11 +382,11 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	  object@pen.value.full <- value
 	  return(object)
 	})
-# 	setGeneric("pen.value.input<-", function(object, value) standardGeneric("pen.value.input<-"))
-# 	setReplaceMethod("pen.value.input", "cpt", function(object, value) {
-# 	  object@pen.value.input <- value
-# 	  return(object)
-# 	})
+	setGeneric("pen.value.input<-", function(object, value) standardGeneric("pen.value.input<-"))
+	setReplaceMethod("pen.value.input", "cpt", function(object, value) {
+	  object@pen.value.input <- value
+	  return(object)
+	})
   
 
 # parameter functions
@@ -666,35 +666,35 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	  return(out)
 	})
 	
-	# setMethod("param", "cpt.reg", function(object,shape,...) {			
-	# 	param.norm=function(object){
-	# 		cpts=c(0,object@cpts)
-	# 	#	nseg=length(cpts)-1 #nseg(object)
-	# 		data=data.set(object)
-	# 		p=ncol(data)-1
-	# 		tmpbeta=matrix(NA,ncol=p,nrow=nseg(object))
-	# 		tmpsigma=rep(NA,nseg(object))
-	# 		for(j in 1:nseg(object)){
-	# 		  formula=paste('-1+data[',cpts[j]+1,':',cpts[j+1],',2]',sep='')
-	# 		  if(p>1){
-	# 		    for(i in 2:p){
-	# 		      formula=paste(formula,'+data[',(cpts[j]+1),':',cpts[j+1],',',i+1,']',sep='')
-	# 		    }
-	# 		  }
-	# 		  tmpfit=eval(parse(text=paste('lm(data[',(cpts[j]+1),':',cpts[j+1],',1]~',formula,')',sep='')))
-	# 		  tmpbeta[j,]=tmpfit$coefficients
-	# 		  tmpsigma[j]=sum(tmpfit$residuals^2)/(length(tmpfit$residuals)-length(tmpfit$coefficients)) ##var(tmpfit$residuals)
-	# 		}
-	# 		return(list(beta=tmpbeta,sig2=tmpsigma))
-	# 	}
-	# 	if(test.stat(object)=="Normal"){
-	# 		param.est(object)<-param.norm(object)
-	# 	}
-	# 	else{
-	# 		stop("Unknown test statistic, must be 'Normal'")
-	# 	}
-	# 	return(object)
-	# })
+	setMethod("param", "cpt.reg", function(object,shape,...) {
+		param.norm=function(object){
+			cpts=c(0,object@cpts)
+		#	nseg=length(cpts)-1 #nseg(object)
+			data=data.set(object)
+			p=ncol(data)-1
+			tmpbeta=matrix(NA,ncol=p,nrow=nseg(object))
+			tmpsigma=rep(NA,nseg(object))
+			for(j in 1:nseg(object)){
+			  formula=paste('-1+data[',cpts[j]+1,':',cpts[j+1],',2]',sep='')
+			  if(p>1){
+			    for(i in 2:p){
+			      formula=paste(formula,'+data[',(cpts[j]+1),':',cpts[j+1],',',i+1,']',sep='')
+			    }
+			  }
+			  tmpfit=eval(parse(text=paste('lm(data[',(cpts[j]+1),':',cpts[j+1],',1]~',formula,')',sep='')))
+			  tmpbeta[j,]=tmpfit$coefficients
+			  tmpsigma[j]=sum(tmpfit$residuals^2)/(length(tmpfit$residuals)-length(tmpfit$coefficients)) ##var(tmpfit$residuals)
+			}
+			return(list(beta=tmpbeta,sig2=tmpsigma))
+		}
+		if(test.stat(object)=="Normal"){
+			param.est(object)<-param.norm(object)
+		}
+		else{
+			stop("Unknown test statistic, must be 'Normal'")
+		}
+		return(object)
+	})
 
 # summary functions
 	setMethod("summary","cpt",function(object){
@@ -723,16 +723,16 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
     else{cat("Number of segmentations recorded:", nrow(cpts.full(object)), " with between ", sum(cpts.full(object)[nrow(cpts.full(object)),]>0,na.rm=T), " and ", sum(cpts.full(object)[1,]>0,na.rm=T), "changepoints.\n Penalty value ranges from:",min(pen.value.full(object))," to ",max(pen.value.full(object)))}
 	})
 
-#   setMethod("summary","cpt.reg",function(object){
-#     cat("Created Using changepoint version",object@version,'\n')
-#     cat("Changepoint type     : Change in",cpttype(object),'\n')
-# 	    cat("Method of analysis   :",method(object),"\n")
-# 	    cat("Test Statistic :", test.stat(object),"\n")
-# 	    cat("Type of penalty      :", pen.type(object), "with value,",pen.value(object),"\n")
-# 	    cat("Maximum no. of cpts   :", ncpts.max(object),"\n")
-# 	    if(length(cpts(object))<=20){cat("Changepoint Locations :",cpts(object),"\n")}
-# 	    else{cat("Number of changepoints:", ncpts(object),"\n")}
-# 	})
+  setMethod("summary","cpt.reg",function(object){
+    cat("Created Using changepoint version",object@version,'\n')
+    cat("Changepoint type     : Change in",cpttype(object),'\n')
+	    cat("Method of analysis   :",method(object),"\n")
+	    cat("Test Statistic :", test.stat(object),"\n")
+	    cat("Type of penalty      :", pen.type(object), "with value,",pen.value(object),"\n")
+	    cat("Maximum no. of cpts   :", ncpts.max(object),"\n")
+	    if(length(cpts(object))<=20){cat("Changepoint Locations :",cpts(object),"\n")}
+	    else{cat("Number of changepoints:", ncpts(object),"\n")}
+	})
 
 # show functions
 	setMethod("show","cpt",function(object){
@@ -743,14 +743,14 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    cat("summary(.)  :\n----------\n")
 	    summary(object)
 	})
-	# setMethod("show","cpt.reg",function(object){
-	#     cat("Class 'cpt.reg' : Changepoint Regression Object\n")
-	#     cat("       ~~   : S4 class containing", length(attributes(object))-1, "slots with names\n")
-	#     cat("             ", names(attributes(object))[1:(length(attributes(object))-1)], "\n\n")
-	#     cat("Created on  :", object@date, "\n\n")
-	#     cat("summary(.)  :\n----------\n")
-	#     summary(object)
-	# })
+	setMethod("show","cpt.reg",function(object){
+	    cat("Class 'cpt.reg' : Changepoint Regression Object\n")
+	    cat("       ~~   : S4 class containing", length(attributes(object))-1, "slots with names\n")
+	    cat("             ", names(attributes(object))[1:(length(attributes(object))-1)], "\n\n")
+	    cat("Created on  :", object@date, "\n\n")
+	    cat("summary(.)  :\n----------\n")
+	    summary(object)
+	})
 
 # plot functions
 	setMethod("plot","cpt",function(x,cpt.col='red',cpt.width=1,cpt.style=1,...){
@@ -857,24 +857,24 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	  }
 	})
 	
-	# setMethod("plot","cpt.reg",function(x,cpt.col='red',cpt.width=1,cpt.style=1,...){
-	#   if(length(param.est(x))==0){# i.e. parameter.estimates=FALSE in call
-	#     cat('Calculating parameter estimates...')
-	#     object=param(x)
-	#     cat('done.\n')
-	#   }
-	#   plot(data.set(x)[,1],type='l',...)
-	#   if(test.stat(x)=="Normal"){
-	#     cpts=c(0,x@cpts)
-	#     betas=param.est(x)$beta
-	#     for(i in 1:nseg(x)){
-	#       lines((cpts[i]+1):cpts[i+1],betas[i,]%*%t(data.set(x)[(cpts[i]+1):cpts[i+1],-1]),col=cpt.col,lwd=cpt.width,lty=cpt.style)
-	#     }
-	#   }
-	#   else{
-	#     stop('Invalid Changepoint test statistic')
-	#   }
-	# })
+	setMethod("plot","cpt.reg",function(x,cpt.col='red',cpt.width=1,cpt.style=1,...){
+	  if(length(param.est(x))==0){# i.e. parameter.estimates=FALSE in call
+	    cat('Calculating parameter estimates...')
+	    object=param(x)
+	    cat('done.\n')
+	  }
+	  plot(data.set(x)[,1],type='l',...)
+	  if(test.stat(x)=="Normal"){
+	    cpts=c(0,x@cpts)
+	    betas=param.est(x)$beta
+	    for(i in 1:nseg(x)){
+	      lines((cpts[i]+1):cpts[i+1],betas[i,]%*%t(data.set(x)[(cpts[i]+1):cpts[i+1],-1]),col=cpt.col,lwd=cpt.width,lty=cpt.style)
+	    }
+	  }
+	  else{
+	    stop('Invalid Changepoint test statistic')
+	  }
+	})
 
 # likelihood functions
 	setMethod("logLik", "cpt", function(object) {
@@ -1205,32 +1205,32 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	  return(like)
 	})
 
-# 	setMethod("logLik", "cpt.reg", function(object) {
-# 	  if(length(param.est(object))==0){# i.e. parameter.estimates=FALSE in call
-# 	    cat('Calculating parameter estimates...')
-# 	    object=param(object)
-# 	    cat('done.\n')
-# 	  }
-# 	  if(test.stat(object)=="Normal"){
-# 	    cpts=c(0,object@cpts)
-# 	    seglen=seg.len(object)
-# 	    data=data.set(object)
-# 	    beta=param.est(object)$beta
-# 	    sigmas=param.est(object)$sig2
-# 	    rss=NULL
-# 	    for(i in 1:length(seglen)){
-# 	      rss[i]=sum((data[(cpts[i]+1):cpts[i+1],1]-data[(cpts[i]+1):cpts[i+1],-1]%*%beta[i,])^2)
-# 	    }
-#       like=sum(seglen*log(2*pi*sigmas))+sum(rss/sigmas)
-#       if(pen.type(object)=="MBIC"){
-#         like=c(like, like+(nseg(object)-2)*pen.value(object)+sum(log(seg.len(object))))
-#       }else{
-#         like=c(like,like+(nseg(object)-1)*pen.value(object))
-#       }
-# 	  }
-# 	  else{stop("logLik is only valid for Normal distributional assumption.")}
-# 	  return(like)
-# 	})
+	setMethod("logLik", "cpt.reg", function(object) {
+	  if(length(param.est(object))==0){# i.e. parameter.estimates=FALSE in call
+	    cat('Calculating parameter estimates...')
+	    object=param(object)
+	    cat('done.\n')
+	  }
+	  if(test.stat(object)=="Normal"){
+	    cpts=c(0,object@cpts)
+	    seglen=seg.len(object)
+	    data=data.set(object)
+	    beta=param.est(object)$beta
+	    sigmas=param.est(object)$sig2
+	    rss=NULL
+	    for(i in 1:length(seglen)){
+	      rss[i]=sum((data[(cpts[i]+1):cpts[i+1],1]-data[(cpts[i]+1):cpts[i+1],-1]%*%beta[i,])^2)
+	    }
+      like=sum(seglen*log(2*pi*sigmas))+sum(rss/sigmas)
+      if(pen.type(object)=="MBIC"){
+        like=c(like, like+(nseg(object)-2)*pen.value(object)+sum(log(seg.len(object))))
+      }else{
+        like=c(like,like+(nseg(object)-1)*pen.value(object))
+      }
+	  }
+	  else{stop("logLik is only valid for Normal distributional assumption.")}
+	  return(like)
+	})
 	
 	setGeneric("likelihood", function(object) standardGeneric("likelihood"))
 	setMethod("likelihood", "cpt", function(object) {
