@@ -15,5 +15,5 @@ Description: Implements various mainstream and specialised changepoint methods f
 Depends: R(>= 3.2), methods, stats, zoo(>= 0.9-1)
 Suggests: testthat
 License: GPL
-LazyLoad: yes
+LazyData: true
 Packaged: 2018-06-02 12:36:29 UTC; killick
