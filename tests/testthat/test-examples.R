@@ -122,11 +122,11 @@ test_that('class3',expect_equivalent(logLik(out,ncpts=3),c(925.8085, 947.0578)))
 
 
 # From cpt.reg-class.Rd
-x=new("cpt.reg") # creates a new object with the cpt.reg class defaults
-test_that('class4',expect_is(x,"cpt.reg"))
-test_that('class5',expect_is(data.set(x),"matrix"))
-data.set(x)<-matrix(1:10,nrow=5,ncol=2) # replaces the data.set slot from x with a matrix
-test_that('class6',expect_equivalent(data.set(x),matrix(1:10,nrow=5,ncol=2)))
+# x=new("cpt.reg") # creates a new object with the cpt.reg class defaults
+# test_that('class4',expect_is(x,"cpt.reg"))
+# test_that('class5',expect_is(data.set(x),"matrix"))
+# data.set(x)<-matrix(1:10,nrow=5,ncol=2) # replaces the data.set slot from x with a matrix
+# test_that('class6',expect_equivalent(data.set(x),matrix(1:10,nrow=5,ncol=2)))
 
 
 

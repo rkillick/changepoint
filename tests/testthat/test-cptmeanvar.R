@@ -35,7 +35,7 @@ data <- list(singmeanvardata,mulmeanvardata, mulmeanvarexpdata, mulmeanvarpoisda
 methods <- c("AMOC", "PELT", "BinSeg") #might want to change code to convert to uppercase so less likely to break code
 #methods <- c("AMOC")
 
-penalties <- c("None", "SIC", "BIC", "AIC", "Hannan-Quinn", "Asymptotic", "Manual", "MBIC") #CROPS segfaulting 
+penalties <- c("None", "SIC", "BIC", "AIC", "Hannan-Quinn", "Asymptotic", "Manual", "MBIC")
 
 asympenval <- list(1, 0.756, 0.234, 'return', -1, 0) #need to add character string and -1 and 0
 #manpenval <- list("2+log(n)", "log(n)", "3*n", -1, "diffparam-1") 
