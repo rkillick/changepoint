@@ -141,6 +141,14 @@ costfunction = &mbic_meanvar_poisson;
     *error = 3;
     goto err3;
   }
+
+  //int checklist_remove[*n];
+  int *checklist_remove;
+  checklist_remove = (int *)calloc(*n+1,sizeof(int));
+  if (checklist_remove==NULL)   {
+    *error = 4;
+    goto err4;
+  }
   
   int tstar,i,whichout,nchecktmp;
   
@@ -173,6 +181,9 @@ costfunction = &mbic_meanvar_poisson;
   nchecklist=2;
   checklist[0]=0;
   checklist[1]=*minseglen;
+
+  checklist_remove[0] = *n+2;
+  checklist_remove[1] = *n+2;
   
   for(tstar=2*(*minseglen);tstar<(*n+1);tstar++){
     R_CheckUserInterrupt(); /* checks if user has interrupted the R session and quits if true */
@@ -186,18 +197,36 @@ costfunction = &mbic_meanvar_poisson;
     lastchangecpts[tstar]=checklist[whichout]; 
     numchangecpts[tstar]=numchangecpts[lastchangecpts[tstar]]+1;
     /* Update checklist for next iteration, first element is next tau */
-      nchecktmp=0;
-    for(i=0;i<nchecklist;i++){
-      if(tmplike[i]<= (lastchangelike[tstar]+*pen)){
-        *(checklist+nchecktmp)=checklist[i];
-        nchecktmp+=1;
+    nchecktmp=0;
+    for(i=0;i<nchecklist;i++)
+    {
+
+      if(tmplike[i] > (lastchangelike[tstar]+*pen))
+      {
+
+        if( checklist_remove[i] > *n+1)
+	{ 
+          checklist_remove[i] =*minseglen - 1 + tstar; /* Delay the deletion of this option*/
+	}
+
       }
-     }
-     nchecklist = nchecktmp;
+
+      if(checklist_remove[i] > tstar)
+      {
+
+        *(checklist+nchecktmp)=checklist[i];
+        *(checklist_remove+nchecktmp)=checklist_remove[i];
+        nchecktmp+=1;
+
+      }
+
+    }
+      nchecklist = nchecktmp;
     }
     
     
    *(checklist+nchecklist)=tstar-(*minseglen-1);// atleast 1 obs per seg
+   *(checklist_remove+nchecklist)=*n+2;
      nchecklist+=1;
   /*  nchecklist=nchecktmp;*/
   
@@ -212,6 +241,7 @@ costfunction = &mbic_meanvar_poisson;
     ncpts+=1;
   }
   free(tmpt);
+  err4:  free(checklist_remove);
   err3:  free(tmplike);
   err2:  free(checklist);
  // err3:  free(lastchangelike);
