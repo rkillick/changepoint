@@ -3,6 +3,7 @@ pandoc_version: 1.19.2.1
 sudo: required
 cache: packages
 warnings_are_errors: true
+r_check_args: --as-cran
 r_check_revdep: false
 r:
   - 3.2
