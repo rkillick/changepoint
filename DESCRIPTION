@@ -3,11 +3,7 @@ Type: Package
 Title: Methods for Changepoint Detection
 Version: 2.3
 Date: 2018-06-02
-Authors@R: c(person("Rebecca", "Killick",
-        role=c("aut","cre"),email="r.killick@lancs.ac.uk"),
-				person("Kaylea", "Haynes", role="aut"),        
-				person("Idris", "Eckley", role=c("ths")),
-        person("Paul","Fearnhead",role=c("ctb","ths")), person("Jamie","Lee",role="ctr"))
+Author: Rebecca Killick [aut, cre], Kaylea Haynes [aut], Idris Eckley [ths], Paul Fearnhead [ctb, ths], Jamie Lee [ctr]
 Maintainer: Rebecca Killick <r.killick@lancs.ac.uk>
 BugReports: https://github.com/rkillick/changepoint/issues
 URL: https://github.com/rkillick/changepoint/
