@@ -197,21 +197,13 @@ costfunction = &mbic_meanvar_poisson;
     numchangecpts[tstar]=numchangecpts[lastchangecpts[tstar]]+1;
     /* Update checklist for next iteration, first element is next tau */
       nchecktmp=0;
-       for(i=0;i<nchecklist;i++)
-       {
-           
-           if(tmplike[i] > (lastchangelike[tstar]+*pen))
-           {
-               
-               if( checklist_remove[i] > *n+1)
-               {
+       for(i=0;i<nchecklist;i++){
+           if(tmplike[i] > (lastchangelike[tstar]+*pen)){
+               if( checklist_remove[i] > *n+1){
                    checklist_remove[i] =*minseglen - 1 + tstar; /* Delay the deletion of this option*/
                }
-               
            }
-           
-           if(checklist_remove[i] > tstar)
-           {
+           if(checklist_remove[i] > tstar){
                *(checklist+nchecktmp)=checklist[i];
                *(checklist_remove+nchecktmp)=checklist_remove[i];
                nchecktmp+=1;
@@ -219,7 +211,6 @@ costfunction = &mbic_meanvar_poisson;
        }
        nchecklist = nchecktmp;
    }
-    
     
    *(checklist+nchecklist)=tstar-(*minseglen-1);// atleast 1 obs per seg
    *(checklist_remove+nchecklist)=*n+2;
