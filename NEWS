@@ -1,3 +1,10 @@
+Version 2.3.1
+=============
+* Updated PELT pruning bug in the c code thanks to Alex Fisch.
+* Corrected type functionality in diagnostic=TRUE graphs thanks to Andrew Conell who changed the R plotting functionality in cpt.class meaning users can specify type on a deeper level of the function than before. 
+*Removed the vdiffr test at this juncture due to an existing issue with the vdiffr package and the errors this caused on TRAVIS CI and future changes. 
+
+
 Version 2.3
 ===========
 * Removed SegNeigh option from package.  This gives the same answer as PELT but in much longer computational time.  It was originally included to allow time comparisons but is no longer required.
