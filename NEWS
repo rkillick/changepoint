@@ -4,6 +4,9 @@ Version 2.3
 * CUSUM and CSS test statistics have moved to the changepoint.np package.
 * Fixed bug that meant logLik(.) was erroring when used on output from cpt.mean(.).
 * Added "type=" functionality to the "diagnostic=TRUE" graphs.  Thanks go to github user hoxo_m for providing the code and tests for this.
+* Updated PELT pruning in the C code thanks to Alex Fisch for spotting that the pruning for minimum segment length >2 was not implemented to provide an exact solution.
+* Corrected type functionality in diagnostic=TRUE graphs. Thanks to Andrew Conell. 
+* Removed the vdiffr test at this juncture due to an existing issue with the vdiffr package and the errors this caused on TRAVIS CI and future changes. 
 
 Version 2.2.4
 =============
