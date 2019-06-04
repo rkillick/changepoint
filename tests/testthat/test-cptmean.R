@@ -1,5 +1,7 @@
 context("cpt.mean tests")
-#test line
+
+#test line 
+
 set.seed(1) # Note: new data sets must be added at the end.
 singmeandata <- c(rnorm(100,0,1),rnorm(100,10,1))
 mulmeandata <- c(rnorm(100,0,1),rnorm(100,10,1),rnorm(100,20,1),rnorm(100,50,1))
