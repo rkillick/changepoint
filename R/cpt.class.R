@@ -801,7 +801,7 @@ setClass("cpt.reg",slots=list(data.set="matrix", cpttype="character", method="ch
 		}
 	})
 
-	setMethod("plot","cpt.range",function(x,ncpts=NA,diagnostic=FALSE,cpt.col='red',cpt.width=1,cpt.style=1,type="l"...){
+	setMethod("plot","cpt.range",function(x,ncpts=NA,diagnostic=FALSE,cpt.col='red',cpt.width=1,cpt.style=1,type="l",...){
 	  if(diagnostic==TRUE){
 	  	n.changepoints = apply(cpts.full(x), 1, function(x) sum(x > 0, na.rm = TRUE))
 	  	penalty.values = pen.value.full(x)
