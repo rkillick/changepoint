@@ -825,15 +825,15 @@
 		}
 	})
 
-	setMethod("plot","cpt.range",function(x,ncpts=NA,diagnostic=FALSE,cpt.col='red',cpt.width=1,cpt.style=1,...){
+	setMethod("plot","cpt.range",function(x,ncpts=NA,diagnostic=FALSE,cpt.col='red',cpt.width=1,cpt.style=1,type="l"...){
 	  if(diagnostic==TRUE){
 	    n.changepoints = apply(cpts.full(x), 1, function(x) sum(x > 0, na.rm = TRUE))
 	    penalty.values = pen.value.full(x)
 	    if (is.null(list(...)$type)) {
 	      # By default, the type of the diagnostic plots is "lines".
-	      plot(x = n.changepoints, y = penalty.values, xlab = 'Number of Changepoints', ylab = 'Penalty Value', type = "l", ...)
+  		plot(x = n.changepoints, y = penalty.values, xlab = 'Number of Changepoints', ylab = 'Penalty Value', type = type, ...)
 	    } else {
-	      plot(x = n.changepoints, y = penalty.values, xlab = 'Number of Changepoints', ylab = 'Penalty Value', ...)
+	  	plot(x = n.changepoints, y = penalty.values, xlab = 'Number of Changepoints', ylab = 'Penalty Value', ...)
 	    }
 	    return(invisible(NULL))
 	  }
@@ -1280,6 +1280,7 @@
     }
 	})
 	
+<<<<<<< HEAD
 	setMethod("acf", "cpt.reg", function(object,lag.max=NULL,...) {
 	  cpts=c(0,object@cpts)
 	  nseg=nseg(object)
@@ -1289,3 +1290,14 @@
 	  }
 	})
 	
+=======
+	# setMethod("acf", "cpt.reg", function(object,lag.max=NULL,...) {
+	#   cpts=c(0,object@cpts)
+	#   nseg=nseg(object)
+	#   data=data.set(object)[,1]
+	#   for(i in 1:nseg){
+	#     stats::acf(data[(cpts[i]+1):cpts[i+1]],main=paste("Series part:",(cpts[i]+1),"-",cpts[i+1]),...)
+	#   }
+	# })
+	# 
+>>>>>>> fe6e103... 04/06/2019
