@@ -2,7 +2,7 @@ Package: changepoint
 Type: Package
 Title: Methods for Changepoint Detection
 Version: 2.3.1
-Date: 2018-06-02
+Date: 2019-06-05
 Authors@R: c(person("Rebecca", "Killick",
         role=c("aut","cre"),email="r.killick@lancs.ac.uk"),
 				person("Kaylea", "Haynes", role="aut"),        
