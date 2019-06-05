@@ -1,11 +1,11 @@
 Package: changepoint
 Type: Package
 Title: Methods for Changepoint Detection
-Version: 2.2.4
-Date: 2022-10-31
+Version: 2.3.1
+Date: 2019-06-05
 Authors@R: c(person("Rebecca", "Killick",
         role=c("aut","cre"),email="r.killick@lancs.ac.uk"),
-				person("Kaylea", "Haynes", role="aut"),        
+				person("Kaylea", "Haynes", role="aut"),
 				person("Idris", "Eckley", role=c("ths")),
         person("Paul","Fearnhead",role=c("ctb","ths")), person("Robin", "Long", role="ctb"),person("Jamie","Lee",role="ctr"))
 Maintainer: Rebecca Killick <r.killick@lancs.ac.uk>
@@ -16,7 +16,6 @@ Depends: R(>= 3.1), methods, stats, zoo(>= 0.9-1)
 Suggests: testthat, vdiffr
 License: GPL
 LazyData: true
-Packaged: 2022-10-31 14:14:13 UTC; killick
 NeedsCompilation: yes
 Repository: CRAN
 Date/Publication: 2022-10-31 15:50:02 UTC
@@ -26,3 +25,5 @@ Author: Rebecca Killick [aut, cre],
   Paul Fearnhead [ctb, ths],
   Robin Long [ctb],
   Jamie Lee [ctr]
+Packaged: 2019-06-05 10:36:32 UTC; killick
+
