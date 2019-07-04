@@ -63,8 +63,8 @@ single.meanvar.poisson<-function(data,penalty="MBIC",pen.value=0,class=TRUE,para
   else{
     n=ncol(data)
   }
-  if(n<4){stop('Data must have atleast 4 observations to fit a changepoint model.')}
-  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
+  if(n<4){stop('Data must have at least 4 observations to fit a changepoint model.')}
+  if(n<(2*minseglen)){stop('Minimum segment length is too large to include a change in this data')}
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck="meanvar.poisson", method="AMOC")   
   if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
@@ -175,7 +175,7 @@ multiple.meanvar.poisson=function(data,mul.method="PELT",penalty="MBIC",pen.valu
   else{
     n=ncol(data)
   }
-  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
+  if(n<(2*minseglen)){stop('Minimum segment length is too large to include a change in this data')}
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck=costfunc, method=mul.method)
   if(is.null(dim(data))==TRUE || length(dim(data)) == 1){

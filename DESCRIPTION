@@ -2,12 +2,13 @@ Package: changepoint
 Type: Package
 Title: Methods for Changepoint Detection
 Version: 2.3.1
-Date: 2019-06-05
+Date: 2019-07-04
 Authors@R: c(person("Rebecca", "Killick",
         role=c("aut","cre"),email="r.killick@lancs.ac.uk"),
+        person("Andrew", "Connell", role=c("aut","ctr"),email="a.connell1@lancaster.ac.uk"),
 				person("Kaylea", "Haynes", role="aut"),
 				person("Idris", "Eckley", role=c("ths")),
-        person("Paul","Fearnhead",role=c("ctb","ths")), person("Robin", "Long", role="ctb"),person("Jamie","Lee",role="ctr"))
+        person("Paul","Fearnhead",role=c("ctb","ths")), person ("Andrew","Connell",role="ctb"), person("Robin", "Long", role="ctb"),person("Jamie","Lee",role="ctr"))
 Maintainer: Rebecca Killick <r.killick@lancs.ac.uk>
 BugReports: https://github.com/rkillick/changepoint/issues
 URL: https://github.com/rkillick/changepoint/
@@ -24,6 +25,7 @@ Author: Rebecca Killick [aut, cre],
   Idris Eckley [ths],
   Paul Fearnhead [ctb, ths],
   Robin Long [ctb],
+  Andrew Connell [ctb],
   Jamie Lee [ctr]
-Packaged: 2019-06-05 10:36:32 UTC; killick
+Packaged: 2019-07-04 15:55:29 UTC; killick
 
