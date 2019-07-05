@@ -1,3 +1,5 @@
+context("cpt.reg tests")
+
 # testing functions, aim to get 100% test coverage on exported code
 # testing for cpt.reg function
 
@@ -21,7 +23,28 @@ rn <- sample(1:length(singmeandata), 10, replace=F)
 for(i in rn){
   NAdata[i] <- NA
 }
+NAdata[1] <- NA
 data <- list(singmeandata,mulmeandata, nochangedata, singvardata, mulvardata, mulmeanvardata, mulmeanvarexpdata, mulmeanvarpoisdata, constantdata, NAdata, shortdata, negativedata, characterdata)
 
+designdata <- list(singmeandata,mulmeandata, nochangedata, singvardata, mulvardata, mulmeanvardata, mulmeanvarexpdata, mulmeanvarpoisdata, constantdata)
+for(i in 1:length(designdata)){
+ for(j in 1:10){
+  expect_equal(class(design(data[[i]],j)), "matrix")
+ }
+}
+
+for(i in 1:length(data)){
+ for(j in 2:10){
+  if(is.na(data[[i]][1])==TRUE){
+    expect_error(cpt.reg(design(data[[i]],j)), "NA/NaN/Inf in foreign function call (arg 2)", fixed = TRUE)
+  }else if(is.na(data[[i]][2])==TRUE){
+    suppressWarnings(expect_error(cpt.reg(design(data[[i]],j)), "invalid 'times' argument", fixed = TRUE))
+  }else if(is.character(data[[i]][1])==TRUE){
+    expect_error(cpt.reg(design(data[[i]],j)), "Argument 'data' must be a numerical matrix/array.", fixed = TRUE)
+  }else{
+    expect_s4_class(cpt.reg(design(data[[i]],j)), 'cpt.reg')
+  }
+ }
+}
 
 
