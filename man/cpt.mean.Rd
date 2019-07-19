@@ -40,7 +40,7 @@ param.estimates=TRUE,minseglen=1)
   }
 }
 \details{
-	This function is used to find changes in mean for data using the test statistic specfified in the test.stat parameter.  The changes are found using the method supplied which can be single changepoint (AMOC) or multiple changepoints using exact (PELT) or approximate (BinSeg) methods.  A changepoint is denoted as the last observation of the segment / regime.
+	This function is used to find changes in mean for data using the test statistic specified in the test.stat parameter.  The changes are found using the method supplied which can be single changepoint (AMOC) or multiple changepoints using exact (PELT) or approximate (BinSeg) methods.  A changepoint is denoted as the last observation of the segment / regime.
 }
 \value{
   If \code{class=TRUE} then an object of S4 class "cpt" is returned.  The slot \code{cpts} contains the changepoints that are returned.  For \code{class=FALSE} the structure is as follows.
@@ -83,10 +83,9 @@ Rebecca Killick
 set.seed(1)
 x=c(rnorm(100,0,1),rnorm(100,10,1))
 cpt.mean(x,penalty="SIC",method="AMOC",class=FALSE) # returns 100 to show that the null hypothesis
-#was rejected and the change in mean is at 100
+#was rejected and the change in mean is at 100 and the confidence level is 1.
 ans=cpt.mean(x,penalty="Asymptotic",pen.value=0.01,method="AMOC") 
 cpts(ans)# returns 100 to show that the null hypothesis was rejected, the change in mean is at 100
-#and we are 99% confident of this result
 
 
 # Example of multiple changes in mean at 50,100,150 in simulated normal data

@@ -3,7 +3,7 @@ import(graphics)
 import(zoo)
 import(stats)
 
-export("cpt.mean", "cpt.meanvar", "cpt.var")
+export("cpt.mean", "cpt.meanvar", "cpt.var","cpt.reg", "design")
 export("BINSEG", "decision", "penalty_decision","PELT","class_input")
 exportClasses(cpt,cpt.range)
 exportMethods(plot,summary,show,nseg,logLik,likelihood,data.set,data.set.ts,cpts,cpts.full, cpts.ts,cpttype,distribution,test.stat,
