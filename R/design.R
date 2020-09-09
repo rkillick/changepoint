@@ -1,5 +1,8 @@
 #This function generates a user an (n-1)x(p+2) design matrix for their data and own choice of AR(p) model. This can be used directly with cpt.reg() but is unnecessary for cpt.ar() as it will be generated internally. 
 design <- function(data,p=1){
+    if (p<1){
+        stop("p must be >0")
+    }
     if(p>0.2*length(data)){
         warning("Due to the order of this model, there is a high risk of overfitting the data")
     }
