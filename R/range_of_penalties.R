@@ -118,7 +118,7 @@ range_of_penalties <- function(sumstat,cost = "mean.norm",PELT = T,min_pen=log(l
     
   }
   
-  return(list(cpt.out = rbind(beta_interval = beta.int,numberofchangepoints,penalised_cost = penal),changepoints = segmentations))
+  return(list(cpt.out = rbind(beta_interval = beta.int,numberofchangepoints,penalised_cost = penal,pen_values=test_penalties),changepoints = segmentations))
   #segmentations is output matrix
   #beta.int
 }

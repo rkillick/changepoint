@@ -41,7 +41,7 @@ class_input <- function(data, cpttype, method, test.stat, penalty, pen.value, mi
     m = t(sapply(out[[2]], '[', 1:max(sapply(out[[2]], length))))
     
     cpts.full(ans) = m
-    pen.value.full(ans) = out[[1]][1,]
+    pen.value.full(ans) = out[[1]][4,]
     if(test.stat=="Gamma"){param.est(ans)$shape=shape}
   }
   
