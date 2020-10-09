@@ -5,7 +5,7 @@ class_input <- function(data, cpttype, method, test.stat, penalty, pen.value, mi
     ans=new("cpt")
   }
   
-  data.set(ans)=data;cpttype(ans)=cpttype;method(ans)=method; test.stat(ans)=test.stat;pen.type(ans)=penalty;pen.value(ans)=pen.value;minseglen(ans)=minseglen;
+  data.set(ans)=data;cpttype(ans)=cpttype;method(ans)=method; test.stat(ans)=test.stat;pen.type(ans)=penalty;pen.value(ans)=pen.value;minseglen(ans)=minseglen;ans@date=date();
   if(penalty!="CROPS"){ # crops is only one that doesn't give a single set of cpts
     cpts(ans)=out[[2]]
     
