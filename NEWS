@@ -1,7 +1,12 @@
 Version 2.2.4
 =============
+* Ported cpt.reg from EnvCpt to changepoint. REBECCA CHECK!
+* Added ability to generate design matrix of any size to be used with cpt.reg. This is particularly useful for those who want to fit AR(p) changepoint models. REBECCA CHECK!
 * Updated C code to be compliant with new CRAN flags
 * Updated check for 1D objects to also check for 1D arrays.  Thanks to Github user ChristopherEeles for highlighting the bug.
+* Updated changepoint package to new CRAN regulations.
+* Thanks to Toby Hocking for highlighting that when pen=0, BinSeg doesn't need to warn that ncpts=Q as this is by design. Warning for pen=0 removed.
+* Thanks to Toby Hocking and his students for spotting that when minseglen=1 BinSeg would not allow the maximum Q.  This was due to a hardcoding of minseglen=2 in the check function.  This has been corrected.
 
 Version 2.2.3
 =============
@@ -221,5 +226,6 @@ Version 0.2
 Version 0.1
 ===========
 * Original
+
 
 
