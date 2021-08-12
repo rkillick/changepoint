@@ -10,12 +10,7 @@ plot(obj.cpt.range, diagnostic = TRUE)
 plot(obj.cpt.range, diagnostic = TRUE, type = "h")
 
 # Tests for plots
-#These functions are still somewhat experimental and even though the generated plots match the true plots
-#there still seems to be some issues being caused. https://github.com/r-lib/vdiffr/issues
-#we will readd this feature once the original issue is resolved.
-
-#vdiffr::expect_doppelganger("Diagnostic plot (default)", plot(obj.cpt.range, diagnostic = TRUE))
-#vdiffr::expect_doppelganger("Diagnostic plot (histogram)", plot(obj.cpt.range, diagnostic = TRUE, type = "h"))
-
-
-
+vdiffr::expect_doppelganger("Diagnostic plot (default)",
+                            plot(obj.cpt.range, diagnostic = TRUE))
+vdiffr::expect_doppelganger("Diagnostic plot (histogram)",
+                            plot(obj.cpt.range, diagnostic = TRUE, type = "h"))

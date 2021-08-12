@@ -801,13 +801,13 @@ setClass("cpt.reg",slots=list(data.set="matrix", cpttype="character", method="ch
 		}
 	})
 
-	setMethod("plot","cpt.range",function(x,ncpts=NA,diagnostic=FALSE,cpt.col='red',cpt.width=1,cpt.style=1,type="l",...){
+	setMethod("plot","cpt.range",function(x,ncpts=NA,diagnostic=FALSE,cpt.col='red',cpt.width=1,cpt.style=1,...){
 	  if(diagnostic==TRUE){
 	  	n.changepoints = apply(cpts.full(x), 1, function(x) sum(x > 0, na.rm = TRUE))
 	  	penalty.values = pen.value.full(x)
 	  	if (is.null(list(...)$type)) {
 	  		# By default, the type of the diagnostic plots is "lines".
-	  		plot(x = n.changepoints, y = penalty.values, xlab = 'Number of Changepoints', ylab = 'Penalty Value', type = type, ...)
+	  		plot(x = n.changepoints, y = penalty.values, xlab = 'Number of Changepoints', ylab = 'Penalty Value', type = "l", ...)
 	  	} else {
 	  		plot(x = n.changepoints, y = penalty.values, xlab = 'Number of Changepoints', ylab = 'Penalty Value', ...)
 	  	}
