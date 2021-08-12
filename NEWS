@@ -1,10 +1,3 @@
-Version 2.3.1
-============
-* Ported EnvCpt throught to changepoint however, no end user changes should be seen.
-* Ability to generate design matrix of any size to be used with cpt.reg which has been brought forward to a user facing function rather than one that could only be called on in EnvCpt.
-* Additional functionality allows for users to fit any AR(p) model changes. Shortly to follow will be the auto selection of the order of the AR choice.
-* Users that use both EnvCpt and changepoint must update both packages for the full functionality of EnvCpt.  
-
 Version 2.3
 ===========
 * Removed SegNeigh option from package.  This gives the same answer as PELT but in much longer computational time.  It was originally included to allow time comparisons but is no longer required.
@@ -54,13 +47,13 @@ Version 2.2
 * Changed BinSeg and Segneigh to give nice errors when Q=0.
 * Added "ths", Thesis advisor to Idris Eckley (RK advisor) and Paul Fearnhead (KH advisor).
 * Changed penalties such that with a postfix 0 i.e. SIC0 we DO NOT count the changepoint as a parameter (this was previously SIC) and wihtout a postfix i.e. SIC we count the changepoint as a parameter (this was previously SIC1). This change brings the package in line with some theoretical results and empirical evidence that including the change in parameter estimation is preferred.  This also affects the MBIC definition which now also includes the number of changepoints.
-* Fixed minor bug in range_of_penalties code
+* Fixed minor bug in range_of_penalties code 
 * Removed documentation for accessor and replacement functions to improve usability for new users.  Thanks to Hadley Wickham for suggesting this.
 * Removed the row of zeroes in the cpts.full slot for method="SegNeigh" in the cpt.range class.
 * When method="SegNeigh" the cpt.range class now returns the difference in likelihood in the pen.value.full slots (previously this was the likelihood).  This brings the reporting in line with method="BinSeg".
 * When using test.stat="CSS" or test.stat="CUSUM" there is now a warning that traditional penalty values are not advised.
-* Created a new plot function for cpt.range objects. Behaves in the same way as the plot function for cpt objects but has two extra arguments, ncpts (numeric) and diagnostic (TRUE or FALSE).
-- The ncpts parameter by default is NA, thus plotting the optimal segmentation according to the penalty.  If the number is specified then the segmentation corresponding to that number is plotted.
+* Created a new plot function for cpt.range objects. Behaves in the same way as the plot function for cpt objects but has two extra arguments, ncpts (numeric) and diagnostic (TRUE or FALSE).  
+- The ncpts parameter by default is NA, thus plotting the optimal segmentation according to the penalty.  If the number is specified then the segmentation corresponding to that number is plotted.  
 - The diagnostic plot can aide the decision on the number of changepoints.  It plots the difference in test statistic from adding the change against the number of changepoints.  When adding a true changepoint the cost increases/decreases rapidly, when adding a changepoint due to noise the change is small.  This is similar to a scree plot in principal component analysis.
 * In order to facilitate the above, a new param generic has been created for cpt.range objects that allows parameter estimation for a specified number of changepoints.  This information is not stored when calculated so users may wish to use this function directly for other purposes such as parameter value retrieval.
 * Added package version to the class structures so that an analysis is fully reproducible from a stored cpt* object.
@@ -76,8 +69,8 @@ Version 2.1.1
 
 Version 2.1
 =============
-* Fixed error in penalty values that was introduced in the move to version 2.  Thanks to Craig Wenger for highlighting this.
-* Corrected speed decrease in PELT and BinSeg functions from the changes made in version 2.  Thanks to Craig Wenger for highlighting this.
+* Fixed error in penalty values that was introduced in the move to version 2.  Thanks to Craig Wenger for highlighting this.  
+* Corrected speed decrease in PELT and BinSeg functions from the changes made in version 2.  Thanks to Craig Wenger for highlighting this.  
 
 Version 2.0.1
 =============

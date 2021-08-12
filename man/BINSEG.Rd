@@ -11,7 +11,7 @@ This function is called by \code{cpt.mean}, \code{cpt.var} and \code{cpt.meanvar
 WARNING: No checks on arguments are performed!
 }
 \usage{
-BINSEG(sumstat, pen = 0, cost_func = "mean.norm", shape = 1, minseglen = 2,  Q=5)
+BINSEG(sumstat, pen = 0, cost_func = "norm.mean", shape = 1, minseglen = 2,  Q=5)
 }
 \arguments{
   \item{sumstat}{
