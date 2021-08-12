@@ -1,15 +1,13 @@
 Package: changepoint
 Type: Package
 Title: Methods for Changepoint Detection
-Version: 2.3.1
-Date: 2019-07-19
-Authors@R: c(person("Rebecca", "Killick", role=c("aut","cre"),email="r.killick@lancs.ac.uk"),
-        person("Andrew", "Connell", role="aut"),
-	person("Kaylea", "Haynes", role="aut"),
-	person("Harjit","Hullait",role="ctb"), 
-	person("Idris", "Eckley", role=c("ths")),
-        person("Paul","Fearnhead",role=c("ctb","ths")), 
-	person("Jamie","Lee",role="ctr"))
+Version: 2.3
+Date: 2018-06-02
+Authors@R: c(person("Rebecca", "Killick",
+        role=c("aut","cre"),email="r.killick@lancs.ac.uk"),
+				person("Kaylea", "Haynes", role="aut"),        
+				person("Idris", "Eckley", role=c("ths")),
+        person("Paul","Fearnhead",role=c("ctb","ths")), person("Jamie","Lee",role="ctr"))
 Maintainer: Rebecca Killick <r.killick@lancs.ac.uk>
 BugReports: https://github.com/rkillick/changepoint/issues
 URL: https://github.com/rkillick/changepoint/
@@ -18,4 +16,4 @@ Depends: R(>= 3.2), methods, stats, zoo(>= 0.9-1)
 Suggests: testthat, vdiffr
 License: GPL
 LazyData: true
-Packaged: 2019-07-19 15:55:29 UTC; killick
+Packaged: 2018-06-02 12:36:29 UTC; killick
