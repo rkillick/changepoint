@@ -87,7 +87,7 @@ jobs:
           path: check
 
       - name: Install dependencies
-        if: runner.os == 'Linux' && runner.r == 'release'
+        if: runner.os == 'Linux' && matrix.config.r == 'release'
         run: |
           install.packages(c("remotes"))
           remotes::install_deps(dependencies = TRUE)
@@ -96,6 +96,6 @@ jobs:
 
           
       - name: Test coverage
-        if: runner.os == 'Linux' && runner.r == 'release'
+        if: runner.os == 'Linux' && matrix.config.r == 'release'
         run: covr::codecov()
         shell: Rscript {0}
