@@ -96,6 +96,6 @@ jobs:
 
           
       - name: Test coverage
-        if: runner.os == 'Linux' and runner.r == 'release'
+        if: runner.os == 'Linux' && runner.r == 'release'
         run: covr::codecov()
         shell: Rscript {0}
