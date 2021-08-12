@@ -1,8 +1,9 @@
 Version 2.3.1
 ============
-* Ported cpt.reg from EnvCpt to changepoint.
-* Updated changepoint package to new CRAN regulations.
-* Added ability to generate design matrix of any size to be used with cpt.reg. This is particularly useful for those who want to fit AR(p) changepoint models.
+* Ported EnvCpt throught to changepoint however, no end user changes should be seen.
+* Ability to generate design matrix of any size to be used with cpt.reg which has been brought forward to a user facing function rather than one that could only be called on in EnvCpt.
+* Additional functionality allows for users to fit any AR(p) model changes. Shortly to follow will be the auto selection of the order of the AR choice.
+* Users that use both EnvCpt and changepoint must update both packages for the full functionality of EnvCpt.  
 
 Version 2.3
 ===========
