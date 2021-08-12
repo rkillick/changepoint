@@ -87,7 +87,7 @@ jobs:
           path: check
 
       - name: Install dependencies
-        if: runner.os == 'Linux' and runner.r == 'release'
+        if: runner.os == 'Linux' && runner.r == 'release'
         run: |
           install.packages(c("remotes"))
           remotes::install_deps(dependencies = TRUE)
