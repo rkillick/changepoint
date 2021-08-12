@@ -27,7 +27,7 @@ BINSEG = function(sumstat, pen = 0, cost_func = "mean.norm", shape = 1, minsegle
   error = 0
 
   answer=.C('binseg', cost_func = cost_func, sumstat = sumstat, n = as.integer(n), m = as.integer(m), pen = as.double(pen), Q = as.integer(Q), cptsout = cptsout, error = as.integer(error), minorder = as.integer(min), optimalorder = as.integer(optimal), maxorder = as.integer(max), minseglen = as.integer(minseglen), likeout = likeout, op_cps = as.integer(op_cps), shape = as.double(shape), tol = as.double(tol), MBIC = as.integer(MBIC))
-  if((answer$op_cps == Q)&(pen!=0)){warning('The number of changepoints identified is Q, it is advised to increase Q to make sure changepoints have not been missed.')}
+  if(answer$op_cps == Q){warning('The number of changepoints identified is Q, it is advised to increase Q to make sure changepoints have not been missed.')}
   if(answer$op_cps == 0){cpts=n}
   else{cpts=c(sort(answer$cptsout[1:answer$op_cps]),n)}
   return(list(cps=rbind(answer$cptsout,2*answer$likeout),cpts=cpts,op.cpts=answer$op_cps,pen=pen))
