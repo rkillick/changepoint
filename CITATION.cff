@@ -1,0 +1,61 @@
+abstract: |
+  Implements various mainstream and specialised changepoint methods
+  for finding single and multiple changepoints within data. Many
+  popular non-parametric and frequentist methods are included. The
+  cpt.mean(), cpt.var(), cpt.meanvar() functions should be your first
+  point of call.
+authors:
+  - family-names: Killick
+    given-names: Rebecca
+    email: r.killick at lancs.ac.uk
+    orcid: "https://orcid.org/0000-0003-0583-3960"
+  - family-names: Haynes
+    given-names: Kaylea
+  - family-names: Eckley
+    given-names: Idris
+  - family-names: Fearnhead
+    given-names: Paul
+  - family-names: Lee
+    given-names: Jamie
+cff-version: 1.2.0
+date-released: "2016-10-04"
+license:
+  - GPL-3.0
+  - GPL-2.0
+repository-code: "https://github.com/rkillick/changepoint"
+version: 2.2.2
+title: "Changepoint: Methods for Changepoint Detection"
+message: |
+  If you use this software, please cite both the article from
+  preferred-citation and the software itself.
+preferred-citation:
+
+references:
+  - authors:
+    - family-names: Killick
+      given-names: Rebecca
+      orcid: "https://orcid.org/0000-0003-0583-3960"
+    - family-names: Haynes
+      given-names: Kaylea
+    - family-names: Eckley
+      given-names: Idris
+    title: "changepoint: An R package for changepoint analysis"
+    type: software
+    version: 1.0
+    year: 2019
+    url: "https://CRAN.R-project.org/package=changepoint"
+    notes: "R package version 2.2.2"
+  - authors
+    - family-names: Killick
+      given-names: Rebecca
+      orcid: "https://orcid.org/0000-0003-0583-3960"
+    - family-names: Eckley
+      given-names: Idris
+    title: "changepoint: An R Package for Changepoint Analysis"
+    type: article
+    journal: "Journal of Statistical Software"
+    year: 2014
+    volume: 58
+    number: 3
+    pages: "1--19"
+    url: "http://www.jstatsoft.org/v58/i03/"
