@@ -29,23 +29,22 @@ message: |
   If you use this software, please cite both the article from
   preferred-citation and the software itself.
 preferred-citation:
-
+  authors:
+  - family-names: Killick
+    given-names: Rebecca
+    orcid: "https://orcid.org/0000-0003-0583-3960"
+  - family-names: Haynes
+    given-names: Kaylea
+  - family-names: Eckley
+    given-names: Idris
+  title: "changepoint: An R package for changepoint analysis"
+  type: software
+  version: 1.0
+  year: 2019
+  url: "https://CRAN.R-project.org/package=changepoint"
+  notes: "R package version 2.2.2"
 references:
   - authors:
-    - family-names: Killick
-      given-names: Rebecca
-      orcid: "https://orcid.org/0000-0003-0583-3960"
-    - family-names: Haynes
-      given-names: Kaylea
-    - family-names: Eckley
-      given-names: Idris
-    title: "changepoint: An R package for changepoint analysis"
-    type: software
-    version: 1.0
-    year: 2019
-    url: "https://CRAN.R-project.org/package=changepoint"
-    notes: "R package version 2.2.2"
-  - authors
     - family-names: Killick
       given-names: Rebecca
       orcid: "https://orcid.org/0000-0003-0583-3960"
