@@ -1,18 +1,18 @@
-single.meanvar.gamma.calc =
+single.meanvar.gamma.calc <-
   function(data, shape = 1, extrainf = TRUE, minseglen) {
-    singledim = function(data, shape, extrainf = TRUE, minseglen) {
-      n = length(data)
-      y = c(0, cumsum(data))
-      null = 2 * n * shape * log(y[n + 1]) - 2 * n * shape * log(n * shape)
-      taustar = minseglen:(n - minseglen)
-      tmp = 2 * taustar * shape * log(y[taustar + 1]) - 2 * taustar * shape * log(taustar * shape) + 2 * (n - taustar) * shape * log((y[n + 1] - y[taustar + 1])) - 2 * (n - taustar) * shape * log((n - taustar) * shape)
+    singledim <- function(data, shape, extrainf = TRUE, minseglen) {
+      n <- length(data)
+      y <- c(0, cumsum(data))
+      null <- 2 * n * shape * log(y[n + 1]) - 2 * n * shape * log(n * shape)
+      taustar <- minseglen:(n - minseglen)
+      tmp <- 2 * taustar * shape * log(y[taustar + 1]) - 2 * taustar * shape * log(taustar * shape) + 2 * (n - taustar) * shape * log((y[n + 1] - y[taustar + 1])) - 2 * (n - taustar) * shape * log((n - taustar) * shape)
 
-      tau = which(tmp == min(tmp, na.rm = T))[1]
-      taulike = tmp[tau]
-      tau = tau + minseglen - 1 # correcting for the fact that we are starting at minseglen
+      tau <- which(tmp == min(tmp, na.rm = T))[1]
+      taulike <- tmp[tau]
+      tau <- tau + minseglen - 1 # correcting for the fact that we are starting at minseglen
       if (extrainf == TRUE) {
-        out = c(tau, null, taulike)
-        names(out) = c("cpt", "null", "alt")
+        out <- c(tau, null, taulike)
+        names(out) <- c("cpt", "null", "alt")
         return(out)
       } else {
         return(tau)
@@ -22,39 +22,39 @@ single.meanvar.gamma.calc =
 
     if (is.null(dim(data)) == TRUE) {
       # single data set
-      cpt = singledim(data, shape, extrainf, minseglen)
+      cpt <- singledim(data, shape, extrainf, minseglen)
       return(cpt)
     } else {
-      rep = nrow(data)
-      n = ncol(data)
-      cpt = NULL
+      rep <- nrow(data)
+      n <- ncol(data)
+      cpt <- NULL
       if (length(shape) == 1) {
-        shape = rep(shape, rep)
+        shape <- rep(shape, rep)
       }
       if (extrainf == FALSE) {
         for (i in 1:rep) {
-          cpt[i] = singledim(data[i, ], shape[i], extrainf, minseglen)
+          cpt[i] <- singledim(data[i, ], shape[i], extrainf, minseglen)
         }
       } else {
-        cpt = matrix(0, ncol = 3, nrow = rep)
+        cpt <- matrix(0, ncol = 3, nrow = rep)
         for (i in 1:rep) {
-          cpt[i, ] = singledim(data[i, ], shape[i], extrainf, minseglen)
+          cpt[i, ] <- singledim(data[i, ], shape[i], extrainf, minseglen)
         }
-        colnames(cpt) = c("cpt", "null", "alt")
+        colnames(cpt) <- c("cpt", "null", "alt")
       }
       return(cpt)
     }
   }
 
-single.meanvar.gamma = function(data, shape = 1, penalty = "MBIC", pen.value = 0, class = TRUE, param.estimates = TRUE, minseglen) {
+single.meanvar.gamma <- function(data, shape = 1, penalty = "MBIC", pen.value = 0, class = TRUE, param.estimates = TRUE, minseglen) {
   if (sum(data <= 0) > 0) {
     stop("Gamma test statistic requires positive data")
   }
   if (is.null(dim(data)) == TRUE) {
     # single dataset
-    n = length(data)
+    n <- length(data)
   } else {
-    n = ncol(data)
+    n <- ncol(data)
   }
   if (n < 4) {
     stop("Data must have atleast 4 observations to fit a changepoint model.")
@@ -63,29 +63,29 @@ single.meanvar.gamma = function(data, shape = 1, penalty = "MBIC", pen.value = 0
     stop("Minimum segment legnth is too large to include a change in this data")
   }
 
-  pen.value = penalty_decision(penalty, pen.value, n, diffparam = 1, asymcheck = "meanvar.gamma", method = "AMOC")
+  pen.value <- penalty_decision(penalty, pen.value, n, diffparam = 1, asymcheck = "meanvar.gamma", method = "AMOC")
   if (is.null(dim(data)) == TRUE) {
-    tmp = single.meanvar.gamma.calc(coredata(data), shape, extrainf = TRUE, minseglen)
+    tmp <- single.meanvar.gamma.calc(coredata(data), shape, extrainf = TRUE, minseglen)
     if (penalty == "MBIC") {
-      tmp[3] = tmp[3] + log(tmp[1]) + log(n - tmp[1] + 1)
+      tmp[3] <- tmp[3] + log(tmp[1]) + log(n - tmp[1] + 1)
     }
-    ans = decision(tmp[1], tmp[2], tmp[3], penalty, n, diffparam = 1, pen.value)
+    ans <- decision(tmp[1], tmp[2], tmp[3], penalty, n, diffparam = 1, pen.value)
     if (class == TRUE) {
       return(class_input(data, cpttype = "mean and variance", method = "AMOC", test.stat = "Gamma", penalty = penalty, pen.value = ans$pen, minseglen = minseglen, param.estimates = param.estimates, out = c(0, ans$cpt), shape = shape))
     } else {
       return(ans$cpt)
     }
   } else {
-    tmp = single.meanvar.gamma.calc(data, shape, extrainf = TRUE, minseglen)
+    tmp <- single.meanvar.gamma.calc(data, shape, extrainf = TRUE, minseglen)
     if (penalty == "MBIC") {
-      tmp[, 3] = tmp[, 3] + log(tmp[, 1]) + log(n - tmp[, 1] + 1)
+      tmp[, 3] <- tmp[, 3] + log(tmp[, 1]) + log(n - tmp[, 1] + 1)
     }
-    ans = decision(tmp[, 1], tmp[, 2], tmp[, 3], penalty, n, diffparam = 1, pen.value)
+    ans <- decision(tmp[, 1], tmp[, 2], tmp[, 3], penalty, n, diffparam = 1, pen.value)
     if (class == TRUE) {
-      rep = nrow(data)
-      out = list()
+      rep <- nrow(data)
+      out <- list()
       for (i in 1:rep) {
-        out[[i]] = class_input(data[i, ], cpttype = "mean and variance", method = "AMOC", test.stat = "Gamma", penalty = penalty, pen.value = ans$pen, minseglen = minseglen, param.estimates = param.estimates, out = c(0, ans$cpt[i]), shape = shape)
+        out[[i]] <- class_input(data[i, ], cpttype = "mean and variance", method = "AMOC", test.stat = "Gamma", penalty = penalty, pen.value = ans$pen, minseglen = minseglen, param.estimates = param.estimates, out = c(0, ans$cpt[i]), shape = shape)
       }
       return(out)
     } else {
@@ -193,34 +193,34 @@ single.meanvar.gamma = function(data, shape = 1, penalty = "MBIC", pen.value = 0
 # }
 
 
-multiple.meanvar.gamma = function(data, shape = 1, mul.method = "PELT", penalty = "MBIC", pen.value = 0, Q = 5, class = TRUE, param.estimates = TRUE, minseglen) {
+multiple.meanvar.gamma <- function(data, shape = 1, mul.method = "PELT", penalty = "MBIC", pen.value = 0, Q = 5, class = TRUE, param.estimates = TRUE, minseglen) {
   if (sum(data <= 0) > 0) {
     stop("Gamma test statistic requires positive data")
   }
   if (!((mul.method == "PELT") || (mul.method == "BinSeg"))) {
     stop("Multiple Method is not recognised, must be PELT or BinSeg.")
   }
-  costfunc = "meanvar.gamma"
+  costfunc <- "meanvar.gamma"
   if (penalty == "MBIC") {
-    costfunc = "meanvar.gamma.mbic"
+    costfunc <- "meanvar.gamma.mbic"
   }
-  diffparam = 1
+  diffparam <- 1
   if (is.null(dim(data)) == TRUE) {
     # single dataset
-    n = length(data)
-    shape = shape[1]
+    n <- length(data)
+    shape <- shape[1]
   } else {
-    n = ncol(data)
+    n <- ncol(data)
   }
   if (n < (2 * minseglen)) {
     stop("Minimum segment legnth is too large to include a change in this data")
   }
 
-  pen.value = penalty_decision(penalty, pen.value, n, diffparam, asymcheck = costfunc, method = mul.method)
+  pen.value <- penalty_decision(penalty, pen.value, n, diffparam, asymcheck = costfunc, method = mul.method)
 
   if (is.null(dim(data)) == TRUE) {
     # single dataset
-    out = data_input(data = data, method = mul.method, pen.value = pen.value, costfunc = costfunc, minseglen = minseglen, Q = Q, shape = shape)
+    out <- data_input(data = data, method = mul.method, pen.value = pen.value, costfunc = costfunc, minseglen = minseglen, Q = Q, shape = shape)
 
     if (class == TRUE) {
       return(class_input(data, cpttype = "mean and variance", method = mul.method, test.stat = "Gamma", penalty = penalty, pen.value = pen.value, minseglen = minseglen, param.estimates = param.estimates, out = out, Q = Q, shape = shape))
@@ -228,21 +228,21 @@ multiple.meanvar.gamma = function(data, shape = 1, mul.method = "PELT", penalty 
       return(out[[2]])
     }
   } else {
-    rep = nrow(data)
-    out = list()
+    rep <- nrow(data)
+    out <- list()
     if (length(shape) != rep) {
-      shape = rep(shape, rep)
+      shape <- rep(shape, rep)
     }
     for (i in 1:rep) {
-      out[[i]] = data_input(data[i, ], method = mul.method, pen.value = pen.value, costfunc = costfunc, minseglen = minseglen, Q = Q, shape = shape)
+      out[[i]] <- data_input(data[i, ], method = mul.method, pen.value = pen.value, costfunc = costfunc, minseglen = minseglen, Q = Q, shape = shape)
     }
 
-    cpts = lapply(out, "[[", 2)
+    cpts <- lapply(out, "[[", 2)
 
     if (class == TRUE) {
-      ans = list()
+      ans <- list()
       for (i in 1:rep) {
-        ans[[i]] = class_input(data[i, ], cpttype = "mean and variance", method = mul.method, test.stat = "Gamma", penalty = penalty, pen.value = pen.value, minseglen = minseglen, param.estimates = param.estimates, out = out[[2]], Q = Q, shape = shape[[i]])
+        ans[[i]] <- class_input(data[i, ], cpttype = "mean and variance", method = mul.method, test.stat = "Gamma", penalty = penalty, pen.value = pen.value, minseglen = minseglen, param.estimates = param.estimates, out = out[[2]], Q = Q, shape = shape[[i]])
       }
       return(ans)
     } else {

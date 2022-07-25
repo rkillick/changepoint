@@ -1,8 +1,8 @@
 context("plot(diagnostic = TRUE) tests")
 
 # Generate cpt.range object
-testdata = changepoint::ftse100$V2
-obj.cpt.range = cpt.var(testdata,
+testdata <- changepoint::ftse100$V2
+obj.cpt.range <- cpt.var(testdata,
   method = "PELT",
   penalty = "CROPS", pen.value = c(5, 500)
 )

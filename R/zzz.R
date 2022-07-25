@@ -1,5 +1,5 @@
-.onAttach = function(libname, pkgname) {
-  f = read.dcf(
+.onAttach <- function(libname, pkgname) {
+  f <- read.dcf(
     file.path(libname, pkgname, "DESCRIPTION"),
     c("Version", "Date")
   )
