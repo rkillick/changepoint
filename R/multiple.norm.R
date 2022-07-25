@@ -1,7 +1,7 @@
 # PELT.var.norm=function(data,pen=0,know.mean=FALSE,mu=NA,nprune=FALSE){
 #   mll.var.EFK=function(x,n){
 #     neg=x<=0
-#     x[neg==TRUE]=0.00000000001    
+#     x[neg==TRUE]=0.00000000001
 #     return( n*(log(2*pi)+log(x/n)+1))
 #   }
 #   if((know.mean==FALSE)&(is.na(mu))){
@@ -9,7 +9,7 @@
 #   }
 #   n=length(data)
 #   y2=c(0,cumsum((data-mu)^2))
-# 
+#
 #   lastchangecpts=matrix(NA,nrow=n,ncol=2)
 #   lastchangelike=matrix(NA,nrow=n,ncol=2)
 #   checklist=NULL
@@ -64,7 +64,7 @@
 #   n=length(data)
 #   y2=c(0,cumsum(data^2))
 #   y=c(0,cumsum(data))
-# 
+#
 #   lastchangecpts=matrix(NA,nrow=n,ncol=2)
 #   lastchangelike=matrix(NA,nrow=n,ncol=2)
 #   checklist=NULL
@@ -121,7 +121,7 @@
 #   n=length(data)
 #   y2=c(0,cumsum(data^2))
 #   y=c(0,cumsum(data))
-# 
+#
 #   lastchangecpts=matrix(NA,nrow=n,ncol=2)
 #   lastchangelike=matrix(NA,nrow=n,ncol=2)
 #   checklist=NULL
@@ -170,15 +170,15 @@
 
 
 
-#binseg.var.norm=function(data,Q=5,pen=0,know.mean=FALSE,mu=NA){
+# binseg.var.norm=function(data,Q=5,pen=0,know.mean=FALSE,mu=NA){
 #  mll.var=function(x,n){
 #    neg=x<=0
-#    x[neg==TRUE]=0.00000000001    
+#    x[neg==TRUE]=0.00000000001
 #    return( -0.5*n*(log(2*pi)+log(x/n)+1))
 #  }
 #  n=length(data)
 #  if((know.mean==FALSE)&(is.na(mu))){
-#	mu=mean(data)
+# 	mu=mean(data)
 #  }
 #  y2=c(0,cumsum((data-mu)^2))
 #  tau=c(0,n)
@@ -215,7 +215,7 @@
 #    }
 #  }
 #  return(list(cps=cpt,op.cpts=op.cps,pen=pen))
-#}
+# }
 
 
 # binseg.mean.norm=function(data,Q=5,pen=0){
@@ -228,7 +228,7 @@
 #   tau=c(0,n)
 #   cpt=matrix(0,nrow=2,ncol=Q)
 #   oldmax=1000
-# 
+#
 #   for(q in 1:Q){
 #     lambda=rep(0,n-1)
 #     i=1
@@ -274,7 +274,7 @@
 #   tau=c(0,n)
 #   cpt=matrix(0,nrow=2,ncol=Q)
 #   oldmax=1000
-# 
+#
 #   for(q in 1:Q){
 #     lambda=rep(0,n-1)
 #     i=1
@@ -310,166 +310,176 @@
 # }
 
 
-multiple.var.norm=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,Q=5,know.mean=FALSE,mu=NA,class=TRUE,param.estimates=TRUE, minseglen=2){
-  if(!((mul.method=="PELT")||(mul.method=="BinSeg"))){
+multiple.var.norm <- function(data, mul.method = "PELT", penalty = "MBIC", pen.value = 0, Q = 5, know.mean = FALSE, mu = NA, class = TRUE, param.estimates = TRUE, minseglen = 2) {
+  if (!((mul.method == "PELT") || (mul.method == "BinSeg"))) {
     stop("Multiple Method is not recognised, must be PELT or BinSeg.")
   }
-  costfunc = "var.norm"
-  if(penalty =="MBIC"){
-    costfunc = "var.norm.mbic"
+  costfunc <- "var.norm"
+  if (penalty == "MBIC") {
+    costfunc <- "var.norm.mbic"
   }
-  diffparam=1
-  if(is.null(dim(data))==TRUE){
+  diffparam <- 1
+  if (is.null(dim(data)) == TRUE) {
     # single dataset
-    n=length(data)
-    mu=mu[1]
+    n <- length(data)
+    mu <- mu[1]
+  } else {
+    n <- ncol(data)
   }
-  else{
-    n=ncol(data)
+  if (n < 4) {
+    stop("Data must have atleast 4 observations to fit a changepoint model.")
   }
-  if(n<4){stop('Data must have atleast 4 observations to fit a changepoint model.')}
-  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
-  
-  pen.value = penalty_decision(penalty, pen.value, n, diffparam, asymcheck=costfunc, method=mul.method)
+  if (n < (2 * minseglen)) {
+    stop("Minimum segment legnth is too large to include a change in this data")
+  }
 
-    if(is.null(dim(data))==TRUE){
+  pen.value <- penalty_decision(penalty, pen.value, n, diffparam, asymcheck = costfunc, method = mul.method)
+
+  if (is.null(dim(data)) == TRUE) {
     # single dataset
-    if((know.mean==FALSE)&(is.na(mu))){
-      mu=mean(coredata(data))
+    if ((know.mean == FALSE) & (is.na(mu))) {
+      mu <- mean(coredata(data))
     }
-    out = data_input(data=data,method=mul.method,pen.value=pen.value,costfunc=costfunc,minseglen=minseglen,Q=Q,var=mu)
-    
-    if(class==TRUE){
-      out=class_input(data, cpttype="variance", method=mul.method, test.stat="Normal", penalty=penalty, pen.value=pen.value, minseglen=minseglen, param.estimates=param.estimates, out=out, Q=Q)
-      param.est(out)=c(param.est(out),mean=mu)
+    out <- data_input(data = data, method = mul.method, pen.value = pen.value, costfunc = costfunc, minseglen = minseglen, Q = Q, var = mu)
+
+    if (class == TRUE) {
+      out <- class_input(data, cpttype = "variance", method = mul.method, test.stat = "Normal", penalty = penalty, pen.value = pen.value, minseglen = minseglen, param.estimates = param.estimates, out = out, Q = Q)
+      param.est(out) <- c(param.est(out), mean = mu)
       return(out)
+    } else {
+      return(out[[2]])
     }
-    else{ return(out[[2]])}
-  }
-  else{
-    rep=nrow(data)
-    out=list()
-    if(length(mu)!=rep){
-      mu=rep(mu,rep)
+  } else {
+    rep <- nrow(data)
+    out <- list()
+    if (length(mu) != rep) {
+      mu <- rep(mu, rep)
     }
-    
-    for(i in 1:rep){
-      if((know.mean==FALSE)&(is.na(mu[i]))){
-        mu=mean(coredata(data[i,]))
+
+    for (i in 1:rep) {
+      if ((know.mean == FALSE) & (is.na(mu[i]))) {
+        mu <- mean(coredata(data[i, ]))
       }
-      out[[i]]=data_input(data[i,],method=mul.method,pen.value=pen.value,costfunc=costfunc,minseglen=minseglen,Q=Q,var=mu)
+      out[[i]] <- data_input(data[i, ], method = mul.method, pen.value = pen.value, costfunc = costfunc, minseglen = minseglen, Q = Q, var = mu)
     }
-    
-      cpts=lapply(out, '[[', 2)
-        
-    if(class==TRUE){
-      ans=list()
-      for(i in 1:rep){
-        ans[[i]]=class_input(data[i,], cpttype="variance", method=mul.method, test.stat="Normal", penalty=penalty, pen.value=pen.value, minseglen=minseglen, param.estimates=param.estimates, out=out[[i]], Q=Q)
-        param.est(ans[[i]])=c(param.est(ans[[i]]),mean=mu[i])
+
+    cpts <- lapply(out, "[[", 2)
+
+    if (class == TRUE) {
+      ans <- list()
+      for (i in 1:rep) {
+        ans[[i]] <- class_input(data[i, ], cpttype = "variance", method = mul.method, test.stat = "Normal", penalty = penalty, pen.value = pen.value, minseglen = minseglen, param.estimates = param.estimates, out = out[[i]], Q = Q)
+        param.est(ans[[i]]) <- c(param.est(ans[[i]]), mean = mu[i])
       }
       return(ans)
+    } else {
+      return(cpts)
     }
-    else{return(cpts)}
   }
 }
 
 
-multiple.mean.norm=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,Q=5,class=TRUE,param.estimates=TRUE,minseglen){
-  if(!((mul.method=="PELT")||(mul.method=="BinSeg"))){
+multiple.mean.norm <- function(data, mul.method = "PELT", penalty = "MBIC", pen.value = 0, Q = 5, class = TRUE, param.estimates = TRUE, minseglen) {
+  if (!((mul.method == "PELT") || (mul.method == "BinSeg"))) {
     stop("Multiple Method is not recognised, must be PELT or BinSeg")
   }
-  costfunc = "mean.norm"
-  if(penalty=="MBIC"){
-    costfunc = "mean.norm.mbic"
+  costfunc <- "mean.norm"
+  if (penalty == "MBIC") {
+    costfunc <- "mean.norm.mbic"
   }
-  diffparam=1
-  if(is.null(dim(data))==TRUE){
+  diffparam <- 1
+  if (is.null(dim(data)) == TRUE) {
     # single dataset
-    n=length(data) # still works if data is of class ts
+    n <- length(data) # still works if data is of class ts
+  } else {
+    n <- ncol(data)
   }
-  else{
-    n=ncol(data)
+  if (n < (2 * minseglen)) {
+    stop("Minimum segment legnth is too large to include a change in this data")
   }
-  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
-  
-  pen.value = penalty_decision(penalty, pen.value, n, diffparam, asymcheck = costfunc, method=mul.method)
 
-    if(is.null(dim(data))==TRUE){
+  pen.value <- penalty_decision(penalty, pen.value, n, diffparam, asymcheck = costfunc, method = mul.method)
+
+  if (is.null(dim(data)) == TRUE) {
     # single dataset
-    out = data_input(data=data,method=mul.method,pen.value=pen.value,costfunc=costfunc,minseglen=minseglen,Q=Q)
-     
-    if(class==TRUE){
-      return(class_input(data, cpttype="mean", method=mul.method, test.stat="Normal", penalty=penalty, pen.value=pen.value, minseglen=minseglen, param.estimates=param.estimates, out=out, Q=Q))
+    out <- data_input(data = data, method = mul.method, pen.value = pen.value, costfunc = costfunc, minseglen = minseglen, Q = Q)
+
+    if (class == TRUE) {
+      return(class_input(data, cpttype = "mean", method = mul.method, test.stat = "Normal", penalty = penalty, pen.value = pen.value, minseglen = minseglen, param.estimates = param.estimates, out = out, Q = Q))
+    } else {
+      return(out[[2]])
     }
-    else{ return(out[[2]])}
-  }
-  else{
-    rep=nrow(data)
-    out=list()
-    if(class==TRUE){cpts=list()}
-    for(i in 1:rep){
-      out[[i]]=data_input(data[i,],method=mul.method,pen.value=pen.value,costfunc=costfunc,minseglen=minseglen,Q=Q)
+  } else {
+    rep <- nrow(data)
+    out <- list()
+    if (class == TRUE) {
+      cpts <- list()
     }
-    
-    cps=lapply(out, '[[', 2)
-    
-    if(class==TRUE){
-      ans=list()
-      for(i in 1:rep){
-        ans[[i]]=class_input(data[i,], cpttype="mean", method=mul.method, test.stat="Normal", penalty=penalty, pen.value=pen.value, minseglen=minseglen, param.estimates=param.estimates, out=out[[i]], Q=Q)
+    for (i in 1:rep) {
+      out[[i]] <- data_input(data[i, ], method = mul.method, pen.value = pen.value, costfunc = costfunc, minseglen = minseglen, Q = Q)
+    }
+
+    cps <- lapply(out, "[[", 2)
+
+    if (class == TRUE) {
+      ans <- list()
+      for (i in 1:rep) {
+        ans[[i]] <- class_input(data[i, ], cpttype = "mean", method = mul.method, test.stat = "Normal", penalty = penalty, pen.value = pen.value, minseglen = minseglen, param.estimates = param.estimates, out = out[[i]], Q = Q)
       }
       return(ans)
+    } else {
+      return(cps)
     }
-    else{return(cps)}
   }
 }
 
-multiple.meanvar.norm=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,Q=5,class=TRUE,param.estimates=TRUE,minseglen){
-  if(!((mul.method=="PELT")||(mul.method=="BinSeg"))){
+multiple.meanvar.norm <- function(data, mul.method = "PELT", penalty = "MBIC", pen.value = 0, Q = 5, class = TRUE, param.estimates = TRUE, minseglen) {
+  if (!((mul.method == "PELT") || (mul.method == "BinSeg"))) {
     stop("Multiple Method is not recognised, must be PELT or BinSeg.")
   }
-  costfunc = "meanvar.norm"
-  if(penalty=="MBIC"){
-    costfunc = "meanvar.norm.mbic"
+  costfunc <- "meanvar.norm"
+  if (penalty == "MBIC") {
+    costfunc <- "meanvar.norm.mbic"
   }
-  diffparam=2
-  if(is.null(dim(data))==TRUE){
+  diffparam <- 2
+  if (is.null(dim(data)) == TRUE) {
     # single dataset
-    n=length(data)
+    n <- length(data)
+  } else {
+    n <- ncol(data)
   }
-  else{
-    n=ncol(data)
+  if (n < (2 * minseglen)) {
+    stop("Minimum segment legnth is too large to include a change in this data")
   }
-  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
-  
-  pen.value = penalty_decision(penalty, pen.value, n, diffparam, asymcheck = costfunc, method=mul.method)
 
-    if(is.null(dim(data))==TRUE){
+  pen.value <- penalty_decision(penalty, pen.value, n, diffparam, asymcheck = costfunc, method = mul.method)
+
+  if (is.null(dim(data)) == TRUE) {
     # single dataset
-    out = data_input(data=data,method=mul.method,pen.value=pen.value,costfunc=costfunc,minseglen=minseglen,Q=Q)
+    out <- data_input(data = data, method = mul.method, pen.value = pen.value, costfunc = costfunc, minseglen = minseglen, Q = Q)
 
-    if(class==TRUE){
-      return(class_input(data, cpttype="mean and variance", method=mul.method, test.stat="Normal", penalty=penalty, pen.value=pen.value, minseglen=minseglen, param.estimates=param.estimates, out=out, Q=Q))
+    if (class == TRUE) {
+      return(class_input(data, cpttype = "mean and variance", method = mul.method, test.stat = "Normal", penalty = penalty, pen.value = pen.value, minseglen = minseglen, param.estimates = param.estimates, out = out, Q = Q))
+    } else {
+      return(out[[2]])
     }
-    else{ return(out[[2]])}
-  }
-  else{
-    rep=nrow(data)
-    out=list()
-    for(i in 1:rep){
-      out[[i]]=data_input(data[i,],method=mul.method,pen.value=pen.value,costfunc=costfunc,minseglen=minseglen,Q=Q)
+  } else {
+    rep <- nrow(data)
+    out <- list()
+    for (i in 1:rep) {
+      out[[i]] <- data_input(data[i, ], method = mul.method, pen.value = pen.value, costfunc = costfunc, minseglen = minseglen, Q = Q)
     }
-  
-    cps=lapply(out, '[[', 2)
-  
-    if(class==TRUE){
-      ans=list()
-      for(i in 1:rep){
-        ans[[i]] = class_input(data[i,], cpttype="mean and variance", method=mul.method, test.stat="Normal", penalty=penalty, pen.value=pen.value, minseglen=minseglen, param.estimates=param.estimates, out=out[[i]], Q=Q)
+
+    cps <- lapply(out, "[[", 2)
+
+    if (class == TRUE) {
+      ans <- list()
+      for (i in 1:rep) {
+        ans[[i]] <- class_input(data[i, ], cpttype = "mean and variance", method = mul.method, test.stat = "Normal", penalty = penalty, pen.value = pen.value, minseglen = minseglen, param.estimates = param.estimates, out = out[[i]], Q = Q)
       }
       return(ans)
+    } else {
+      return(cps)
     }
-    else{return(cps)}
   }
 }
