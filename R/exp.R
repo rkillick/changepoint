@@ -1,18 +1,18 @@
-single.meanvar.exp.calc <-
+single.meanvar.exp.calc =
   function(data, extrainf = TRUE, minseglen) {
-    singledim <- function(data, extrainf = TRUE, minseglen) {
-      n <- length(data)
-      y <- c(0, cumsum(data))
-      null <- 2 * n * log(y[n + 1]) - 2 * n * log(n)
-      taustar <- minseglen:(n - minseglen)
-      tmp <- 2 * taustar * log(y[taustar + 1]) - 2 * taustar * log(taustar) + 2 * (n - taustar) * log((y[n + 1] - y[taustar + 1])) - 2 * (n - taustar) * log(n - taustar)
+    singledim = function(data, extrainf = TRUE, minseglen) {
+      n = length(data)
+      y = c(0, cumsum(data))
+      null = 2 * n * log(y[n + 1]) - 2 * n * log(n)
+      taustar = minseglen:(n - minseglen)
+      tmp = 2 * taustar * log(y[taustar + 1]) - 2 * taustar * log(taustar) + 2 * (n - taustar) * log((y[n + 1] - y[taustar + 1])) - 2 * (n - taustar) * log(n - taustar)
 
-      tau <- which(tmp == min(tmp, na.rm = T))[1]
-      taulike <- tmp[tau]
-      tau <- tau + minseglen - 1 # correcting for the fact that we are starting at minseglen
+      tau = which(tmp == min(tmp, na.rm = T))[1]
+      taulike = tmp[tau]
+      tau = tau + minseglen - 1 # correcting for the fact that we are starting at minseglen
       if (extrainf == TRUE) {
-        out <- c(tau, null, taulike)
-        names(out) <- c("cpt", "null", "alt")
+        out = c(tau, null, taulike)
+        names(out) = c("cpt", "null", "alt")
         return(out)
       } else {
         return(tau)
@@ -21,37 +21,37 @@ single.meanvar.exp.calc <-
 
     if (is.null(dim(data)) == TRUE) {
       # single data set
-      cpt <- singledim(data, extrainf, minseglen)
+      cpt = singledim(data, extrainf, minseglen)
       return(cpt)
     } else {
-      rep <- nrow(data)
-      n <- ncol(data)
-      cpt <- NULL
+      rep = nrow(data)
+      n = ncol(data)
+      cpt = NULL
       if (extrainf == FALSE) {
         for (i in 1:rep) {
-          cpt[i] <- singledim(data[i, ], extrainf, minseglen)
+          cpt[i] = singledim(data[i, ], extrainf, minseglen)
         }
       } else {
-        cpt <- matrix(0, ncol = 3, nrow = rep)
+        cpt = matrix(0, ncol = 3, nrow = rep)
         for (i in 1:rep) {
-          cpt[i, ] <- singledim(data[i, ], extrainf, minseglen)
+          cpt[i, ] = singledim(data[i, ], extrainf, minseglen)
         }
-        colnames(cpt) <- c("cpt", "null", "alt")
+        colnames(cpt) = c("cpt", "null", "alt")
       }
       return(cpt)
     }
   }
 
 
-single.meanvar.exp <- function(data, penalty = "MBIC", pen.value = 0, class = TRUE, param.estimates = TRUE, minseglen) {
+single.meanvar.exp = function(data, penalty = "MBIC", pen.value = 0, class = TRUE, param.estimates = TRUE, minseglen) {
   if (sum(data < 0) > 0) {
     stop("Exponential test statistic requires positive data")
   }
   if (is.null(dim(data)) == TRUE) {
     # single dataset
-    n <- length(data)
+    n = length(data)
   } else {
-    n <- ncol(data)
+    n = ncol(data)
   }
   if (n < 4) {
     stop("Data must have atleast 4 observations to fit a changepoint model.")
@@ -62,39 +62,39 @@ single.meanvar.exp <- function(data, penalty = "MBIC", pen.value = 0, class = TR
 
   penalty_decision(penalty, pen.value, n, diffparam = 1, asymcheck = "meanvar.exp", method = "AMOC")
   if (is.null(dim(data)) == TRUE) {
-    tmp <- single.meanvar.exp.calc(coredata(data), extrainf = TRUE, minseglen)
+    tmp = single.meanvar.exp.calc(coredata(data), extrainf = TRUE, minseglen)
     if (penalty == "MBIC") {
-      tmp[3] <- tmp[3] + log(tmp[1]) + log(n - tmp[1] + 1)
+      tmp[3] = tmp[3] + log(tmp[1]) + log(n - tmp[1] + 1)
     }
-    ans <- decision(tmp[1], tmp[2], tmp[3], penalty, n, diffparam = 1, pen.value)
+    ans = decision(tmp[1], tmp[2], tmp[3], penalty, n, diffparam = 1, pen.value)
     if (class == TRUE) {
       return(class_input(data, cpttype = "mean and variance", method = "AMOC", test.stat = "Exponential", penalty = penalty, pen.value = ans$pen, minseglen = minseglen, param.estimates = param.estimates, out = c(0, ans$cpt)))
     } else {
-      an <- (2 * log(log(n)))^(1 / 2)
-      bn <- 2 * log(log(n)) + (1 / 2) * log(log(log(n))) - (1 / 2) * log(pi)
-      out <- c(ans$cpt, exp(-2 * exp(-an * sqrt(abs(tmp[2] - tmp[3])) + an * bn)) - exp(-2 * exp(an * bn))) # Chen & Gupta (2000) pg149
-      names(out) <- c("cpt", "p value")
+      an = (2 * log(log(n)))^(1 / 2)
+      bn = 2 * log(log(n)) + (1 / 2) * log(log(log(n))) - (1 / 2) * log(pi)
+      out = c(ans$cpt, exp(-2 * exp(-an * sqrt(abs(tmp[2] - tmp[3])) + an * bn)) - exp(-2 * exp(an * bn))) # Chen & Gupta (2000) pg149
+      names(out) = c("cpt", "p value")
       return(out)
     }
   } else {
-    tmp <- single.meanvar.exp.calc(data, extrainf = TRUE, minseglen)
+    tmp = single.meanvar.exp.calc(data, extrainf = TRUE, minseglen)
     if (penalty == "MBIC") {
-      tmp[, 3] <- tmp[, 3] + log(tmp[, 1]) + log(n - tmp[, 1] + 1)
+      tmp[, 3] = tmp[, 3] + log(tmp[, 1]) + log(n - tmp[, 1] + 1)
     }
-    ans <- decision(tmp[, 1], tmp[, 2], tmp[, 3], penalty, n, diffparam = 1, pen.value)
+    ans = decision(tmp[, 1], tmp[, 2], tmp[, 3], penalty, n, diffparam = 1, pen.value)
     if (class == TRUE) {
-      rep <- nrow(data)
-      out <- list()
+      rep = nrow(data)
+      out = list()
       for (i in 1:rep) {
-        out[[i]] <- class_input(data[i, ], cpttype = "mean and variance", method = "AMOC", test.stat = "Exponential", penalty = penalty, pen.value = ans$pen, minseglen = minseglen, param.estimates = param.estimates, out = c(0, ans$cpt[i]))
+        out[[i]] = class_input(data[i, ], cpttype = "mean and variance", method = "AMOC", test.stat = "Exponential", penalty = penalty, pen.value = ans$pen, minseglen = minseglen, param.estimates = param.estimates, out = c(0, ans$cpt[i]))
       }
       return(out)
     } else {
-      an <- (2 * log(log(n)))^(1 / 2)
-      bn <- 2 * log(log(n)) + (1 / 2) * log(log(log(n))) - (1 / 2) * log(pi)
-      out <- cbind(ans$cpt, exp(-2 * exp(-an * sqrt(abs(tmp[, 2] - tmp[, 3])) + bn)) - exp(-2 * exp(bn))) # Chen & Gupta (2000) pg149
-      colnames(out) <- c("cpt", "p value")
-      rownames(out) <- NULL
+      an = (2 * log(log(n)))^(1 / 2)
+      bn = 2 * log(log(n)) + (1 / 2) * log(log(log(n))) - (1 / 2) * log(pi)
+      out = cbind(ans$cpt, exp(-2 * exp(-an * sqrt(abs(tmp[, 2] - tmp[, 3])) + bn)) - exp(-2 * exp(bn))) # Chen & Gupta (2000) pg149
+      colnames(out) = c("cpt", "p value")
+      rownames(out) = NULL
       return(out)
     }
   }
@@ -198,34 +198,34 @@ single.meanvar.exp <- function(data, penalty = "MBIC", pen.value = 0, class = TR
 #   return(list(cps=cpt,op.cpts=op.cps,pen=pen))
 # }
 
-multiple.meanvar.exp <- function(data, mul.method = "PELT", penalty = "MBIC", pen.value = 0, Q = 5, class = TRUE, param.estimates = TRUE, minseglen) {
+multiple.meanvar.exp = function(data, mul.method = "PELT", penalty = "MBIC", pen.value = 0, Q = 5, class = TRUE, param.estimates = TRUE, minseglen) {
   if (sum(data < 0) > 0) {
     stop("Exponential test statistic requires positive data")
   }
   if (!((mul.method == "PELT") || (mul.method == "BinSeg"))) {
     stop("Multiple Method is not recognised, must be PELT or BinSeg.")
   }
-  costfunc <- "meanvar.exp"
+  costfunc = "meanvar.exp"
   if (penalty == "MBIC") {
-    costfunc <- "meanvar.exp.mbic"
+    costfunc = "meanvar.exp.mbic"
   }
 
-  diffparam <- 1
+  diffparam = 1
   if (is.null(dim(data)) == TRUE) {
     # single dataset
-    n <- length(data)
+    n = length(data)
   } else {
-    n <- ncol(data)
+    n = ncol(data)
   }
   if (n < (2 * minseglen)) {
     stop("Minimum segment legnth is too large to include a change in this data")
   }
 
-  pen.value <- penalty_decision(penalty, pen.value, n, diffparam = 1, asymcheck = costfunc, method = mul.method)
+  pen.value = penalty_decision(penalty, pen.value, n, diffparam = 1, asymcheck = costfunc, method = mul.method)
 
   if (is.null(dim(data)) == TRUE) {
     # single dataset
-    out <- data_input(data = data, method = mul.method, pen.value = pen.value, costfunc = costfunc, minseglen = minseglen, Q = Q)
+    out = data_input(data = data, method = mul.method, pen.value = pen.value, costfunc = costfunc, minseglen = minseglen, Q = Q)
 
     if (class == TRUE) {
       return(class_input(data, cpttype = "mean and variance", method = mul.method, test.stat = "Exponential", penalty = penalty, pen.value = pen.value, minseglen = minseglen, param.estimates = param.estimates, out = out, Q = Q))
@@ -233,18 +233,18 @@ multiple.meanvar.exp <- function(data, mul.method = "PELT", penalty = "MBIC", pe
       return(out[[2]])
     }
   } else {
-    rep <- nrow(data)
-    out <- list()
+    rep = nrow(data)
+    out = list()
     for (i in 1:rep) {
-      out[[i]] <- data_input(data[i, ], method = mul.method, pen.value = pen.value, costfunc = costfunc, minseglen = minseglen, Q = Q)
+      out[[i]] = data_input(data[i, ], method = mul.method, pen.value = pen.value, costfunc = costfunc, minseglen = minseglen, Q = Q)
     }
 
-    cpts <- lapply(out, "[[", 2)
+    cpts = lapply(out, "[[", 2)
 
     if (class == TRUE) {
-      ans <- list()
+      ans = list()
       for (i in 1:rep) {
-        ans[[i]] <- class_input(data[i, ], cpttype = "mean and variance", method = mul.method, test.stat = "Exponential", penalty = penalty, pen.value = pen.value, minseglen = minseglen, param.estimates = param.estimates, out = out[[i]], Q = Q)
+        ans[[i]] = class_input(data[i, ], cpttype = "mean and variance", method = mul.method, test.stat = "Exponential", penalty = penalty, pen.value = pen.value, minseglen = minseglen, param.estimates = param.estimates, out = out[[i]], Q = Q)
       }
       return(ans)
     } else {
