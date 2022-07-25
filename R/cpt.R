@@ -1,7 +1,7 @@
-cpt.mean <- function(data, penalty = "MBIC", pen.value = 0, method = "AMOC", Q = 5, test.stat = "Normal", class = TRUE, param.estimates = TRUE, minseglen = 1) {
+cpt.mean = function(data, penalty = "MBIC", pen.value = 0, method = "AMOC", Q = 5, test.stat = "Normal", class = TRUE, param.estimates = TRUE, minseglen = 1) {
   checkData(data)
   if (minseglen < 1) {
-    minseglen <- 1
+    minseglen = 1
     warning("Minimum segment length for a change in mean is 1, automatically changed to be 1.")
   }
   if (test.stat == "CUSUM") {
@@ -15,7 +15,7 @@ cpt.mean <- function(data, penalty = "MBIC", pen.value = 0, method = "AMOC", Q =
     if (is.numeric(pen.value)) {
       if (length(pen.value) == 2) {
         if (pen.value[2] < pen.value[1]) {
-          pen.value <- rev(pen.value)
+          pen.value = rev(pen.value)
         }
         # run range of penalties
         return(CROPS(data = data, method = method, pen.value = pen.value, test.stat = test.stat, class = class, param.est = param.estimates, minseglen = minseglen, func = "mean"))
@@ -55,10 +55,10 @@ cpt.mean <- function(data, penalty = "MBIC", pen.value = 0, method = "AMOC", Q =
 # 	}
 # }
 
-cpt.var <- function(data, penalty = "MBIC", pen.value = 0, know.mean = FALSE, mu = NA, method = "AMOC", Q = 5, test.stat = "Normal", class = TRUE, param.estimates = TRUE, minseglen = 2) {
+cpt.var = function(data, penalty = "MBIC", pen.value = 0, know.mean = FALSE, mu = NA, method = "AMOC", Q = 5, test.stat = "Normal", class = TRUE, param.estimates = TRUE, minseglen = 2) {
   checkData(data)
   if (minseglen < 2) {
-    minseglen <- 2
+    minseglen = 2
     warning("Minimum segment length for a change in variance is 2, automatically changed to be 2.")
   }
 
@@ -67,7 +67,7 @@ cpt.var <- function(data, penalty = "MBIC", pen.value = 0, know.mean = FALSE, mu
     if (is.numeric(pen.value)) {
       if (length(pen.value) == 2) {
         if (pen.value[2] < pen.value[1]) {
-          pen.value <- rev(pen.value)
+          pen.value = rev(pen.value)
         }
         # run range of penalties
         return(CROPS(data = data, method = method, pen.value = pen.value, test.stat = test.stat, class = class, param.est = param.estimates, minseglen = minseglen, func = "var"))
@@ -94,11 +94,11 @@ cpt.var <- function(data, penalty = "MBIC", pen.value = 0, know.mean = FALSE, mu
   }
 }
 
-cpt.meanvar <- function(data, penalty = "MBIC", pen.value = 0, method = "AMOC", Q = 5, test.stat = "Normal", class = TRUE, param.estimates = TRUE, shape = 1, minseglen = 2) {
+cpt.meanvar = function(data, penalty = "MBIC", pen.value = 0, method = "AMOC", Q = 5, test.stat = "Normal", class = TRUE, param.estimates = TRUE, shape = 1, minseglen = 2) {
   checkData(data)
   if (minseglen < 2) {
     if (!(minseglen == 1 & (test.stat == "Poisson" | test.stat == "Exponential"))) {
-      minseglen <- 2
+      minseglen = 2
       warning("Minimum segment length for a change in mean and variance is 2, automatically changed to be 2.")
     }
   }
@@ -106,7 +106,7 @@ cpt.meanvar <- function(data, penalty = "MBIC", pen.value = 0, method = "AMOC", 
     if (is.numeric(pen.value)) {
       if (length(pen.value) == 2) {
         if (pen.value[2] < pen.value[1]) {
-          pen.value <- rev(pen.value)
+          pen.value = rev(pen.value)
         }
         # run range of penalties
         return(CROPS(data = data, method = method, pen.value = pen.value, test.stat = test.stat, class = class, param.est = param.estimates, minseglen = minseglen, shape = shape, func = "meanvar"))
@@ -154,7 +154,7 @@ cpt.meanvar <- function(data, penalty = "MBIC", pen.value = 0, method = "AMOC", 
   }
 }
 
-checkData <- function(data) {
+checkData = function(data) {
   if (!is.numeric(data)) {
     stop("Only numeric data allowed")
   }
