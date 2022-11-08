@@ -20,7 +20,7 @@ single.meanvar.exp.calc <-
       }
     }
     
-    if(is.null(dim(data))==TRUE){
+    if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
       # single data set
       cpt=singledim(data,extrainf,minseglen)
       return(cpt)
@@ -48,7 +48,7 @@ single.meanvar.exp.calc <-
 
 single.meanvar.exp<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.estimates=TRUE,minseglen){
   if(sum(data<0)>0){stop('Exponential test statistic requires positive data')}
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     n=length(data)
   }
@@ -59,7 +59,7 @@ single.meanvar.exp<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.es
   if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
   
   penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck="meanvar.exp", method="AMOC")
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     tmp=single.meanvar.exp.calc(coredata(data),extrainf=TRUE,minseglen)
     if(penalty=="MBIC"){
       tmp[3]=tmp[3]+log(tmp[1])+log(n-tmp[1]+1)
@@ -267,7 +267,7 @@ multiple.meanvar.exp=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,
   }
   
   diffparam=1
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     n=length(data)
   }
@@ -278,7 +278,7 @@ multiple.meanvar.exp=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck=costfunc, method=mul.method)
 
-    if(is.null(dim(data))==TRUE){
+    if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     out = data_input(data=data,method=mul.method,pen.value=pen.value,costfunc=costfunc,minseglen=minseglen,Q=Q)
  

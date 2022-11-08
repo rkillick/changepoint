@@ -1,7 +1,12 @@
+Version 2.2.4
+=============
+* Updated C code to be compliant with new CRAN flags
+* Updated check for 1D objects to also check for 1D arrays.  Thanks to Github user ChristopherEeles for highlighting the bug.
+
 Version 2.2.3
 =============
 * Updated documentation to reflect that the changepoint is the last observation of a segment, not the first observation of a new segment as previously described. Thanks to Alex Bertram for reporting this.
-* Added fuctionality for cpt.range into cpts to allow specification of ncpts.  Use as cpts(object,ncpts=X) to retrive the X changepoints segmentation from object which has a cpt.range class.  Thanks to Craig Faunce for the suggestion.
+* Added fuctionality for cpt.range into cpts to allow specification of ncpts.  Use as cpts(object,ncpts=X) to retrive the X changepoints segmentation from an object which has cpt.range class.  Thanks to Craig Faunce for the suggestion.
 * Corrected parameter estimation for cpt.reg class so that sig2 contains the variance MLE per segment. This addresses a consistency issue with lm when evaluating logLik when no changepoints are found.  Thanks to Simon Taylor for spotting this.
 * Correction bug in parameter estimation for cpt.var with cpt.range class when ncpts!=NA.  Previously this was using seg.len() function which returned NA for CROPS and incorrect segments lengths for BinSeg.  Thanks to David Krider for asking a question which led to this bug being identified.
 * Added "type=" functionality to the "diagnostic=TRUE" graphs.  Thanks go to github user hoxo_m for providing the code and tests for this.
@@ -93,14 +98,10 @@ Version 2.0
 
 Version 1.1.5
 =============
-Changes to previous version
-
 * Modified citation information
 
 Version 1.1.3
 =============
-Changes to previous version
-
 * Upgraded zoo from "imports" to "depends".  This is needed because more functionality from zoo is required and this also gives users access to the zoo features directly whereas previously they had to library the package separately.
 * The segment neighbourhood algorithm has now been updated to make sure that the changes in variance or mean and variance do not return segments of length 1.  This is now in line with the PELT and BinSeg algorithms.
 * Added citation information.
@@ -108,66 +109,46 @@ Changes to previous version
 
 Version 1.1.2
 =============
-Changes to previous version
-
 * The check introduced in version 1.1.1 was causing problems in older versions as there was a mask between S3 and S4 generics.  Thus we removed the masking effect and incremented the minimum version of R to 3.0.  Thanks go to Philipp Boersch-Supan for highlighting the bug.
 * Added Kaylea Haynes as author of package.
 
 Version 1.1.1
 =============
-Changes to previous version
-
 * Added a check on the generics used to check if the generics "coef" and "logLik" exist and if not to create them.  This was creating problems with backwards R compatibility as "coef" and "logLik" were only introduced as generics in recent versions of R.
 
 Version 1.1
 ===========
-Changes to previous version
-
 * Adding printing of p-value to single changepoint likelihood-based functions.  Thanks go to anonymous reviewers for this suggestion.
 * Changed all Segment Neighbourhood and Binary Segmentation functions to print a warning if the number of changes/segments identified equals Q.
 
 Version 1.0.6
 =============
-Changes to previous version
-
 * Fixed bug where the likelihood & logLik generics returns an error when there are no changes.  This was due to using the cpts generic which no longer returns the length of the data as a change (since version 1.0).  Thanks go to Gia-Thuy Pham for highlighting this bug.
 * Corrected calculation of segment scale parameter estimates for Gamma models (used in cpt.meanvar(...,test.stat='Gamma')).  Previously this was dividing by seg.length+1 when it should be dividing by seg.length.  Thanks go to Martyn Byng for highlighting the error.
 
 Version 1.0.5
 =============
-Changes to previous version
-
 * Added journal references to PELT documentation. Thanks go to Martyn Byng for pointing out that this required updating.
 * Added checks on minimum lengths of data input (minimum for mean is 1 per segment, for variance / mean & variance it is 2 observations per segment).  Thanks go to Toby Hocking for highlighting the error.
 
 Version 1.0.4
 =============
-Changes to previous version
-
 * Changed all the Binary Segmentation multiple changepoint algorithms to have a default oldmax parameter of Inf.  The old default (1000) was causing problems when users were wanting to do elbow plots for penalty choice.  Thanks go to Brian Jessop for highlighting the problem.  Note: There was no problem with the changepoints returned by the previous code.  This change purely relates to elbow plot penalty choice.
 
 Version 1.0.3
 =============
-Changes to previous version
-
 * Changed a few commands where na.rm=F to na.rm=T.  This was causing problems when users entered constant data as some test statistics could produce NAs.  Thanks go to Harutyun Khachatryan for pointing out this bug.
 
 Version 1.0.2
 =============
-Changes to previous version
-
 * Changed argument name in cpt.mean, cpt.var and cpt.meanvar.  Previously was named 'dist', now named 'test.stat'.  Not backwards compatible.  This is in line with the major changes in version 1.0 to the class structure.
 
 Version 1.0.1
 =============
-Changes to previous version
-
 * Corrected naming of columns returned by logLik and likelihood generics.  These return the scaled negative likelihood and scaled negative likelihood + penalty.
 
 Version 1.0
 ===========
-Changes to previous version
-
 * Removed printing and plotting of the last observation as the last cpt
 * The distribution class slot for the cpt class has been rename to test.stat (backwards compatibility remains - for now)
 * Changed value parameter in all functions to be pen.value (no backwards compatibility for named variables but ordering of arguments remains the same)
@@ -181,61 +162,43 @@ Changes to previous version
 
 Version 0.8
 ===========
-Changes to previous version
-
 * Restructured C implementation of PELT to remove unnecessary function calls (minor speed improvement)
 * Updated FTSE100 data
 * Added Lai2005fig3 and Lai2005fig4 data
 
 Version 0.7.1
 =============
-Changes to previous version
-
 * added BIC1, SIC1, AIC1, Hannan-Quinn1 penalties (counting the changepoint as a parameter in contrast to BIC, SIC, AIC, Hannan-Quinn which do not)
 
 Version 0.7
 ===========
-Changes to previous version
-
 * added change in Poisson distribution to cpt.meanvar
 
 Version 0.6.1
 =============
-Changes to previous version
-
 * removed plotting of "n" as a changepoint for changes in variance
 * changed array allocation to calloc in PELT C code
 * added checks to C code for user interruption (including appropriate memory handling)
 
 Version 0.6
 ===========
-Changes to previous version
-
 * PELT algorithms now run using C code
 * Binary Segmentation algorithms now run using C code
 
 Version 0.5
 ===========
-Changes to previous version
-
 * added namespace to comply with R 2.13
 
 Version 0.4.2
 =============
-Changes to previous version
-
 * corrected mismatch in default values for mu
 
 Version 0.4.1
 =============
-Changes to previous version
-
 * changed default value of the mu parameter from -1000 to NA
 
 Version 0.4
 ===========
-Changes to previous version
-
 * removed regression for Normal distributed errors
 * added cusum for change in mean
 * added cusum of squares for change in variance
@@ -244,26 +207,18 @@ Changes to previous version
 
 Version 0.3
 ===========
-Changes to previous version
-
 * added change in regression for Normal distributed errors
 
 Version 0.2.1
 =============
-Changes to previous version
-
 * fixed multiple optimal changepoint bug in multiple algorithms
 
 Version 0.2
 ===========
-Changes to previous version
-
 * added change in scale parameter of Gamma distribution to cpt.meanvar
 * added change in Exponential distribution to cpt.meanvar
 * added ncpts function to cpt and cpt.reg classes
 
-Version 0.1: Original
-
-Rebecca Killick
-Lancaster University
-www.lancs.ac.uk/~killick
+Version 0.1
+===========
+* Original

@@ -21,7 +21,7 @@ function(data,shape=1,extrainf=TRUE,minseglen){
   }
     
 
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single data set
     cpt=singledim(data,shape,extrainf,minseglen)
     return(cpt)
@@ -51,7 +51,7 @@ function(data,shape=1,extrainf=TRUE,minseglen){
 
 single.meanvar.gamma<-function(data,shape=1,penalty="MBIC",pen.value=0,class=TRUE,param.estimates=TRUE,minseglen){
 	if(sum(data<=0)>0){stop('Gamma test statistic requires positive data')}
-	if(is.null(dim(data))==TRUE){
+	if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
 	  # single dataset
 	  n=length(data)
 	}
@@ -62,7 +62,7 @@ single.meanvar.gamma<-function(data,shape=1,penalty="MBIC",pen.value=0,class=TRU
   if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
   
 	pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck="meanvar.gamma", method="AMOC")
-	if(is.null(dim(data))==TRUE){
+	if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
 		tmp=single.meanvar.gamma.calc(coredata(data),shape,extrainf=TRUE,minseglen)
 		if(penalty=="MBIC"){
 		  tmp[3]=tmp[3]+log(tmp[1])+log(n-tmp[1]+1)
@@ -259,7 +259,7 @@ multiple.meanvar.gamma=function(data,shape=1,mul.method="PELT",penalty="MBIC",pe
 	  costfunc = "meanvar.gamma.mbic"
 	}
 	diffparam=1
-	if(is.null(dim(data))==TRUE){
+	if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
 		# single dataset
 		n=length(data)
 		shape=shape[1]
@@ -271,7 +271,7 @@ multiple.meanvar.gamma=function(data,shape=1,mul.method="PELT",penalty="MBIC",pe
 	
 	pen.value = penalty_decision(penalty, pen.value, n, diffparam, asymcheck = costfunc, method=mul.method)
 	
-	if(is.null(dim(data))==TRUE){
+	if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
 		# single dataset
 	  out = data_input(data=data,method=mul.method,pen.value=pen.value,costfunc=costfunc,minseglen=minseglen,Q=Q,shape=shape)
 	 

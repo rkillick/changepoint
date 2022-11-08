@@ -11,7 +11,7 @@ bibentry(bibtype="article",
   volume       = "58",
   number       = "3",
   pages        = "1--19",
-  url          = "https://www.jstatsoft.org/v58/i03/",
+  url          = "https://www.jstatsoft.org/article/view/v058i03",
 )
 
 bibentry(bibtype="Manual",

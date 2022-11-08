@@ -493,7 +493,7 @@ multiple.var.norm=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,Q=5
     costfunc = "var.norm.mbic"
   }
   diffparam=1
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     n=length(data)
     mu=mu[1]
@@ -506,7 +506,7 @@ multiple.var.norm=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,Q=5
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam, asymcheck=costfunc, method=mul.method)
 
-    if(is.null(dim(data))==TRUE){
+    if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     if((know.mean==FALSE)&(is.na(mu))){
       mu=mean(coredata(data))
@@ -561,7 +561,7 @@ multiple.mean.norm=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,Q=
     costfunc = "mean.norm.mbic"
   }
   diffparam=1
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     n=length(data) # still works if data is of class ts
   }
@@ -572,7 +572,7 @@ multiple.mean.norm=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,Q=
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam, asymcheck = costfunc, method=mul.method)
 
-    if(is.null(dim(data))==TRUE){
+    if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     out = data_input(data=data,method=mul.method,pen.value=pen.value,costfunc=costfunc,minseglen=minseglen,Q=Q)
      
@@ -614,7 +614,7 @@ multiple.meanvar.norm=function(data,mul.method="PELT",penalty="MBIC",pen.value=0
     costfunc = "meanvar.norm.mbic"
   }
   diffparam=2
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     n=length(data)
   }
@@ -625,7 +625,7 @@ multiple.meanvar.norm=function(data,mul.method="PELT",penalty="MBIC",pen.value=0
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam, asymcheck = costfunc, method=mul.method)
 
-    if(is.null(dim(data))==TRUE){
+    if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     out = data_input(data=data,method=mul.method,pen.value=pen.value,costfunc=costfunc,minseglen=minseglen,Q=Q)
 

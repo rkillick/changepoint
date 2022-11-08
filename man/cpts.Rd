@@ -7,11 +7,14 @@ Generic Function - cpts
 Generic function
 }
 \usage{
-cpts(object)
+cpts(object,...)
 }
 \arguments{
   \item{object}{
 	Depending on the class of \code{object} depends on the method used (and if one exists)
+}
+  \item{...}{
+	Depending on the class of \code{object} depends on the method used and whether ... is needed/warranted (and if one exists)
 }
 }
 \details{

@@ -142,7 +142,7 @@
 		if (is.function("cpts")){
 			fun <- cpts
 		}
-		else {fun <- function(object){
+		else {fun <- function(object,...){
 				standardGeneric("cpts")
 			}
 		}
@@ -150,7 +150,19 @@
 	}
 	setMethod("cpts","cpt",function(object) object@cpts[-length(object@cpts)])
 	setMethod("cpts","cpt.reg",function(object) object@cpts[-length(object@cpts)])
+	setMethod("cpts","cpt.range",function(object,ncpts=NA){
+	  if(is.na(ncpts)){return(object@cpts[-length(object@cpts)])}
+	  else{
+	    ncpts.full=apply(cpts.full(object),1,function(x){sum(x>0,na.rm=TRUE)})
+	    row=try(which(ncpts.full==ncpts),silent=TRUE)
+	    if(inherits(row,'try-error')){
+	      stop("Your input object doesn't have a segmentation with the requested number of changepoints.\n Possible ncpts are: ",paste(ncpts.full,collapse=','))
+	    }
+	    else{return(cpts.full(object)[row,])}
+	  }
+	 })
 	
+	  
 	if(!isGeneric("cpts.full")) {
 	  if (is.function("cpts.full")){
 	    fun <- cpts.full
@@ -345,6 +357,16 @@
     if(value[length(value)]==n){object@cpts <- value}
     else{		object@cpts <- c(value,n)  }
 		return(object)
+	})
+	setReplaceMethod("cpts", "cpt.range", function(object, value) {
+	  if((cpttype(object)=="meanar")|(cpttype(object)=="trendar")){
+	    n=length(object@data.set)-1
+	  }
+	  else{n=length(object@data.set)}
+	  
+	  if(value[length(value)]==n){object@cpts <- value}
+	  else{		object@cpts <- c(value,n)  }
+	  return(object)
 	})
 	setReplaceMethod("cpts", "cpt.reg", function(object, value) {
 	  if(value[length(value)]==nrow(object@data.set)){object@cpts <- value}
@@ -547,7 +569,7 @@
 	  param.var=function(object,cpts){
 	    nseg=length(cpts)-1
 	    data=data.set(object)
-	    seglen=seg.len(object)
+	    seglen=cpts[-1]-cpts[-length(cpts)]
 	    tmpvar=NULL
 	    for(j in 1:nseg){
 	      tmpvar[j]=var(data[(cpts[j]+1):(cpts[j+1])])
@@ -578,8 +600,8 @@
 	    thetaT=(6*cptsumstat[,2])/((seglen+1)*(2*seglen+1)) + (thetaS * (1-((3*seglen)/((2*seglen)+1))))
 	    return(cbind(thetaS,thetaT))
 	  }
-	  param.meanar=function(object){
-	    seglen=seg.len(object)
+	  param.meanar=function(object,cpts){
+	    seglen=cpts[-1]-cpts[-length(cpts)]
 	    data=data.set(object)
 	    n=length(data)-1
 	    sumstat=cbind(cumsum(c(0,data[-1])),cumsum(c(0,data[-(n+1)])),cumsum(c(0,data[-1]*data[-(n+1)])),cumsum(c(0,data[-1]^2)),cumsum(c(0,data[-(n+1)]^2)))
@@ -589,8 +611,8 @@
 	    
 	    return(cbind(beta1,beta2))
 	  }
-	  param.trendar=function(object){
-	    seglen=seg.len(object)
+	  param.trendar=function(object,cpts){
+	    seglen=cpts[-1]-cpts[-length(cpts)]
 	    data=data.set(object)
 	    n=length(data)-1
 	    sumstat=cbind(cumsum(c(0,data[-1])),cumsum(c(0,data[-(n+1)])),cumsum(c(0,data[-1]*data[-(n+1)])),cumsum(c(0,data[-1]*c(1:n))),cumsum(c(0,data[-(n+1)]*c(0:(n-1)))))
@@ -685,7 +707,7 @@
 			  }
 			  tmpfit=eval(parse(text=paste('lm(data[',(cpts[j]+1),':',cpts[j+1],',1]~',formula,')',sep='')))
 			  tmpbeta[j,]=tmpfit$coefficients
-			  tmpsigma[j]=var(tmpfit$residuals)
+			  tmpsigma[j]=sum(tmpfit$residuals^2)/(length(tmpfit$residuals)-length(tmpfit$coefficients)) ##var(tmpfit$residuals)
 			}
 			return(list(beta=tmpbeta,sig2=tmpsigma))
 		}
@@ -805,7 +827,15 @@
 
 	setMethod("plot","cpt.range",function(x,ncpts=NA,diagnostic=FALSE,cpt.col='red',cpt.width=1,cpt.style=1,...){
 	  if(diagnostic==TRUE){
-      return(plot(apply(cpts.full(x),1,function(x){sum(x>0,na.rm=TRUE)}),pen.value.full(x),type='l',xlab='Number of Changepoints',ylab='Penalty Value',...))
+	    n.changepoints = apply(cpts.full(x), 1, function(x) sum(x > 0, na.rm = TRUE))
+	    penalty.values = pen.value.full(x)
+	    if (is.null(list(...)$type)) {
+	      # By default, the type of the diagnostic plots is "lines".
+	      plot(x = n.changepoints, y = penalty.values, xlab = 'Number of Changepoints', ylab = 'Penalty Value', type = "l", ...)
+	    } else {
+	      plot(x = n.changepoints, y = penalty.values, xlab = 'Number of Changepoints', ylab = 'Penalty Value', ...)
+	    }
+	    return(invisible(NULL))
 	  }
 	  plot(data.set.ts(x),...)
 	  if(is.na(ncpts)){
@@ -891,6 +921,7 @@
         		rss=sum((data.set(object)-means)^2)
         		n=length(data.set(object))
         		like=n*(log(2*pi)+log(rss/n)+1) # -2*loglik
+        		cpts=c(0,object@cpts)
         		if(pen.type(object)=="MBIC"){
         		  like=c(like, like+(nseg(object)-2)*pen.value(object)+sum(log(cpts[-1]-cpts[-(nseg(object)+1)])))
         		}else{

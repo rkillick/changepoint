@@ -27,7 +27,7 @@ single.meanvar.poisson.calc <-
       }
     }
     
-    if(is.null(dim(data))==TRUE){
+    if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
       # single data set
       cpt=singledim(data,extrainf,minseglen)
       return(cpt)
@@ -56,7 +56,7 @@ single.meanvar.poisson.calc <-
 single.meanvar.poisson<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.estimates=TRUE,minseglen){
   if((sum(data<0)>0)){stop('Poisson test statistic requires positive data')}
   if(sum(as.integer(data)==data)!=length(data)){stop('Poisson test statistic requires integer data')}
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     n=length(data)
   }
@@ -67,7 +67,7 @@ single.meanvar.poisson<-function(data,penalty="MBIC",pen.value=0,class=TRUE,para
   if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck="meanvar.poisson", method="AMOC")   
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     tmp=single.meanvar.poisson.calc(coredata(data),extrainf=TRUE,minseglen)
     if(penalty=="MBIC"){
       tmp[3]=tmp[3]+log(tmp[1])+log(n-tmp[1]+1)
@@ -168,7 +168,7 @@ multiple.meanvar.poisson=function(data,mul.method="PELT",penalty="MBIC",pen.valu
   }
   
   diffparam=1
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     n=length(data)
   }
@@ -178,7 +178,7 @@ multiple.meanvar.poisson=function(data,mul.method="PELT",penalty="MBIC",pen.valu
   if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck=costfunc, method=mul.method)
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     out = data_input(data=data,method=mul.method,pen.value=pen.value,costfunc=costfunc,minseglen=minseglen,Q=Q)
     

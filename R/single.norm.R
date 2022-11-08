@@ -22,7 +22,7 @@ function(data,extrainf=TRUE,minseglen){
   }
     
 
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single data set
     cpt=singledim(data,extrainf,minseglen)
     return(cpt)
@@ -48,7 +48,7 @@ function(data,extrainf=TRUE,minseglen){
 }
 
 single.mean.norm<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.estimates=TRUE,minseglen){
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     n=length(data)
   }
@@ -59,7 +59,7 @@ single.mean.norm<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.esti
   if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck="mean.norm", method="AMOC")
-  if(is.null(dim(data))==TRUE){ # single dataset
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){ # single dataset
 		tmp=single.mean.norm.calc(coredata(data),extrainf=TRUE,minseglen)
 		if(penalty=="MBIC"){
 		  tmp[3]=tmp[3]+log(tmp[1])+log(n-tmp[1]+1)
@@ -134,7 +134,7 @@ single.var.norm.calc <- function(data,mu,extrainf=TRUE,minseglen){
 
 
 single.var.norm<-function(data,penalty="MBIC",pen.value=0,know.mean=FALSE,mu=NA,class=TRUE,param.estimates=TRUE,minseglen){
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     n=length(data)
     mu=mu[1]
@@ -147,7 +147,7 @@ single.var.norm<-function(data,penalty="MBIC",pen.value=0,know.mean=FALSE,mu=NA,
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck="var.norm", method="AMOC")
   
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     if((know.mean==FALSE)&(is.na(mu))){
       mu=mean(coredata(data))
     }
@@ -240,7 +240,7 @@ function(data,extrainf=TRUE,minseglen){
   }
     
 
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single data set
     cpt=singledim(data,extrainf,minseglen)
     return(cpt)
@@ -266,7 +266,7 @@ function(data,extrainf=TRUE,minseglen){
 }
 
 single.meanvar.norm<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.estimates=TRUE,minseglen){
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     n=length(data)
   }
@@ -278,7 +278,7 @@ single.meanvar.norm<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.e
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck="meanvar.norm", method="AMOC")
   
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
 		tmp=single.meanvar.norm.calc(coredata(data),extrainf=TRUE,minseglen)
 		if(penalty=="MBIC"){
 		  tmp[3]=tmp[3]+log(tmp[1])+log(n-tmp[1]+1)

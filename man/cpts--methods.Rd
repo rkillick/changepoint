@@ -3,6 +3,7 @@
 \alias{cpts<--methods}
 \alias{cpts<-,cpt-method}
 \alias{cpts<-,cpt.reg-method}
+\alias{cpts<-,cpt.range-method}
 \title{ ~~ Methods for Function cpts<-  ~~}
 \description{
  ~~ Methods for function \code{cpts<-}  ~~
@@ -15,6 +16,9 @@
 }
 
 \item{\code{signature(x = "cpt.reg")}}{
+	Assigns the value following <- to the cpts slot in x, from version 1.0 this no longer requires the last entry to be the length of the dataset.
+}
+\item{\code{signature(x = "cpt.range")}}{
 	Assigns the value following <- to the cpts slot in x, from version 1.0 this no longer requires the last entry to be the length of the dataset.
 }
 }}

@@ -19,7 +19,7 @@ single.var.css.calc <-
     }
     
     
-    if(is.null(dim(data))==TRUE){
+    if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
       # single data set
       cpt=singledim(data,extrainf,minseglen)
       return(cpt)
@@ -49,7 +49,7 @@ single.var.css<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.estima
   if(length(pen.value)>1){stop('Only one dimensional penalties can be used for CSS')}
   if(penalty=="MBIC"){stop("MBIC penalty is not valid for nonparametric test statistics.")}
   diffparam=1
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     n=length(data)
   }
@@ -60,7 +60,7 @@ single.var.css<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.estima
   if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam, asymcheck = "var.css", method="AMOC")
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     tmp=single.var.css.calc(coredata(data),extrainf=TRUE,minseglen)
     ans=decision(tau=tmp[1],null=tmp[2],penalty="Manual",n=n,diffparam=1,pen.value=pen.value)
     if(class==TRUE){
@@ -126,7 +126,7 @@ single.mean.cusum.calc <-
     }
     
     
-    if(is.null(dim(data))==TRUE){
+    if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
       # single data set
       cpt=singledim(data,extrainf,minseglen)
       return(cpt)
@@ -156,7 +156,7 @@ single.mean.cusum<-function(data,penalty="Asymptotic",pen.value=0.05,class=TRUE,
   if(length(pen.value)>1){stop('Only one dimensional penalties can be used for CUSUM')}
   if(penalty=="MBIC"){stop("MBIC penalty is not valid for nonparametric test statistics.")}
 
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     n=length(data)
   }
@@ -167,7 +167,7 @@ single.mean.cusum<-function(data,penalty="Asymptotic",pen.value=0.05,class=TRUE,
   if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck="mean.cusum", method="AMOC")
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     tmp=single.mean.cusum.calc(coredata(data),extrainf=TRUE,minseglen)
     ans=decision(tau=tmp[1],null=tmp[2],penalty=penalty,n=n,diffparam=1,pen.value=pen.value)
     if(class==TRUE){

@@ -116,7 +116,7 @@ multiple.var.css=function(data,mul.method="BinSeg",penalty="MBIC",pen.value=0,Q=
     stop("MBIC penalty is not valid for nonparametric test statistics.")
   }
   diffparam=1
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     n=length(data)
   }
@@ -126,7 +126,7 @@ multiple.var.css=function(data,mul.method="BinSeg",penalty="MBIC",pen.value=0,Q=
   if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam, asymcheck = costfunc, method=mul.method)
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     if(mul.method=="BinSeg"){
       			out=binseg.var.css(data,Q,pen.value)
@@ -309,7 +309,7 @@ multiple.mean.cusum=function(data,mul.method="BinSeg",penalty="Asymptotic",pen.v
     stop("MBIC penalty is not valid for nonparametric test statistics.")
   }
   diffparam=1
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     n=length(data)
   }
@@ -319,7 +319,7 @@ multiple.mean.cusum=function(data,mul.method="BinSeg",penalty="Asymptotic",pen.v
   if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam, asymcheck = costfunc, method=mul.method)
-  if(is.null(dim(data))==TRUE){
+  if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     if(mul.method=="BinSeg"){
 			out=binseg.mean.cusum(coredata(data),Q,pen.value)
