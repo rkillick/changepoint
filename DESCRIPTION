@@ -1,8 +1,8 @@
 Package: changepoint
 Type: Package
 Title: Methods for Changepoint Detection
-Version: 2.2.4
-Date: 2022-10-31
+Version: 2.2.5
+Date: 2022-11-08
 Authors@R: c(person("Rebecca", "Killick",
         role=c("aut","cre"),email="r.killick@lancs.ac.uk"),
 				person("Kaylea", "Haynes", role="aut"),        
@@ -12,17 +12,18 @@ Maintainer: Rebecca Killick <r.killick@lancs.ac.uk>
 BugReports: https://github.com/rkillick/changepoint/issues
 URL: https://github.com/rkillick/changepoint/
 Description: Implements various mainstream and specialised changepoint methods for finding single and multiple changepoints within data.  Many popular non-parametric and frequentist methods are included.  The cpt.mean(), cpt.var(), cpt.meanvar() functions should be your first point of call.
-Depends: R(>= 3.1), methods, stats, zoo(>= 0.9-1)
+Depends: R(>= 3.2), methods, stats, zoo(>= 0.9-1)
 Suggests: testthat, vdiffr
 License: GPL
 LazyData: true
-Packaged: 2022-10-31 14:14:13 UTC; killick
+Packaged: 2022-11-08 14:14:13 UTC; killick
 NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2022-10-31 15:50:02 UTC
+Date/Publication: 2022-11-08 15:50:02 UTC
 Author: Rebecca Killick [aut, cre],
   Kaylea Haynes [aut],
   Idris Eckley [ths],
   Paul Fearnhead [ctb, ths],
   Robin Long [ctb],
   Jamie Lee [ctr]
+

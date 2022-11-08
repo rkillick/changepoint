@@ -1,7 +1,12 @@
+Version 2.2.5
+=============
+* Thanks to Toby Hocking for highlighting that when pen=0, BinSeg doesn't need to warn that ncpts=Q as this is by design. Warning for pen=0 removed.
+* Thanks to Toby Hocking and his students for spotting that when minseglen=1 BinSeg would not allow the maximum Q.  This was due to a hardcoding of minseglen=2 in the check function.  This has been corrected.
+
 Version 2.2.4
 =============
-* Updated C code to be compliant with new CRAN flags
 * Updated check for 1D objects to also check for 1D arrays.  Thanks to Github user ChristopherEeles for highlighting the bug.
+* Updated C code to be compliant with new CRAN flags
 
 Version 2.2.3
 =============
@@ -16,7 +21,6 @@ Version 2.2.3
 * Changed bugreports field in Description to Github issues page.
 * Removed a feature from the direct call to "segnigh.XX.YY" functions where a vector of penalties could be supplied.  This caused a warning to occur in a dependency.
 * Re-evaluated the maximum Q that could be given to all segneigh functions.  Thanks to Aaron Lowther for highlighting.
-
 
 Version 2.2.2
 =============
@@ -222,3 +226,6 @@ Version 0.2
 Version 0.1
 ===========
 * Original
+
+
+
