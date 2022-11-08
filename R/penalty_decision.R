@@ -39,7 +39,7 @@ penalty_decision = function(penalty, pen.value, n, diffparam, asymcheck, method)
   }
   if((penalty=="Manual")&&(is.numeric(pen.value)==FALSE)){
     pen.value=try(eval(parse(text=paste(pen.value))),silent=TRUE)
-    if(class(pen.value)=='try-error'){
+    if(inherits(pen.value,'try-error')){
       stop('Your manual penalty cannot be evaluated')
     }else{
       pen.return=pen.value

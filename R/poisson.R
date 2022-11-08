@@ -140,14 +140,11 @@ segneigh.meanvar.poisson=function(data,Q=5,pen=0){
     }
   }
   
-  op.cps=NULL
   k=0:(Q-1)
   
-  for(i in 1:length(pen)){
-    criterion=-2*like.Q[,n]+k*pen[i]
-    
-    op.cps=c(op.cps,which(criterion==min(criterion,na.rm=T))-1)
-  }
+  criterion=-2*like.Q[,n]+k*pen
+  op.cps=which(criterion==min(criterion,na.rm=T))[1]-1
+
   if(op.cps==(Q-1)){warning('The number of segments identified is Q, it is advised to increase Q to make sure changepoints have not been missed.')}
   if(op.cps==0){cpts=n}
   else{cpts=c(sort(cps.Q[op.cps+1,][cps.Q[op.cps+1,]>0]),n)}

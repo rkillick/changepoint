@@ -172,6 +172,7 @@
 segneigh.var.norm=function(data,Q=5,pen=0,know.mean=FALSE,mu=NA){
   n=length(data)
   if(n<4){stop('Data must have atleast 4 observations to fit a changepoint model.')}
+  if(length(pen)>1){stop("Penalty must be a single value and not a vector")}
   
   if(Q>((n/2)+1)){stop(paste('Q is larger than the maximum number of segments',(n/2)+1))}
   if((know.mean==FALSE)&(is.na(mu))){
@@ -214,14 +215,11 @@ segneigh.var.norm=function(data,Q=5,pen=0,know.mean=FALSE,mu=NA){
     }
   }
   
-  op.cps=NULL
   k=0:(Q-1)
   
-  for(i in 1:length(pen)){
-    criterion=-2*like.Q[,n]+k*pen[i]
-    
-    op.cps=c(op.cps,which(criterion==min(criterion,na.rm=T))-1)
-  }
+  criterion=-2*like.Q[,n]+k*pen
+  op.cps=which(criterion==min(criterion,na.rm=T))[1]-1
+
   if(op.cps==(Q-1)){warning('The number of segments identified is Q, it is advised to increase Q to make sure changepoints have not been missed.')}
   
   if(op.cps==0){cpts=n}
@@ -234,8 +232,9 @@ segneigh.var.norm=function(data,Q=5,pen=0,know.mean=FALSE,mu=NA){
 segneigh.mean.norm=function(data,Q=5,pen=0){
   n=length(data)
   if(n<2){stop('Data must have atleast 2 observations to fit a changepoint model.')}
+  if(length(pen)>1){stop("Penalty must be a single value and not a vector")}
   
-  if(Q>((n/2)+1)){stop(paste('Q is larger than the maximum number of segments',(n/2)+1))}
+  if(Q>(n-2)){stop(paste('Q is larger than the maximum number of segments',n-2))}
   all.seg=matrix(0,ncol=n,nrow=n)
   for(i in 1:n){
     ssq=0
@@ -268,14 +267,11 @@ segneigh.mean.norm=function(data,Q=5,pen=0){
     }
   }
   
-  op.cps=NULL
   k=0:(Q-1)
   
-  for(i in 1:length(pen)){
-    criterion=-2*like.Q[,n]+k*pen[i]
-    
-    op.cps=c(op.cps,which(criterion==min(criterion,na.rm=T))-1)
-  }
+  criterion=-2*like.Q[,n]+k*pen
+  op.cps=which(criterion==min(criterion,na.rm=T))[1]-1
+
   if(op.cps==(Q-1)){warning('The number of segments identified is Q, it is advised to increase Q to make sure changepoints have not been missed.')}
   if(op.cps==0){cpts=n}
   else{cpts=c(sort(cps.Q[op.cps+1,][cps.Q[op.cps+1,]>0]),n)}
@@ -287,6 +283,7 @@ segneigh.mean.norm=function(data,Q=5,pen=0){
 segneigh.meanvar.norm=function(data,Q=5,pen=0){
   n=length(data)
   if(n<4){stop('Data must have atleast 4 observations to fit a changepoint model.')}
+  if(length(pen)>1){stop("Penalty must be a single value and not a vector")}
   
   if(Q>((n/2)+1)){stop(paste('Q is larger than the maximum number of segments',(n/2)+1))}
   all.seg=matrix(0,ncol=n,nrow=n)
@@ -329,14 +326,11 @@ segneigh.meanvar.norm=function(data,Q=5,pen=0){
     }
   }
   
-  op.cps=NULL
   k=0:(Q-1)
   
-  for(i in 1:length(pen)){
-    criterion=-2*like.Q[,n]+k*pen[i]
-    
-    op.cps=c(op.cps,which(criterion==min(criterion,na.rm=T))-1)
-  }
+  criterion=-2*like.Q[,n]+k*pen
+  op.cps=which(criterion==min(criterion,na.rm=T))[1]-1
+
   if(op.cps==(Q-1)){warning('The number of segments identified is Q, it is advised to increase Q to make sure changepoints have not been missed.')}
   
   if(op.cps==0){cpts=n}

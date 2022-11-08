@@ -160,7 +160,9 @@ segneigh.meanvar.exp=function(data,Q=5,pen=0){
   if(sum(data<=0)>0){stop('Exponential test statistic requires positive data')}
   n=length(data)
   if(n<4){stop('Data must have atleast 4 observations to fit a changepoint model.')}
-  if(Q>((n/2)+1)){stop(paste('Q is larger than the maximum number of segments',(n/2)+1))}
+  if(length(pen)>1){stop("Penalty must be a single value and not a vector")}
+  
+  if(Q>(n-2)){stop(paste('Q is larger than the maximum number of segments',n-2))}
   all.seg=matrix(0,ncol=n,nrow=n)
   for(i in 1:n){
     sumx=0
@@ -193,14 +195,11 @@ segneigh.meanvar.exp=function(data,Q=5,pen=0){
     }
   }
   
-  op.cps=NULL
   k=0:(Q-1)
   
-  for(i in 1:length(pen)){
-    criterion=-2*like.Q[,n]+k*pen[i]
-    
-    op.cps=c(op.cps,which(criterion==min(criterion,na.rm=T))-1)
-  }
+  criterion=-2*like.Q[,n]+k*pen
+  op.cps=which(criterion==min(criterion,na.rm=T))[1]-1
+
   if(op.cps==(Q-1)){warning('The number of segments identified is Q, it is advised to increase Q to make sure changepoints have not been missed.')}
   
   if(op.cps==0){cpts=n}

@@ -22,7 +22,7 @@ PELT = function(sumstat,pen=0, cost_func = "norm.mean", shape = 1, minseglen = 1
   storage.mode(numchangecpts) = 'integer'
   
   # answer=.C('PELT',cost_func, y3, y2,y,as.integer(n),as.double(pen),cptsout,as.integer(error),as.double(shape))
-  answer=.C('PELT',cost_func, sumstat,as.integer(n),as.double(pen),cptsout,as.integer(error),as.double(shape), as.integer(minseglen), lastchangelike, lastchangecpts,numchangecpts)
+  answer=.C('PELTC',cost_func, sumstat,as.integer(n),as.double(pen),cptsout,as.integer(error),as.double(shape), as.integer(minseglen), lastchangelike, lastchangecpts,numchangecpts)
 
   if(answer[[6]]>0){
     stop("C code error:",answer[[6]],call.=F)

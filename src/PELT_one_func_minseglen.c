@@ -30,7 +30,7 @@ void FreePELT(error)
 	}
 }
 
-void PELT(cost_func, sumstat,n,pen,cptsout,error, shape, minseglen, lastchangelike, lastchangecpts, numchangecpts)
+void PELTC(cost_func, sumstat,n,pen,cptsout,error, shape, minseglen, lastchangelike, lastchangecpts, numchangecpts)
   char **cost_func;
   double *sumstat;    /* Summary statistic for the time series */
 	int *n;			/* Length of the time series */

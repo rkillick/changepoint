@@ -523,12 +523,13 @@
 
 	setMethod("param", "cpt.range", function(object,ncpts=NA,shape,...) {
 	  if(is.na(ncpts)){
-	    cpts=c(0,object@cpts)
+	    cpts=object@cpts
+	    if(cpts[1]!=0){cpts=c(0,cpts)} # PELT derivatives don't include the 0
 	  }
 	  else{
 	    ncpts.full=apply(cpts.full(object),1,function(x){sum(x>0,na.rm=TRUE)})
 	    row=try(which(ncpts.full==ncpts),silent=TRUE)
-	    if(class(row)=='try-error'){
+	    if(inherits(row,'try-error')){
 	      stop("Your input object doesn't have a segmentation with the requested number of changepoints.")
 	    }
 	    cpts=c(0,cpts.full(object)[row,1:ncpts],length(data.set(object)))

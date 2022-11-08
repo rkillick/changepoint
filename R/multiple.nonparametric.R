@@ -1,6 +1,8 @@
 segneigh.var.css=function(data,Q=5,pen=0){
   n=length(data)
   if(n<4){stop('Data must have atleast 4 observations to fit a changepoint model.')}
+  if(length(pen)>1){stop("Penalty must be a single value and not a vector")}
+  
   if(Q>((n/2)+1)){stop(paste('Q is larger than the maximum number of segments',(n/2)+1))}
   
   y2=c(0,cumsum(data^2))
@@ -182,7 +184,9 @@ multiple.var.css=function(data,mul.method="BinSeg",penalty="MBIC",pen.value=0,Q=
 segneigh.mean.cusum=function(data,Q=5,pen=0){
   n=length(data)
   if(n<2){stop('Data must have atleast 2 observations to fit a changepoint model.')}
-  if(Q>((n/2)+1)){stop(paste('Q is larger than the maximum number of segments',(n/2)+1))}
+  if(length(pen)>1){stop("Penalty must be a single value and not a vector")}
+  
+  if(Q>(n-2)){stop(paste('Q is larger than the maximum number of segments',n-2))}
   
   y=c(0,cumsum(data))
   oldmax=1000

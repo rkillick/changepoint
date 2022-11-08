@@ -1,3 +1,18 @@
+Version 2.2.3
+=============
+* Updated documentation to reflect that the changepoint is the last observation of a segment, not the first observation of a new segment as previously described. Thanks to Alex Bertram for reporting this.
+* Added fuctionality for cpt.range into cpts to allow specification of ncpts.  Use as cpts(object,ncpts=X) to retrive the X changepoints segmentation from object which has a cpt.range class.  Thanks to Craig Faunce for the suggestion.
+* Corrected parameter estimation for cpt.reg class so that sig2 contains the variance MLE per segment. This addresses a consistency issue with lm when evaluating logLik when no changepoints are found.  Thanks to Simon Taylor for spotting this.
+* Correction bug in parameter estimation for cpt.var with cpt.range class when ncpts!=NA.  Previously this was using seg.len() function which returned NA for CROPS and incorrect segments lengths for BinSeg.  Thanks to David Krider for asking a question which led to this bug being identified.
+* Added "type=" functionality to the "diagnostic=TRUE" graphs.  Thanks go to github user hoxo_m for providing the code and tests for this.
+* Fixed bug that meant logLik(.) was erroring when used on output from cpt.mean(.).
+* Updated changepoint package to new CRAN regulations.
+* Updated JStatSoft web link in citation file.
+* Changed bugreports field in Description to Github issues page.
+* Removed a feature from the direct call to "segnigh.XX.YY" functions where a vector of penalties could be supplied.  This caused a warning to occur in a dependency.
+* Re-evaluated the maximum Q that could be given to all segneigh functions.  Thanks to Aaron Lowther for highlighting.
+
+
 Version 2.2.2
 =============
 * Updated R dependency, thanks to Mateusz Konieczny to identifying the problem (and solution).

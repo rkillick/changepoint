@@ -11,14 +11,14 @@ bibentry(bibtype="article",
   volume       = "58",
   number       = "3",
   pages        = "1--19",
-  url          = "http://www.jstatsoft.org/v58/i03/",
+  url          = "https://www.jstatsoft.org/v58/i03/",
 )
 
 bibentry(bibtype="Manual",
          title = "{changepoint}: An {R} package for changepoint analysis",
          author = c(person("Rebecca", "Killick"),person("Kaylea", "Haynes"), person(c("Idris", "A."), "Eckley")),
          year         = year,
-         url          = "http://CRAN.R-project.org/package=changepoint",
+         url          = "https://CRAN.R-project.org/package=changepoint",
          note = note,
 )
 

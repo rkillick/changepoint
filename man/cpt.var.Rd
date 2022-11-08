@@ -46,7 +46,7 @@ test.stat="Normal",class=TRUE,param.estimates=TRUE,minseglen=2)
   }
 }
 \details{
-	This function is used to find changes in variance for data using the test statistic specified in the test.stat parameter.  The changes are found using the method supplied which can be single changepoint (AMOC) or multiple changepoints using exact (PELT or SegNeigh) or approximate (BinSeg) methods.  A changepoint is denoted as the first observation of the new segment / regime.
+	This function is used to find changes in variance for data using the test statistic specified in the test.stat parameter.  The changes are found using the method supplied which can be single changepoint (AMOC) or multiple changepoints using exact (PELT or SegNeigh) or approximate (BinSeg) methods.  A changepoint is denoted as the last observation of the segment / regime.
   Note that for the test.stat="CSS" option the preset penalties are log(.) to allow comparison with test.stat="Normal".  
 }
 \value{
