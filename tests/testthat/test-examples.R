@@ -5,19 +5,19 @@ context("man file example tests")
 set.seed(1)
 x=c(rnorm(100,0,1),rnorm(100,0,10))
 ansvar=cpt.var(x)
-test_that('var1',expect_identical(cpts(ansvar),100))
+test_that('var1',expect_identical(cpts(ansvar),as.integer(100)))
 
 # change in mean
 set.seed(1)
 y=c(rnorm(100,0,1),rnorm(100,5,1))
 ansmean=cpt.mean(y)
-test_that('mean1',expect_identical(cpts(ansmean),100))
+test_that('mean1',expect_identical(cpts(ansmean),as.integer(100)))
 
 # change in mean and variance
 set.seed(1)
 z=c(rnorm(100,0,1),rnorm(100,2,10))
 ansmeanvar=cpt.meanvar(z)
-test_that('meanvar1',expect_identical(cpts(ansmeanvar),100))
+test_that('meanvar1',expect_identical(cpts(ansmeanvar),as.integer(100)))
 
 
 
@@ -31,9 +31,9 @@ set.seed(1)
 x=c(rnorm(100,0,1),rnorm(100,10,1))
 test_that('mean2',expect_equivalent(cpt.mean(x,penalty="SIC",method="AMOC",class=FALSE),c(100,1)))
 ans=cpt.mean(x,penalty="Asymptotic",pen.value=0.01,method="AMOC") 
-test_that('mean3',expect_identical(cpts(ans),100))
+test_that('mean3',expect_identical(cpts(ans),as.integer(100)))
 ans=cpt.mean(x,penalty="Manual",pen.value=0.8,method="AMOC",test.stat="CUSUM")
-test_that('mean4',expect_equivalent(cpts(ans),101))
+test_that('mean4',expect_equivalent(cpts(ans),as.integer(101)))
 
 # Example of multiple changes in mean at 50,100,150 in simulated normal data
 set.seed(1)

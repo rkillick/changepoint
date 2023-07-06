@@ -123,7 +123,7 @@ multiple.var.css=function(data,mul.method="BinSeg",penalty="MBIC",pen.value=0,Q=
   else{
     n=ncol(data)
   }
-  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
+  if(n<(2*minseglen)){stop('Minimum segment length is too large to include a change in this data')}
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam, asymcheck = costfunc, method=mul.method)
   if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
@@ -316,7 +316,7 @@ multiple.mean.cusum=function(data,mul.method="BinSeg",penalty="Asymptotic",pen.v
   else{
     n=ncol(data)
   }
-  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
+  if(n<(2*minseglen)){stop('Minimum segment length is too large to include a change in this data')}
   
   pen.value = penalty_decision(penalty, pen.value, n, diffparam, asymcheck = costfunc, method=mul.method)
   if(is.null(dim(data))==TRUE || length(dim(data)) == 1){

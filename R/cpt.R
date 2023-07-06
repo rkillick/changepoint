@@ -1,4 +1,4 @@
-cpt.mean=function(data,penalty="MBIC",pen.value=0,method="AMOC",Q=5,test.stat="Normal",class=TRUE,param.estimates=TRUE,minseglen=1){
+cpt.mean=function(data,penalty="MBIC",pen.value=0,method="PELT",Q=5,test.stat="Normal",class=TRUE,param.estimates=TRUE,minseglen=1){
   checkData(data)
   if(method=="SegNeigh" & minseglen>1){stop("minseglen not yet implemented for SegNeigh method, use PELT instead.")}
   if(minseglen<1){minseglen=1;warning('Minimum segment length for a change in mean is 1, automatically changed to be 1.')}
@@ -51,7 +51,7 @@ cpt.mean=function(data,penalty="MBIC",pen.value=0,method="AMOC",Q=5,test.stat="N
   }
 }
 
-#cpt.reg=function(data,penalty="MBIC",pen.value=0,method="AMOC",Q=5,test.stat="Normal",class=TRUE,param.estimates=TRUE){
+#cpt.reg=function(data,penalty="MBIC",pen.value=0,method="PELT",Q=5,test.stat="Normal",class=TRUE,param.estimates=TRUE){
 #	if(test.stat !="Normal"){ stop("Invalid test statistic, must be Normal") }
 #	if(method=="AMOC"){
 #		return(single.reg.norm(data,penalty,pen.value,class,param.estimates))
@@ -68,7 +68,7 @@ cpt.mean=function(data,penalty="MBIC",pen.value=0,method="AMOC",Q=5,test.stat="N
 #	}
 #}
 
-cpt.var=function(data,penalty="MBIC",pen.value=0,know.mean=FALSE, mu=NA,method="AMOC",Q=5,test.stat="Normal",class=TRUE,param.estimates=TRUE,minseglen=2){
+cpt.var=function(data,penalty="MBIC",pen.value=0,know.mean=FALSE, mu=NA,method="PELT",Q=5,test.stat="Normal",class=TRUE,param.estimates=TRUE,minseglen=2){
   checkData(data)
   if(method=="SegNeigh" & minseglen>2){stop("minseglen not yet implemented for SegNeigh method, use PELT instead.")}
   if(minseglen<2){minseglen=2;warning('Minimum segment length for a change in variance is 2, automatically changed to be 2.')}
@@ -123,11 +123,11 @@ cpt.var=function(data,penalty="MBIC",pen.value=0,know.mean=FALSE, mu=NA,method="
   }
 }
 
-cpt.meanvar=function(data,penalty="MBIC",pen.value=0,method="AMOC",Q=5,test.stat="Normal",class=TRUE,param.estimates=TRUE,shape=1,minseglen=2){
+cpt.meanvar=function(data,penalty="MBIC",pen.value=0,method="PELT",Q=5,test.stat="Normal",class=TRUE,param.estimates=TRUE,shape=1,size=NA,minseglen=2){
   checkData(data)
   if(method=="SegNeigh" & minseglen>2){stop("minseglen not yet implemented for SegNeigh method, use PELT instead.")}
   if(minseglen<2){
-    if(!(minseglen==1 & (test.stat=="Poisson"|test.stat=="Exponential"))){
+    if(!(minseglen==1 & (test.stat=="Poisson"|test.stat=="Exponential"|test.stat=="Binomial"))){
       minseglen=2;warning('Minimum segment length for a change in mean and variance is 2, automatically changed to be 2.')}
     }
   if(penalty == "CROPS"){
@@ -209,15 +209,19 @@ cpt.meanvar=function(data,penalty="MBIC",pen.value=0,method="AMOC",Q=5,test.stat
       stop("Invalid Method, must be AMOC, PELT, SegNeigh or BinSeg")
     }
   }
+  else if(test.stat=="Binomial"){
+    return(cpt.meanvar.binom(data=data,penalty=penalty,pen.value=pen.value,method=method,Q=Q,
+                             class=class,param.estimates=param.estimates,minseglen=minseglen,size=size))
+  }
   else{
-    stop("Invalid test statistic, must be Normal, Gamma, Exponential or Poisson")
+    stop("Invalid test statistic, must be Normal, Gamma, Exponential, Poisson or Binomial")
   }
 }
 
 checkData = function(data){
   if(!is.numeric(data)){
     stop("Only numeric data allowed")
-  }  
-  if(anyNA(data)){stop("Missing value: NA is not allowed in the data as changepoint methods are only sensible for regularly spaced data.")}
+  }
+  if(anyNA(data)){stop("Missing value: NA is not allowed in the data. If suitable for the application, drop the NAs but then be careful with inference.")}
   
 }

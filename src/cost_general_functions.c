@@ -43,6 +43,14 @@ double mll_meanvar_poisson(double x, double x2, double x3, int n, double shape){
   else{return(2*x*(log(n)-log(x)));}
 }
 
+double mll_meanvar_binomial(double x, double x2, double x3, int n, double shape){
+  //x  = sum of data
+  //x2 = sum of size
+  if(x==0){return(0);}
+  if(x==x2){return(0);}
+  else{return(2*x2*log(x2)-2*x*log(x)-2*(x2-x)*log(x2-x));}
+}
+
 double mbic_var(double x, double x2, double x3, int n, double shape){
   if(x3<=0){x3=0.00000000001;}
   return(n*(log(2*M_PI)+log(x3/n)+1)+log(n)); /* M_PI is in Rmath.h  */
@@ -72,6 +80,13 @@ double mbic_meanvar_poisson(double x, double x2, double x3, int n, double shape)
   else{return(2*x*(log(n)-log(x))+log(n));}
 }
 
+double mbic_meanvar_binomial(double x, double x2, double x3, int n, double shape){
+  //x  = sum of data
+  //x2 = sum of size
+  if(x==0){return(0);}
+  if(x==x2){return(0);}
+  else{return(2*x2*log(x2)-2*x*log(x)-2*(x2-x)*log(x2-x) + log(n));}
+}
 
 void max_which(double *array,int n,double *maxout,int *whichout){
   // Function to find maximum of an array with n elements that is put in max 

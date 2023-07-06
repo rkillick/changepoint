@@ -59,7 +59,7 @@ single.meanvar.gamma<-function(data,shape=1,penalty="MBIC",pen.value=0,class=TRU
 	  n=ncol(data)
 	}
 	if(n<4){stop('Data must have atleast 4 observations to fit a changepoint model.')}
-  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
+  if(n<(2*minseglen)){stop('Minimum segment length is too large to include a change in this data')}
   
 	pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck="meanvar.gamma", method="AMOC")
 	if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
@@ -267,7 +267,7 @@ multiple.meanvar.gamma=function(data,shape=1,mul.method="PELT",penalty="MBIC",pe
 	else{
 		n=ncol(data)
 	}
-	if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
+	if(n<(2*minseglen)){stop('Minimum segment length is too large to include a change in this data')}
 	
 	pen.value = penalty_decision(penalty, pen.value, n, diffparam, asymcheck = costfunc, method=mul.method)
 	

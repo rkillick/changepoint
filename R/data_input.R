@@ -1,10 +1,10 @@
-data_input <- function(data, method, pen.value, costfunc, minseglen, Q, var=0, shape=1){
+data_input <- function(data, method, pen.value, costfunc, minseglen, Q, var=0, shape=1,size=NA){
   if(var !=0){
-    mu<-var
+    sumstat = SumStats(test.stat=costfunc, data=data, size=size, mu=var)
   }else{
-  mu <- mean(data)
+    sumstat = SumStats(test.stat=costfunc, data=data, size=size)
   }
-  sumstat=cbind(c(0,cumsum(coredata(data))),c(0,cumsum(coredata(data)^2)),cumsum(c(0,(coredata(data)-mu)^2)))
+
   if(method=="PELT"){
     #out=PELT.meanvar.norm(coredata(data),pen.value)
     out=PELT(sumstat,pen=pen.value,cost_func = costfunc,minseglen=minseglen, shape=shape)  ## K NEW ##
@@ -20,7 +20,7 @@ data_input <- function(data, method, pen.value, costfunc, minseglen, Q, var=0, s
   }
   else if(method=="SegNeigh"){
     #out=segneigh.meanvar.norm(coredata(data),Q,pen.value)
-    out=SEGNEIGH(data=data, pen.value=pen.value, Q=Q, costfunc=costfunc, var=var, shape=shape)
+    out=SEGNEIGH(data=data, pen.value=pen.value, Q=Q, costfunc=costfunc, var=var, shape=shape,size=size)
 #     if(out$op.cpts==0){cpts=n}
 #     else{cpts=c(sort(out$cps[out$op.cpts+1,][out$cps[out$op.cpts+1,]>0]),n)}
   }

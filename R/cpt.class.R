@@ -413,7 +413,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 
 # parameter functions
 	setGeneric("param", function(object,...) standardGeneric("param"))
-	setMethod("param", "cpt", function(object,shape,...) {			
+	setMethod("param", "cpt", function(object,shape,size,...) {			
 		param.mean=function(object){
 			cpts=c(0,object@cpts)
 			#nseg=length(cpts)-1
@@ -446,6 +446,20 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 				tmpscale[j]=(y[(cpts[j+1]+1)]-y[(cpts[j]+1)])/((cpts[j+1]-cpts[j])*shape)
 			}
 			return(tmpscale)			
+		}
+		param.prob=function(object,size){
+			cpts=c(0,object@cpts)
+			data=data.set(object)
+			if(length(size)==1) size=rep(size,length(data))
+			y=c(0,cumsum(data))
+			m=c(0,cumsum(size))
+			tmpprob=NULL
+			for(j in 1:nseg(object)){
+				sx <- y[cpts[j+1]+1]-y[cpts[j]+1]
+				sm <- m[cpts[j+1]+1]-m[cpts[j]+1]
+				tmpprob[j]=sx/sm
+			}
+			return(tmpprob)			
 		}
 		param.trend=function(object){
 		  cpts=c(0,object@cpts)
@@ -506,6 +520,9 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 			else if(test.stat(object)=="Poisson"){
 			  param.est(object)<-list(lambda=param.mean(object))
 			}
+			else if(test.stat(object)=="Binomial"){
+				param.est(object)<-list(prob=param.prob(object,size=size),size=size)
+			}
 			else{
 				stop("Unknown test statistic for a change in mean and variance")
 			}
@@ -543,7 +560,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		return(object)
 	})
 
-	setMethod("param", "cpt.range", function(object,ncpts=NA,shape,...) {
+	setMethod("param", "cpt.range", function(object,ncpts=NA,shape,size,...) {
 	  if(is.na(ncpts)){
 	    cpts=object@cpts
 	    if(cpts[1]!=0){cpts=c(0,cpts)} # PELT derivatives don't include the 0
@@ -586,6 +603,21 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	      tmpscale[j]=(y[(cpts[j+1]+1)]-y[(cpts[j]+1)])/((cpts[j+1]-cpts[j])*shape)
 	    }
 	    return(tmpscale)			
+	  }
+	  param.prob=function(object,size){
+	  	nseg=length(cpts)-1
+		cpts=c(0,object@cpts)
+		data=data.set(object)
+		if(length(size)==1) size=rep(size,length(data))
+		y=c(0,cumsum(data))
+		m=c(0,cumsum(size))
+		tmpprob=NULL
+		for(j in 1:nseg){
+			sx <- y[cpts[j+1]+1]-y[cpts[j]+1]
+			sm <- m[cpts[j+1]+1]-m[cpts[j]+1]
+			tmpprob[j]=sx/sm
+		}
+		return(tmpprob)			
 	  }
 	  param.trend=function(object,cpts){
 	    seglen=cpts[-1]-cpts[-length(cpts)]
@@ -645,6 +677,9 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    }
 	    else if(test.stat(object)=="Poisson"){
 	      param.est<-list(lambda=param.mean(object,cpts))
+	    }
+	    else if(test.stat(object)=="Binomial"){
+	      param.est(object)<-list(prob=param.prob(object,size=size),size=size)
 	    }
 	    else{
 	      stop("Unknown test statistic for a change in mean and variance")
@@ -782,7 +817,12 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    object=param(x)
 	    cat('done.\n')
 	  }
-		plot(data.set.ts(x),...)
+		if(test.stat(x)=="Binomial"){
+			data = data.set.ts(x)
+			size = param.est(x)$size
+			plot(data/size,...)
+		}
+		else{plot(data.set.ts(x),...)}
 		if(cpttype(x)=="variance" || cpttype(x)=="nonparametric (empirical_distribution)"){
 		  abline(v=index(data.set.ts(x))[cpts(x)],col=cpt.col,lwd=cpt.width,lty=cpt.style)
 		}
@@ -800,6 +840,9 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 			}
 			else if(test.stat(x)=="Poisson"){
 			  means=param.est(x)$lambda
+			}
+			else if(test.stat(x)=="Binomial"){
+			  means=param.est(x)$prob
 			}
 			else{
 				stop('Invalid Changepoint test statistic')
@@ -836,7 +879,12 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    }
 	    return(invisible(NULL))
 	  }
-	  plot(data.set.ts(x),...)
+		if(test.stat(x)=="Binomial"){
+			data = data.set.ts(x)
+			size = param.est(x)$size
+			plot(data/size,...)
+		}
+		else{plot(data.set.ts(x),...)}
 	  if(is.na(ncpts)){
 	    if(pen.type(x)=="CROPS"){
 	      stop('CROPS does not supply an optimal set of changepoints, set ncpts to the desired segmentation to plot or use diagnostic=TRUE to identify an appropriate number of changepoints')
@@ -853,6 +901,9 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    cpts.to.plot=cpts.full(x)[row,1:ncpts]
 	    if(test.stat(x)=="Gamma"){
 	      param.est=param(x,ncpts,shape=param.est(x)$shape)
+	    }
+	    else if(test.stat(x)=="Binomial"){
+		param.est=param(x,ncpts,size=param.est(x)$size)
 	    }
 	    else{
 	      param.est=param(x,ncpts)
@@ -873,6 +924,9 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    }
 	    else if(test.stat(x)=="Poisson"){
 	      means=param.est(param.est)$lambda
+	    }
+	    else if(test.stat(x)=="Binomial"){
+		means=param.est(x)$prob
 	    }
 	    else{
 	      stop('Invalid Changepoint test statistic')
@@ -1076,6 +1130,29 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		    }
 		  }
 		}
+		else if(test.stat(object)=="Binomial"){
+		  if(cpttype(object)!="mean and variance"){
+		    stop("Unknown changepoint type for test.stat='Binomial', must be 'mean and variance'")
+		  }
+		  else{
+		    y=c(0,cumsum(data.set(object)))
+		    m=c(0,cumsum(param.est(object)$size))
+		    cpts=c(0,object@cpts)
+		    #nseg=length(cpts)-1
+		    tmplike=sum(lchoose(param.est(object)$size,data.set(object)))
+		    for(j in 1:nseg(object)){
+			sx <- y[cpts[j+1]+1]-y[cpts[j]+1]
+			sm <- m[cpts[j+1]+1]-m[cpts[j]+1]
+			seglike <- sx*log(sx) + (sm-sx)*log(sm-sx) - sm*log(sm)
+			tmplike <- tmplike + seglike
+		    }
+		    if(pen.type(object)=="MBIC"){
+		      like=c(-2*tmplike, -2*tmplike+(nseg(object)-2)*pen.value(object)+sum(log(seg.len(object))))
+		    }else{
+		      like=c(-2*tmplike,-2*tmplike+(nseg(object)-1)*pen.value(object))
+		    }
+		  }
+		}
 		else{stop("logLik is only valid for distributional assumptions, not CUSUM or CSS")}
 	  names(like)=c("-2*logLik","-2*Loglike+pen")
 	  return(like)
@@ -1232,6 +1309,29 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	      names(like)=c("-like","-likepen")
 	    }
 	  }
+		else if(test.stat(object)=="Binomial"){
+		  if(cpttype(object)!="mean and variance"){
+		    stop("Unknown changepoint type for test.stat='Binomial', must be 'mean and variance'")
+		  }
+		  else{
+		    y=c(0,cumsum(data.set(object)))
+		    m=c(0,cumsum(param.est(object)$size))
+		    cpts=c(0,object@cpts)
+		    #nseg=length(cpts)-1
+		    tmplike=sum(lchoose(param.est(object)$size,data.set(object)))
+		    for(j in 1:nseg){
+			sx <- y[cpts[j+1]+1]-y[cpts[j]+1]
+			sm <- m[cpts[j+1]+1]-m[cpts[j]+1]
+			seglike <- sx*log(sx) + (sm-sx)*log(sm-sx) - sm*log(sm)
+			tmplike <- tmplike + seglike
+		    }
+		    if(pen.type(object)=="MBIC"){
+		      like=c(-2*tmplike, -2*tmplike+(nseg(object)-2)*pen.value(object)+sum(log(seg.len(object))))
+		    }else{
+		      like=c(-2*tmplike,-2*tmplike+(nseg(object)-1)*pen.value(object))
+		    }
+		  }
+		}
 	  else{stop("logLik is only valid for distributional assumptions, not CUSUM or CSS")}
 	  return(like)
 	})

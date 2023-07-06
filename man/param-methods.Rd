@@ -12,7 +12,7 @@
 \describe{
 
 \item{\code{signature(object = "cpt")}}{
-	Replaces the \code{param.value} slot in object with the parameter estimates that are appropriate for the changepoint type (\code{cpttype} slot).  If the Gamma test statistic is used then the shape parameter is required as a variable.
+	Replaces the \code{param.value} slot in object with the parameter estimates that are appropriate for the changepoint type (\code{cpttype} slot).  If the Gamma test statistic is used then the shape parameter is required as an argument. If the Binomial test statistic is used then the size parameter is required as an argument
 }
 \item{\code{signature(object = "cpt.range")}}{
 	Returns a new (blank) cpt.range object where the \code{param.value} slot contains the parameter estimates for a segmentation with the \code{ncpts} specified number of changepoints.  This is also tailored to the changepoint type (\code{cpttype} slot) of the original object.  If the Gamma test statistic is used then the shape parameter is required as a variable.  An example of use is given in the \link{cpt.mean} help file.

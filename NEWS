@@ -1,3 +1,10 @@
+Version 2.3
+===========
+* Added Binomial cost function to cpt.meanvar().  Thanks go to Simon Taylor for contributing this new cost function.
+* Changed default method in cpt.*() functions to PELT
+* Fixed bug in SegNeigh algorithm where if the distribution used was Gamma the shape parameter was not passed to the lower functions.  Thanks go to Simon Taylor for highlighting the bug.
+
+
 Version 2.2.5
 =============
 * Thanks to Toby Hocking for highlighting that when pen=0, BinSeg doesn't need to warn that ncpts=Q as this is by design. Warning for pen=0 removed.

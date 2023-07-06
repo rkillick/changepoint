@@ -190,7 +190,7 @@ checkCROPS <- function(){
             
             
           }else{
-            expect_that(cpt.meanvar(data=data[[d]], method=methods[m],penalty=penalties[p], pen.value=cropspenval[[cr]], test.stat=testStats[[ts]], class=cl, param.estimates=pe), throws_error('Only Normal, Exponential, Gamma and Poisson are valid test statistics'))   
+            expect_that(cpt.meanvar(data=data[[d]], method=methods[m],penalty=penalties[p], pen.value=cropspenval[[cr]], test.stat=testStats[[ts]], class=cl, param.estimates=pe), throws_error('Only Normal, Exponential, Gamma, Poisson and Binomial are valid test statistics'))   
           }
         }
         t=t+1
@@ -208,7 +208,7 @@ for(d in 1:length(data)){
   if(is.element(NA, data[[d]])){
     test_that(paste0("Test #",t," :data=",d,"penalty=",penalties[p],", method=",methods[m],",class=",cl,", param=",pe,", test.stat=",testStats[ts]), {
       
-      expect_that(cpt.meanvar(data=data[[d]]),throws_error('Missing value: NA is not allowed in the data as changepoint methods are only sensible for regularly spaced data.'))
+      expect_that(cpt.meanvar(data=data[[d]]),throws_error('Missing value: NA is not allowed in the data. If suitable for the application, drop the NAs but then be careful with inference.'))
       #not user friendly error : Error in if (teststat >= pen.value) { : 
       #       missing value where TRUE/FALSE needed
       #       In addition: Warning message:
@@ -221,7 +221,7 @@ for(d in 1:length(data)){
   }else if(length(data[[d]]) <= 2){
     test_that(paste0("Test #",t," :data=",d,"penalty=",penalties[p],", method=",methods[m],",class=",cl,", param=",pe,", test.stat=",testStats[ts]), {
       
-      expect_that(cpt.meanvar(data=data[[d]]),throws_error("Data must have atleast"))
+      expect_that(cpt.meanvar(data=data[[d]], method=methods[m], test.stat=testStats[ts]),throws_error("Data must have atleast"))
       t = t + 1
       
     }) 

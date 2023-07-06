@@ -12,7 +12,7 @@ WARNING: No checks on arguments are performed!
 }
 \usage{
 class_input(data, cpttype, method, test.stat, penalty, pen.value, minseglen, 
-param.estimates, out=list(), Q=NA, shape=NA)
+param.estimates, out=list(), Q=NA, shape=NA, size=NA)
 }
 \arguments{
   \item{data}{
@@ -47,6 +47,9 @@ param.estimates, out=list(), Q=NA, shape=NA)
 }
   \item{shape}{
 	Value of the assumed known shape parameter required when test.stat="Gamma".
+}
+  \item{size}{
+	Value of the assumed known size parameter required when test.stat="Binomial". This is the number of trials for each observation in data.  Can be a single value (assumed the same over time), a vector the length of data, or a matrix the same dimensions as data.
 }
 }
 \details{

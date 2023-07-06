@@ -7,8 +7,8 @@ Identifying Changes in Mean and Variance
 Calculates the optimal positioning and (potentially) number of changepoints for data using the user specified method.
 }
 \usage{
-cpt.meanvar(data,penalty="MBIC",pen.value=0,method="AMOC",Q=5,test.stat="Normal",
-class=TRUE,param.estimates=TRUE,shape=1,minseglen=2)
+cpt.meanvar(data,penalty="MBIC",pen.value=0,method="PELT",Q=5,test.stat="Normal",
+class=TRUE,param.estimates=TRUE,shape=1,size=NA,minseglen=2)
 }
 \arguments{
   \item{data}{
@@ -27,7 +27,7 @@ class=TRUE,param.estimates=TRUE,shape=1,minseglen=2)
 	The maximum number of changepoints to search for using the "BinSeg" method.  The maximum number of segments (number of changepoints + 1) to search for using the "SegNeigh" method.
 }
   \item{test.stat}{
-	The assumed test statistic / distribution of the data.  Currently only "Normal", "Gamma", "Exponential" and "Poisson" are supported.
+	The assumed test statistic / distribution of the data.  Currently only "Normal", "Gamma", "Exponential", "Poisson" and "Binomial" are supported.
 }
   \item{class}{
 	Logical.  If TRUE then an object of class \code{cpt} is returned.
@@ -37,6 +37,9 @@ class=TRUE,param.estimates=TRUE,shape=1,minseglen=2)
 }
   \item{shape}{
 	Value of the assumed known shape parameter required when test.stat="Gamma".
+}
+  \item{size}{
+	Value of the assumed known size parameter required when test.stat="Binomial". This is the number of trials for each observation in data.  Can be a single value (assumed the same over time), a vector the length of data, or a matrix the same dimensions as data.
 }
   \item{minseglen}{
   Positive integer giving the minimum segment length (no. of observations between changes), default is the minimum allowed by theory.
@@ -75,6 +78,8 @@ Change in Gamma shape parameter: Chen, J. and Gupta, A. K. (2000) \emph{Parametr
 Change in Exponential model: Chen, J. and Gupta, A. K. (2000) \emph{Parametric statistical change point analysis}, Birkhauser
 
 Change in Poisson model: Chen, J. and Gupta, A. K. (2000) \emph{Parametric statistical change point analysis}, Birkhauser
+
+Change in Binomial model: Chen, J. and Gupta, A. K. (2000) \emph{Parametric statistical change point analysis}, Birkhauser
 
 PELT Algorithm: Killick R, Fearnhead P, Eckley IA (2012) Optimal detection of changepoints with a linear computational cost, \emph{JASA} \bold{107(500)}, 1590--1598
 

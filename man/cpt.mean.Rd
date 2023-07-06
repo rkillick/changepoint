@@ -7,7 +7,7 @@ Identifying Changes in Mean
 Calculates the optimal positioning and (potentially) number of changepoints for data using the user specified method.
 }
 \usage{
-cpt.mean(data,penalty="MBIC",pen.value=0,method="AMOC",Q=5,test.stat="Normal",class=TRUE,
+cpt.mean(data,penalty="MBIC",pen.value=0,method="PELT",Q=5,test.stat="Normal",class=TRUE,
 param.estimates=TRUE,minseglen=1)
 }
 \arguments{

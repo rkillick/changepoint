@@ -1,4 +1,4 @@
-class_input <- function(data, cpttype, method, test.stat, penalty, pen.value, minseglen, param.estimates, out=list(), Q=NA, shape=NA){
+class_input <- function(data, cpttype, method, test.stat, penalty, pen.value, minseglen, param.estimates, out=list(), Q=NA, shape=NA,size=NA){
   if(method=="BinSeg" || method=="SegNeigh" || penalty=="CROPS"){
     ans=new("cpt.range")
   }else{
@@ -7,11 +7,13 @@ class_input <- function(data, cpttype, method, test.stat, penalty, pen.value, mi
   
   data.set(ans)=data;cpttype(ans)=cpttype;method(ans)=method; test.stat(ans)=test.stat;pen.type(ans)=penalty;pen.value(ans)=pen.value;minseglen(ans)=minseglen;ans@date=date();
   if(penalty!="CROPS"){ # crops is only one that doesn't give a single set of cpts
-    cpts(ans)=out[[2]]
+    cpts(ans)=as.integer(out[[2]])
     
     if(param.estimates==TRUE){
       if(test.stat == "Gamma"){
-      ans=param(ans, shape)
+        ans=param(ans, shape)
+      }else if(test.stat == "Binomial"){
+        ans=param(ans, size)
       }else{
       ans=param(ans)
       }
@@ -31,7 +33,7 @@ class_input <- function(data, cpttype, method, test.stat, penalty, pen.value, mi
   if(method=="BinSeg"){
     l=list()
     for(i in 1:(length(out$cps)/2)){
-      l[[i]] = out$cps[1,1:i] 
+      l[[i]] = out$cps[1,1:i]
     }
     m = t(sapply(l, '[', 1:max(sapply(l, length))))
     
@@ -46,6 +48,7 @@ class_input <- function(data, cpttype, method, test.stat, penalty, pen.value, mi
     cpts.full(ans) = m
     pen.value.full(ans) = out[[1]][1,]
     if(test.stat=="Gamma"){param.est(ans)$shape=shape}
+    if(test.stat == "Binomial"){param.est(ans)$size=size}
   }
   
   return(ans)
