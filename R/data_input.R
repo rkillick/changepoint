@@ -20,10 +20,10 @@ data_input <- function(data, method, pen.value, costfunc, minseglen, Q, var=0, s
   }
   else if(method=="SegNeigh"){
     #out=segneigh.meanvar.norm(coredata(data),Q,pen.value)
-    out=SEGNEIGH(data=data, pen.value=pen.value, Q=Q, costfunc=costfunc, var=var, shape=shape)
+    out=SEGNEIGH_C(data=data, pen.value=pen.value, Q=Q, costfunc=costfunc, var=var, shape=shape)
 #     if(out$op.cpts==0){cpts=n}
 #     else{cpts=c(sort(out$cps[out$op.cpts+1,][out$cps[out$op.cpts+1,]>0]),n)}
   }
   return(out)
-  
+
 }
