@@ -1,10 +1,10 @@
 setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character", 	test.stat="character",pen.type="character",pen.value="numeric",minseglen="numeric",cpts="numeric",ncpts.max="numeric",param.est="list",date="character",version="character"),prototype=prototype(cpttype="Not Set",date=date(),version=as(packageVersion("changepoint"),'character')))
 
 	setClass("cpt.reg",slots=list(data.set="matrix", cpttype="character", method="character", test.stat="character",pen.type="character",pen.value="numeric",minseglen="numeric",cpts="numeric",ncpts.max="numeric",param.est="list",date="character",version="character"),prototype=prototype(cpttype="regression",date=date(),version=as(packageVersion("changepoint"),"character")))
-  
+
 #   setClass("cpt", representation(), prototype())
 # # cpts is the optimal segementation
-#   
+#
   setClass("cpt.range",slots=list(cpts.full="matrix", pen.value.full="numeric"), prototype=prototype(), contains="cpt")
   # cpts.full is the entire matrix
   # pen.value.full (beta) values as an extra slot (vector)
@@ -60,7 +60,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	}
 	setMethod("method","cpt",function(object) object@method)
 	setMethod("method","cpt.reg",function(object) object@method)
-	
+
 	# distribution remains for backwards compatability, changed to test.stat version 1.0
 	if(!isGeneric("distribution")) {
 	  if (is.function("distribution")){
@@ -74,7 +74,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	}
 	setMethod("distribution","cpt",function(object) object@test.stat)
 	setMethod("distribution","cpt.reg",function(object) object@test.stat)
-	
+
   if(!isGeneric("test.stat")) {
 		if (is.function("test.stat")){
 			fun <- test.stat
@@ -87,7 +87,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	}
 	setMethod("test.stat","cpt",function(object) object@test.stat)
 	setMethod("test.stat","cpt.reg",function(object) object@test.stat)
-	
+
 	if(!isGeneric("pen.type")) {
 		if (is.function("pen.type")){
 			fun <- pen.type
@@ -100,7 +100,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	}
 	setMethod("pen.type","cpt",function(object) object@pen.type)
 	setMethod("pen.type","cpt.reg",function(object) object@pen.type)
-	
+
 	if(!isGeneric("pen.value")) {
 		if (is.function("pen.value")){
 			fun <- pen.value
@@ -137,7 +137,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	  setGeneric("minseglen", fun)
 	}
 	setMethod("minseglen","cpt",function(object) object@minseglen)
-	
+
 	if(!isGeneric("cpts")) {
 		if (is.function("cpts")){
 			fun <- cpts
@@ -161,8 +161,8 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    else{return(cpts.full(object)[row,])}
 	  }
 	 })
-	
-	  
+
+
 	if(!isGeneric("cpts.full")) {
 	  if (is.function("cpts.full")){
 	    fun <- cpts.full
@@ -216,7 +216,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 
   setMethod("coef","cpt",function(object) object@param.est)
 	setMethod("coef","cpt.reg",function(object) object@param.est)
-	
+
 # ncpts function
 	if(!isGeneric("ncpts")) {
 		if (is.function("ncpts")){
@@ -245,7 +245,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	setMethod("seg.len","cpt",function(object){object@cpts-c(0,object@cpts[-length(object@cpts)])})
 	setMethod("seg.len","cpt.reg",function(object){object@cpts-c(0,object@cpts[-length(object@cpts)])})
 #i.e. if there is a changepoint in the data, return segment length. If not, return length of the data
-	
+
   # nseg function
 	if(!isGeneric("nseg")) {
 	  if (is.function("nseg")){
@@ -259,8 +259,8 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	}
 	setMethod("nseg","cpt",function(object){ncpts(object)+1})
 	setMethod("nseg","cpt.reg",function(object){ncpts(object)+1})
-  
-  
+
+
 # replacement functions for slots
 	setGeneric("data.set<-", function(object, value) standardGeneric("data.set<-"))
 	setReplaceMethod("data.set", "cpt", function(object, value) {
@@ -271,7 +271,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		object@data.set <- value
 		return(object)
 	})
-	
+
 	setGeneric("cpttype<-", function(object, value) standardGeneric("cpttype<-"))
 	setReplaceMethod("cpttype", "cpt", function(object, value) {
 		object@cpttype <- value
@@ -281,7 +281,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		object@cpttype <- value
 		return(object)
 	})
-	
+
 	setGeneric("method<-", function(object, value) standardGeneric("method<-"))
 	setReplaceMethod("method", "cpt", function(object, value) {
 		object@method <- value
@@ -291,7 +291,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		object@method <- value
 		return(object)
 	})
-	
+
   # distribution remains for backwards compatability, changed to test.stat version 1.0
 	setGeneric("distribution<-", function(object, value) standardGeneric("distribution<-"))
 	setReplaceMethod("distribution", "cpt", function(object, value) {
@@ -312,7 +312,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		object@test.stat <- value
 		return(object)
 	})
-	
+
 	setGeneric("pen.type<-", function(object, value) standardGeneric("pen.type<-"))
 	setReplaceMethod("pen.type", "cpt", function(object, value) {
 		object@pen.type <- value
@@ -322,7 +322,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		object@pen.type <- value
 		return(object)
 	})
-	
+
 	setGeneric("pen.value<-", function(object, value) standardGeneric("pen.value<-"))
 	setReplaceMethod("pen.value", "cpt", function(object, value) {
 		object@pen.value <- value
@@ -346,14 +346,14 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	  object@minseglen <- value
 	  return(object)
 	})
-	
+
 	setGeneric("cpts<-", function(object, value) standardGeneric("cpts<-"))
 	setReplaceMethod("cpts", "cpt", function(object, value) {
 	  if((cpttype(object)=="meanar")|(cpttype(object)=="trendar")){
 	    n=length(object@data.set)-1
 	  }
 	  else{n=length(object@data.set)}
-	  
+
     if(value[length(value)]==n){object@cpts <- value}
     else{		object@cpts <- c(value,n)  }
 		return(object)
@@ -363,7 +363,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    n=length(object@data.set)-1
 	  }
 	  else{n=length(object@data.set)}
-	  
+
 	  if(value[length(value)]==n){object@cpts <- value}
 	  else{		object@cpts <- c(value,n)  }
 	  return(object)
@@ -383,7 +383,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		object@ncpts.max <- value
 		return(object)
 	})
-	
+
 	setGeneric("param.est<-", function(object, value) standardGeneric("param.est<-"))
 	setReplaceMethod("param.est", "cpt", function(object, value) {
 		object@param.est <- value
@@ -393,7 +393,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		object@param.est <- value
 		return(object)
 	})
-  
+
 	setGeneric("cpts.full<-", function(object, value) standardGeneric("cpts.full<-"))
 	setReplaceMethod("cpts.full", "cpt.range", function(object, value) {
 	  object@cpts.full <- value
@@ -409,11 +409,11 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 # 	  object@pen.value.input <- value
 # 	  return(object)
 # 	})
-  
+
 
 # parameter functions
 	setGeneric("param", function(object,...) standardGeneric("param"))
-	setMethod("param", "cpt", function(object,shape,...) {			
+	setMethod("param", "cpt", function(object,shape,...) {
 		param.mean=function(object){
 			cpts=c(0,object@cpts)
 			#nseg=length(cpts)-1
@@ -445,7 +445,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 			for(j in 1:nseg(object)){
 				tmpscale[j]=(y[(cpts[j+1]+1)]-y[(cpts[j]+1)])/((cpts[j+1]-cpts[j])*shape)
 			}
-			return(tmpscale)			
+			return(tmpscale)
 		}
 		param.trend=function(object){
 		  cpts=c(0,object@cpts)
@@ -455,7 +455,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		  sumstat=cbind(cumsum(c(0,data)),cumsum(c(0,data*c(1:n))))
 		  cptsumstat=matrix(sumstat[object@cpts+1,]-sumstat[c(0,cpts(object))+1,],ncol=2)
 		  cptsumstat[,2]=cptsumstat[,2]-cptsumstat[,1]*c(0,cpts(object)) # i.e. creating newx3
-		  
+
 		  thetaS=(2*cptsumstat[,1]*(2*seglen + 1) - 6*cptsumstat[,2]) / (2*seglen*(2*seglen + 1) - 3*seglen*(seglen+1))
 		  thetaT=(6*cptsumstat[,2])/((seglen+1)*(2*seglen+1)) + (thetaS * (1-((3*seglen)/((2*seglen)+1))))
 		  return(cbind(thetaS,thetaT))
@@ -468,7 +468,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		  cptsumstat=matrix(sumstat[object@cpts+1,]-sumstat[c(0,cpts(object))+1,],ncol=5)
 		  beta2=(2*seglen*cptsumstat[,3]-cptsumstat[,1]*cptsumstat[,2])/(2*seglen*cptsumstat[,5]*(1-cptsumstat[,2]^2));
 		  beta1=(2*cptsumstat[,1]-beta2*cptsumstat[,2])/(2*seglen);
-		  
+
 		  return(cbind(beta1,beta2))
 		}
 		param.trendar=function(object){
@@ -481,10 +481,10 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		  cptsumstat[,5]=cptsumstat[,5]-cptsumstat[,2]*c(0,cpts(object)) # i.e. creating newx5
 		  betatop=seglen*(seglen-1)*(seglen*(seglen-1)*cptsumstat[,3] + 2*(2*seglen+1)*cptsumstat[,1]*(cptsumstat[,5]-seglen*cptsumstat[,2]) + 6*cptsumstat[,4]*(cptsumstat[,2]-cptsumstat[,5]))
 		  betabottom=seglen*(seglen-1)*cptsumstat[,7] + 2*(2*seglen+1)*cptsumstat[,2]*(seglen*cptsumstat[,2]-cptsumstat[,5]) + 6*cptsumstat[,5]*(cptsumstat[,5]-cptsumstat[,2]);
-		  beta=betatop/betabottom;  
+		  beta=betatop/betabottom;
 		  thetajpo=(6*(seglen+2)*(cptsumstat[,4]-beta*cptsumstat[,5]))/((seglen+1)*(2*seglen+1)) - 2*(cptsumstat[,1]-beta*cptsumstat[,2])
 		  thetaj=(2*(2*seglen+1)*(cptsumstat[,1]-beta*cptsumstat[,2])-6*(cptsumstat[,4]-beta*cptsumstat[,5]))/(seglen-1)
-		  
+
 		  return(cbind(beta,thetajpo,thetaj))
 		}
 		if(cpttype(object)=="mean"){
@@ -556,7 +556,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    }
 	    cpts=c(0,cpts.full(object)[row,1:ncpts],length(data.set(object)))
 	  }
-	  
+
 	 	param.mean=function(object,cpts){
 	 	  nseg=length(cpts)-1
 	    data=data.set(object)
@@ -585,7 +585,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    for(j in 1:nseg){
 	      tmpscale[j]=(y[(cpts[j+1]+1)]-y[(cpts[j]+1)])/((cpts[j+1]-cpts[j])*shape)
 	    }
-	    return(tmpscale)			
+	    return(tmpscale)
 	  }
 	  param.trend=function(object,cpts){
 	    seglen=cpts[-1]-cpts[-length(cpts)]
@@ -594,7 +594,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    sumstat=cbind(cumsum(c(0,data)),cumsum(c(0,data*c(1:n))))
 	    cptsumstat=matrix(sumstat[object@cpts+1,]-sumstat[c(0,cpts(object))+1,],ncol=2)
 	    cptsumstat[,2]=cptsumstat[,2]-cptsumstat[,1]*c(0,cpts(object)) # i.e. creating newx3
-	    
+
 	    thetaS=(2*cptsumstat[,1]*(2*seglen + 1) - 6*cptsumstat[,2]) / (2*seglen*(2*seglen + 1) - 3*seglen*(seglen+1))
 	    thetaT=(6*cptsumstat[,2])/((seglen+1)*(2*seglen+1)) + (thetaS * (1-((3*seglen)/((2*seglen)+1))))
 	    return(cbind(thetaS,thetaT))
@@ -607,7 +607,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    cptsumstat=matrix(sumstat[object@cpts+1,]-sumstat[c(0,cpts(object))+1,],ncol=5)
 	    beta2=(2*seglen*cptsumstat[,3]-cptsumstat[,1]*cptsumstat[,2])/(2*seglen*cptsumstat[,5]*(1-cptsumstat[,2]^2));
 	    beta1=(2*cptsumstat[,1]-beta2*cptsumstat[,2])/(2*seglen);
-	    
+
 	    return(cbind(beta1,beta2))
 	  }
 	  param.trendar=function(object,cpts){
@@ -620,13 +620,13 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    cptsumstat[,5]=cptsumstat[,5]-cptsumstat[,2]*c(0,cpts(object)) # i.e. creating newx5
 	    betatop=seglen*(seglen-1)*(seglen*(seglen-1)*cptsumstat[,3] + 2*(2*seglen+1)*cptsumstat[,1]*(cptsumstat[,5]-seglen*cptsumstat[,2]) + 6*cptsumstat[,4]*(cptsumstat[,2]-cptsumstat[,5]))
 	    betabottom=seglen*(seglen-1)*cptsumstat[,7] + 2*(2*seglen+1)*cptsumstat[,2]*(seglen*cptsumstat[,2]-cptsumstat[,5]) + 6*cptsumstat[,5]*(cptsumstat[,5]-cptsumstat[,2]);
-	    beta=betatop/betabottom;  
+	    beta=betatop/betabottom;
 	    thetajpo=(6*(seglen+2)*(cptsumstat[,4]-beta*cptsumstat[,5]))/((seglen+1)*(2*seglen+1)) - 2*(cptsumstat[,1]-beta*cptsumstat[,2])
 	    thetaj=(2*(2*seglen+1)*(cptsumstat[,1]-beta*cptsumstat[,2])-6*(cptsumstat[,4]-beta*cptsumstat[,5]))/(seglen-1)
-	    
+
 	    return(cbind(beta,thetajpo,thetaj))
 	  }
-	  
+
 	  if(cpttype(object)=="mean"){
 	    param.est<-list(mean=param.mean(object,cpts))
 	  }
@@ -688,8 +688,8 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	  param.est(out)=param.est
 	  return(out)
 	})
-	
-	setMethod("param", "cpt.reg", function(object,shape,...) {			
+
+	setMethod("param", "cpt.reg", function(object,shape,...) {
 		param.norm=function(object){
 			cpts=c(0,object@cpts)
 		#	nseg=length(cpts)-1 #nseg(object)
@@ -887,7 +887,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    stop('Invalid Changepoint Type for plotting.\n Can only plot mean, variance, mean and variance')
 	  }
 	})
-	
+
 	setMethod("plot","cpt.reg",function(x,cpt.col='red',cpt.width=1,cpt.style=1,...){
 	  if(length(param.est(x))==0){# i.e. parameter.estimates=FALSE in call
 	    cat('Calculating parameter estimates...')
@@ -1100,7 +1100,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
       pen.value=pen.value.full(object)[row]
 	  }
 	  nseg=length(cpts)-1
-	  
+
 	  if(test.stat(object)=="Normal"){
 	    if(cpttype(object)=="mean"){
 	      mll.mean=function(x2,x,n){
@@ -1123,7 +1123,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    else if(cpttype(object)=="variance"){
 	      mll.var=function(x,n){
 	        neg=x<=0
-	        x[neg==TRUE]=0.00000000001    
+	        x[neg==TRUE]=0.00000000001
 	        return( n*(log(2*pi)+log(x/n)+1))
 	      }
 	      y2=c(0,cumsum((data.set(object)-param.est(object)$mean)^2))
@@ -1250,12 +1250,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    sigmas=param.est(object)$sig2
 	    rss=NULL
 	    for(i in 1:length(seglen)){
-	      tmpbeta=beta[i,]
-	      if(ncol(beta==1)){tmpbeta=matrix(tmpbeta,nrow=1)}
-	      tmpdata=data[(cpts[i]+1):cpts[i+1],-1]
-	      if(is.null(dim(tmpdata))){tmpdata=matrix(tmpdata,ncol=1)}
-	      
-	      rss[i]=sum((data[(cpts[i]+1):cpts[i+1],1]-tmpdata%*%beta[i,])^2)
+	      rss[i]=sum((data[(cpts[i]+1):cpts[i+1],1]-data[(cpts[i]+1):cpts[i+1],-1,drop=FALSE]%*%beta[i,,drop=FALSE])^2)
 	    }
       like=sum(seglen*log(2*pi*sigmas))+sum(rss/sigmas)
       if(pen.type(object)=="MBIC"){
@@ -1267,7 +1262,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	  else{stop("logLik is only valid for Normal distributional assumption.")}
 	  return(like)
 	})
-	
+
 	setGeneric("likelihood", function(object) standardGeneric("likelihood"))
 	setMethod("likelihood", "cpt", function(object) {
 		return(logLik(object))
@@ -1283,7 +1278,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
       stats::acf(data[(cpts[i]+1):cpts[i+1]],main=paste("Series part:",(cpts[i]+1),":",cpts[i+1]),...)
     }
 	})
-	
+
 	setMethod("acf", "cpt.reg", function(object,lag.max=NULL,...) {
 	  cpts=c(0,object@cpts)
 	  nseg=nseg(object)
@@ -1292,4 +1287,3 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    stats::acf(data[(cpts[i]+1):cpts[i+1]],main=paste("Series part:",(cpts[i]+1),"-",cpts[i+1]),...)
 	  }
 	})
-	
