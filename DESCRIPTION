@@ -1,13 +1,15 @@
 Package: changepoint
 Type: Package
 Title: Methods for Changepoint Detection
-Version: 2.2.5
-Date: 2022-11-08
+Version: 2.3
+Date: 2024-10-12
 Authors@R: c(person("Rebecca", "Killick",
         role=c("aut","cre"),email="r.killick@lancs.ac.uk"),
-				person("Kaylea", "Haynes", role="aut"),        
+				person("Kaylea", "Haynes", role="ctb"),        
+        person("Harjit","Hullait",role="ctb"),
 				person("Idris", "Eckley", role=c("ths")),
-        person("Paul","Fearnhead",role=c("ctb","ths")), person("Robin", "Long", role="ctb"),person("Jamie","Lee",role="ctr"))
+        person("Paul","Fearnhead",role=c("ctb","ths")), 
+        person("Robin", "Long", role="ctb"),person("Jamie","Lee",role="ctr"))
 Maintainer: Rebecca Killick <r.killick@lancs.ac.uk>
 BugReports: https://github.com/rkillick/changepoint/issues
 URL: https://github.com/rkillick/changepoint/
@@ -16,12 +18,13 @@ Depends: R(>= 3.2), methods, stats, zoo(>= 0.9-1)
 Suggests: testthat, vdiffr
 License: GPL
 LazyData: true
-Packaged: 2022-11-08 14:14:13 UTC; killick
+Packaged: 2024-10-12 14:14:13 UTC; killick
 NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2022-11-08 15:50:02 UTC
+Date/Publication: 2024-10-12 15:50:02 UTC
 Author: Rebecca Killick [aut, cre],
-  Kaylea Haynes [aut],
+  Kaylea Haynes [ctb],
+  Harjit Hullait [ctb],
   Idris Eckley [ths],
   Paul Fearnhead [ctb, ths],
   Robin Long [ctb],

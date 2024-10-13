@@ -1,3 +1,8 @@
+Version 2.3
+===========
+
+* Added cpt.reg() function for changes in regression. Thanks to Harjit Hullait who coded the C backend for this whilst at the STOR-i doctoral training centre at Lancaster University. Thanks also to Simon Taylor who updated the documentation for cpt.reg() from an earlier version.
+
 Version 2.2.5
 =============
 * Thanks to Toby Hocking for highlighting that when pen=0, BinSeg doesn't need to warn that ncpts=Q as this is by design. Warning for pen=0 removed.

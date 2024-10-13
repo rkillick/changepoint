@@ -5,19 +5,19 @@ context("man file example tests")
 set.seed(1)
 x=c(rnorm(100,0,1),rnorm(100,0,10))
 ansvar=cpt.var(x)
-test_that('var1',expect_identical(cpts(ansvar),100))
+test_that('var1',expect_equal(cpts(ansvar),100))
 
 # change in mean
 set.seed(1)
 y=c(rnorm(100,0,1),rnorm(100,5,1))
 ansmean=cpt.mean(y)
-test_that('mean1',expect_identical(cpts(ansmean),100))
+test_that('mean1',expect_equal(cpts(ansmean),100))
 
 # change in mean and variance
 set.seed(1)
 z=c(rnorm(100,0,1),rnorm(100,2,10))
 ansmeanvar=cpt.meanvar(z)
-test_that('meanvar1',expect_identical(cpts(ansmeanvar),100))
+test_that('meanvar1',expect_equal(cpts(ansmeanvar),100))
 
 
 
@@ -30,20 +30,20 @@ test_that('meanvar1',expect_identical(cpts(ansmeanvar),100))
 set.seed(1)
 x=c(rnorm(100,0,1),rnorm(100,10,1))
 test_that('mean2',expect_equivalent(cpt.mean(x,penalty="SIC",method="AMOC",class=FALSE),c(100,1)))
-ans=cpt.mean(x,penalty="Asymptotic",pen.value=0.01,method="AMOC") 
-test_that('mean3',expect_identical(cpts(ans),100))
+ans=cpt.mean(x,penalty="Asymptotic",pen.value=0.01,method="AMOC")
+test_that('mean3',expect_equal(cpts(ans),100))
 ans=cpt.mean(x,penalty="Manual",pen.value=0.8,method="AMOC",test.stat="CUSUM")
 test_that('mean4',expect_equivalent(cpts(ans),101))
 
 # Example of multiple changes in mean at 50,100,150 in simulated normal data
 set.seed(1)
 x=c(rnorm(50,0,1),rnorm(50,5,1),rnorm(50,10,1),rnorm(50,3,1))
-test_that('mean5',expect_identical(cpt.mean(x,penalty="Manual",pen.value="2*log(n)",method="BinSeg",Q=5,class=FALSE),c(50,100,150,200)))
+test_that('mean5',expect_equal(cpt.mean(x,penalty="Manual",pen.value="2*log(n)",method="BinSeg",Q=5,class=FALSE),c(50,100,150,200)))
 
 # Example of using the CROPS penalty in data set above
 set.seed(1)
 x=c(rnorm(50,0,1),rnorm(50,5,1),rnorm(50,10,1),rnorm(50,3,1))
-out=cpt.mean(x, pen.value = c(4,1500),penalty = "CROPS",method = "PELT") 
+out=cpt.mean(x, pen.value = c(4,1500),penalty = "CROPS",method = "PELT")
 truth=matrix(NA,ncol=7,nrow=7); truth[1:6,1]=50;truth[1:5,2]=c(96,96,100,100,150)
 truth[1:4,3]=c(100,100,133,150);truth[1:3,4]=c(133,133,150);truth[1:2,5]=c(150,150)
 truth[1,6]=159;truth[1,7]=180
@@ -58,7 +58,7 @@ x=c(rnorm(50,0,1),rnorm(50,5,1),rnorm(50,10,1),rnorm(50,3,1))
 y=rnorm(200,0,1)
 z=rbind(x,y)
 test_that('mean6',expect_equal(cpt.mean(z,penalty="Asymptotic",pen.value=0.01,method="SegNeigh",Q=5,class=FALSE),list(c(50,100,150,200),200)))
-ans=cpt.mean(z,penalty="Asymptotic",pen.value=0.01,method="PELT") 
+ans=cpt.mean(z,penalty="Asymptotic",pen.value=0.01,method="PELT")
 test_that('mean7',expect_equal(cpts(ans[[1]]),c(50,100,150)))
 test_that('mean8',expect_equal(cpts(ans[[2]]),numeric()))
 
@@ -99,7 +99,7 @@ x=c(rnorm(50,0,1),rnorm(50,5,3),rnorm(50,10,1),rnorm(50,3,10))
 y=rnorm(200,0,1)
 z=rbind(x,y)
 test_that('meanvar5',expect_equivalent(cpt.meanvar(z,penalty="Asymptotic",pen.value=0.01,method="SegNeigh",Q=5,class=FALSE),list(c(50,100,150,200),200)))
-ans=cpt.meanvar(z,penalty="Asymptotic",pen.value=0.01,method="PELT") 
+ans=cpt.meanvar(z,penalty="Asymptotic",pen.value=0.01,method="PELT")
 test_that('meanvar6',expect_equivalent(cpts(ans[[1]]),c(50,100,150)))
 test_that('meanvar7',expect_equivalent(cpts(ans[[2]]),numeric()))
 
@@ -129,6 +129,37 @@ test_that('class3',expect_equivalent(logLik(out,ncpts=3),c(925.8085, 947.0578)))
 
 
 
+
+# From cpt.reg.Rd
+set.seed(1)
+x <- 1:200
+beta0 <- rep(c(0,100,50,0),each=50)
+beta1 <- rep(c(1,-1,0,0.25),each=50)
+y <- beta0 + beta1*x + rnorm(200)
+data <- cbind(y,1,x)
+
+out <- cpt.reg(data, method="PELT", minseglen=5, penalty="MBIC", dist="Normal")
+test_that('reg1',expect_equivalent(cpts(out),c(49,100,150)))
+test_that('reg2',expect_equivalent(param.est(out)$beta[,2],c(0.99733936, -1.00644514, -0.01908214,  0.24806270)))
+
+## Seasonal change, period 12
+n=100
+indicator=rep(1,n)
+trend=1:n
+seasonal=cos(2*pi*(1:n -6)/12) # yearly, peak in summer
+cpt.s = c(rep(0,floor(n/4)), rep(2, floor(n/4)), rep(1, floor(n/4)),rep(0,n-3*floor(n/4))) ##3 Alternating Cpts
+y=0.1*cpt.s*1:n+cos(2*pi*(1:n -6)/12)+rnorm(n)
+data=cbind(y,indicator,trend,seasonal)
+out=cpt.reg(data, minseglen=12)
+test_that('reg3',expect_equivalent(cpts(out),c(25,50,75)))
+test_that('reg4',expect_equivalent(param.est(out)$beta[,2],c(-0.020344840,  0.196045790,  0.079573915, -0.005274402)))
+
+
+
+
+
+
+
 # From cpt.reg-class.Rd
 x=new("cpt.reg") # creates a new object with the cpt.reg class defaults
 test_that('class4',expect_is(x,"cpt.reg"))
@@ -147,7 +178,7 @@ test_that('class6',expect_equivalent(data.set(x),matrix(1:10,nrow=5,ncol=2)))
 set.seed(1)
 x=c(rnorm(100,0,1),rnorm(100,0,10))
 test_that('var2',expect_equivalent(cpt.var(x,penalty="SIC",method="AMOC",class=FALSE),c(100,1)))
-ans=cpt.var(x,penalty="Asymptotic",pen.value=0.01,method="AMOC") 
+ans=cpt.var(x,penalty="Asymptotic",pen.value=0.01,method="AMOC")
 test_that('var3',expect_equivalent(cpts(ans),100))
 
 # Example of multiple changes in variance at 50,100,150 in simulated data
@@ -177,7 +208,7 @@ y=rnorm(200,0,1)
 z=rbind(x,y)
 truth=list();truth[[1]]=c(50,100,149,200);truth[[2]]=200
 test_that('var7',expect_equivalent(cpt.var(z,penalty="Asymptotic",pen.value=0.01,method="SegNeigh",Q=5,class=FALSE),truth))
-ans=cpt.var(z,penalty="Asymptotic",pen.value=0.01,method="PELT") 
+ans=cpt.var(z,penalty="Asymptotic",pen.value=0.01,method="PELT")
 test_that('var8',expect_equivalent(cpts(ans[[1]]),c(50,100,149)))
 test_that('var9',expect_equivalent(cpts(ans[[2]]),numeric()))
 
@@ -196,7 +227,7 @@ test_that('class9',expect_equivalent(cpts(x),c(10,50,100)))
 # Example of a change in variance at 100 in simulated normal data
 set.seed(1)
 x=c(rnorm(100,0,1),rnorm(100,0,10))
-ans=cpt.var(x) 
+ans=cpt.var(x)
 test_that('class10',expect_equivalent(logLik(ans),c(1003.2283241358,1012.438665)))
 
 
@@ -212,7 +243,7 @@ test_that('class12',expect_is(cpts.full(x),"matrix")) # retrieves the cpts.full 
 
 # From cpts.full-.Rd
 x=new("cpt.range") # new cpt.range object
-cpts.full(x)<-matrix(c(10,20,10,NA),nrow=2,byrow=TRUE) 
+cpts.full(x)<-matrix(c(10,20,10,NA),nrow=2,byrow=TRUE)
 test_that('class13',expect_equivalent(cpts.full(x),matrix(c(10,20,10,NA),nrow=2,byrow=TRUE) ))
 
 

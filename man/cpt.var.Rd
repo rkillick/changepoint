@@ -7,7 +7,7 @@ Identifying Changes in Variance
 Calculates the optimal positioning and (potentially) number of changepoints for data using the user specified method.
 }
 \usage{
-cpt.var(data,penalty="MBIC",pen.value=0,know.mean=FALSE,mu=NA,method="AMOC",Q=5,
+cpt.var(data,penalty="MBIC",pen.value=0,know.mean=FALSE,mu=NA,method="PELT",Q=5,
 test.stat="Normal",class=TRUE,param.estimates=TRUE,minseglen=2)
 }
 \arguments{
@@ -18,7 +18,7 @@ test.stat="Normal",class=TRUE,param.estimates=TRUE,minseglen=2)
   Choice of "None", "SIC", "BIC", "MBIC", "AIC", "Hannan-Quinn", "Asymptotic", "Manual" and "CROPS" penalties.  If Manual is specified, the manual penalty is contained in the pen.value parameter. If Asymptotic is specified, the theoretical type I error is contained in the pen.value parameter.  If CROPS is specified, the penalty range is contained in the pen.value parameter; note this is a vector of length 2 which contains the minimum and maximum penalty value.  Note CROPS can only be used if the method is "PELT". The predefined penalties listed DO count the changepoint as a parameter, postfix a 0 e.g."SIC0" to NOT count the changepoint as a parameter.
 }
   \item{pen.value}{
-  The theoretical type I error e.g.0.05 when using the Asymptotic penalty.  A vector of length 2 (min,max) if using the CROPS penalty.  The value of the penalty when using the Manual penalty option - this can be a numeric value or text giving the formula to use.  Available variables are, n=length of original data, null=null likelihood, alt=alternative likelihood, tau=proposed changepoint, diffparam=difference in number of alternatve and null parameters.  
+  The theoretical type I error e.g.0.05 when using the Asymptotic penalty.  A vector of length 2 (min,max) if using the CROPS penalty.  The value of the penalty when using the Manual penalty option - this can be a numeric value or text giving the formula to use.  Available variables are, n=length of original data, null=null likelihood, alt=alternative likelihood, tau=proposed changepoint, diffparam=difference in number of alternatve and null parameters.
 }
   \item{know.mean}{
 	Only required for test.stat="Normal".  Logical, if TRUE then the mean is assumed known and mu is taken as its value.  If FALSE, and mu=NA (default value) then the mean is estimated via maximum likelihood.  If FALSE and the value of mu is supplied, mu is not estimated but is counted as an estimated parameter for decisions.
@@ -27,7 +27,7 @@ test.stat="Normal",class=TRUE,param.estimates=TRUE,minseglen=2)
 	Only required for test.stat="Normal".  Numerical value of the true mean of the data.  Either single value or vector of length nrow(data).  If data is a matrix and mu is a single value, the same mean is used for each row.
 }
   \item{method}{
-	Choice of "AMOC", "PELT", "SegNeigh" or "BinSeg".
+	Choice of "AMOC", "PELT", "SegNeigh" or "BinSeg". Default is "PELT" (from 2.3).
 }
   \item{Q}{
 	The maximum number of changepoints to search for using the "BinSeg" method.  The maximum number of segments (number of changepoints + 1) to search for using the "SegNeigh" method.
@@ -47,7 +47,7 @@ test.stat="Normal",class=TRUE,param.estimates=TRUE,minseglen=2)
 }
 \details{
 	This function is used to find changes in variance for data using the test statistic specified in the test.stat parameter.  The changes are found using the method supplied which can be single changepoint (AMOC) or multiple changepoints using exact (PELT or SegNeigh) or approximate (BinSeg) methods.  A changepoint is denoted as the last observation of the segment / regime.
-  Note that for the test.stat="CSS" option the preset penalties are log(.) to allow comparison with test.stat="Normal".  
+  Note that for the test.stat="CSS" option the preset penalties are log(.) to allow comparison with test.stat="Normal".
 }
 \value{
 	If \code{class=TRUE} then an object of S4 class "cpt" is returned.  The slot \code{cpts} contains the changepoints that are returned.  For \code{class=FALSE} the structure is as follows.
@@ -100,7 +100,7 @@ set.seed(1)
 x=c(rnorm(100,0,1),rnorm(100,0,10))
 cpt.var(x,penalty="SIC",method="AMOC",class=FALSE) # returns 100 to show that the null hypothesis
 #was rejected and the change in variance is at 100
-ans=cpt.var(x,penalty="Asymptotic",pen.value=0.01,method="AMOC") 
+ans=cpt.var(x,penalty="Asymptotic",pen.value=0.01,method="AMOC")
 cpts(ans)# returns 100 to show that the null hypothesis was rejected, the change in variance is at
 #100 and we are 99% confident of this result
 
@@ -119,9 +119,9 @@ cpts.full(out) # returns 7 segmentations for penalty values between log(n) and 1
 # Note that the empty final row indicates no changepoints.
 pen.value.full(out) # gives associated penalty transition points
 # CROPS does not give an optimal set of changepoints thus we may wish to explore further
-plot(out,diagnostic=TRUE) 
+plot(out,diagnostic=TRUE)
 # looks like the segmentation with 3 changepoints, 50,100,150 is the most appropriate
-plot(out,ncpts=3) 
+plot(out,ncpts=3)
 
 # Example multiple datasets where the first row has multiple changes in variance and the second row
 #has no change in variance
@@ -132,7 +132,7 @@ z=rbind(x,y)
 cpt.var(z,penalty="Asymptotic",pen.value=0.01,method="SegNeigh",Q=5,class=FALSE) # returns list that
 #has two elements, the first has 3 changes in variance at 50,100,149 and the second has no changes
 #in variance
-ans=cpt.var(z,penalty="Asymptotic",pen.value=0.01,method="PELT") 
+ans=cpt.var(z,penalty="Asymptotic",pen.value=0.01,method="PELT")
 cpts(ans[[1]]) # same results as for the SegNeigh method.
 cpts(ans[[2]]) # same results as for the SegNeigh method.
 }
