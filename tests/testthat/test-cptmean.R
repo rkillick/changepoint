@@ -38,7 +38,7 @@ methods <- c("AMOC", "PELT", "BinSeg") #might want to change code to convert to 
 #Segneigh taking too long and deprecation, so leaving until very last.
 #methods <- c("AMOC")
 
-penalties <- c("None", "SIC", "BIC", "AIC", "Hannan-Quinn", "Asymptotic", "Manual", "MBIC", "CROPS") 
+penalties <- c("None", "SIC", "BIC", "AIC", "Hannan-Quinn", "Asymptotic", "Manual", "MBIC", "CROPS")
 
 asympenval <- list(1, 0.756, 0.234, 'return', -1, 0) #need to add character string and -1 and 0
 #manpenval <- list("2+log(n)", "log(n)", "3*n", -1, "diffparam-1") #null, alt, tau*2 don't work (comes back with user defind error "your manual cannot be evaluated")
@@ -47,7 +47,7 @@ manpenval <- list("-1")
 QValues <- list(3, -1, 'jamie', 200000) #data variable needs to be modified - larger than data length and over half data length
 #QValues <- c(3, 5)
 
-testStats <- c("Normal", "CUSUM") 
+testStats <- c("Normal", "CUSUM")
 #asym and cusum return user defined "no asymptotic penalty" && "asymptotic penalties not implemented"
 
 class <- c(TRUE, FALSE)
@@ -64,9 +64,9 @@ checkManualPenalty <- function(methodLog){
   if(methodLog == TRUE){
     aqV <- QValues[[v]]
   }
-  
+
   for(npv in 1:length(manpenval)){
-    
+
     test_that(paste0("Test #",t," :data=", d, "penalty=",penalties[p],", method=",methods[m],",class=",cl,", param=",pe,", penvalue=",manpenval[[npv]],", test.stat=",testStats[ts]) ,{
       #x <- cpt.mean(data=data[[d]], penalty=penalties[p], pen.value=manpenval[[npv]], method=methods[m], Q=aQv, test.stat=testStats[ts], class=cl, param.estimates=pe)
       # browser()
@@ -81,11 +81,11 @@ checkManualPenalty <- function(methodLog){
               expect_that(cpt.mean(data=data[[d]], penalty=penalties[p], pen.value=manpenval[[npv]], method=methods[m], Q=aQv, test.stat=testStats[ts], class=cl, param.estimates=pe), throws_error('pen.value cannot be negative, please change your penalty value'))
             }
       expect_that(2+2, equals(4))
-      
+
     })
     t = t+1
   }
-  
+
 }
 
 checkAsymptoticPenalty <- function(methodLog){
@@ -94,13 +94,13 @@ checkAsymptoticPenalty <- function(methodLog){
     aqV <- QValues[[v]]
   }
   for(apv in 1:length(asympenval)){
-    
-    
+
+
     # browser()
     test_that(paste0("Test #",t," :data=", d, "penalty=",penalties[p],", pen.value=", asympenval[[apv]],", method=",methods[m],",class=",cl,", param=",pe,", penvalue=",asympenval[[apv]],", test.stat=",testStats[ts]), {
       if(testStats[ts] == "CUSUM"){
         expect_that(cpt.mean(data=data[[d]], penalty=penalties[p], method=methods[m], Q=aQv, test.stat=testStats[ts], class=cl, param.estimates=pe), throws_error())
-        #edit this line to include specific error messsage        
+        #edit this line to include specific error messsage
       }
       else if(is.numeric(asympenval[[apv]]) == FALSE){
         expect_that(cpt.mean(data=data[[d]], penalty=penalties[p], pen.value=asympenval[[apv]], method=methods[m], Q=aQv, test.stat=testStats[ts], class=cl, param.estimates=pe), throws_error())
@@ -109,13 +109,13 @@ checkAsymptoticPenalty <- function(methodLog){
         expect_that(cpt.mean(data=data[[d]], penalty=penalties[p], pen.value=asympenval[[apv]], method=methods[m], Q=aQv, test.stat=testStats[ts], class=cl, param.estimates=pe), throws_error("Asymptotic penalty values must be > 0 and <= 1"))
       }
       else if(methods[m] == "PELT" || methods[m] == "BinSeg"){
-          expect_warning(cpt.mean(data=data[[d]], penalty=penalties[p], pen.value=asympenval[[apv]], method=methods[m], Q=aQv, test.stat=testStats[ts], class=cl, param.estimates=pe)) 
+          expect_warning(cpt.mean(data=data[[d]], penalty=penalties[p], pen.value=asympenval[[apv]], method=methods[m], Q=aQv, test.stat=testStats[ts], class=cl, param.estimates=pe))
       }
       else{
         x <- cpt.mean(data=data[[d]], penalty=penalties[p], pen.value=asympenval[[apv]], method=methods[m], Q=aQv, test.stat=testStats[ts], class=cl, param.estimates=pe)
         expect_that(2+2, equals(4))
       }
-    })  
+    })
     t = t+1
   }
 }
@@ -123,44 +123,44 @@ checkAsymptoticPenalty <- function(methodLog){
 checkCROPS <- function(){
   #test pen.value + its length + missing
   #test the returns of the class
-  
+
   if(methods[m]!="PELT"){
-    expect_that(cpt.mean(data=data[[d]], method=methods[m],penalty=penalties[p], pen.value=cropspenval[[1]], test.stat=testStats[[ts]], class=cl, param.estimates=pe), throws_error('CROPS is a valid penalty choice only if method="PELT", please change your method or your penalty.'))    
+    expect_that(cpt.mean(data=data[[d]], method=methods[m],penalty=penalties[p], pen.value=cropspenval[[1]], test.stat=testStats[[ts]], class=cl, param.estimates=pe), throws_error('CROPS is a valid penalty choice only if method="PELT", please change your method or your penalty.'))
     t=t+1
   }
   else{
     for(cr in 1:length(cropspenval)){
-      
-      test_that(paste0("Test #",t,"data:",d," :penalty=",penalties[p],", penval=",cropspenval[cr],", method=",methods[m],",class=",cl,", param=",pe,", test.stat=",testStats[ts]), {      
-        
+
+      test_that(paste0("Test #",t,"data:",d," :penalty=",penalties[p],", penval=",cropspenval[cr],", method=",methods[m],",class=",cl,", param=",pe,", test.stat=",testStats[ts]), {
+
         if(is.numeric(cropspenval[[cr]]) == FALSE ){
           expect_that(cpt.mean(data=data[[d]], method=methods[m],penalty=penalties[p], pen.value=cropspenval[[cr]], test.stat=testStats[[ts]], class=cl, param.estimates=pe), throws_error('For CROPS, pen.value must be supplied'))
         }else if(length(cropspenval[[cr]]) != 2 ){
           expect_that(cpt.mean(data=data[[d]], method=methods[m],penalty=penalties[p], pen.value=cropspenval[[cr]], test.stat=testStats[[ts]],class=cl, param.estimates=pe), throws_error('The length of pen.value must be 2'))
-          
-          
+
+
         }else{
           #       expect_that(cpt.mean(data=data[[d]], penalty=penalties[p], class=cl, param.estimates=pe), throws_error('For CROPS, pen.value must be supplied'))
-          
+
           if(testStats[[ts]] == "Normal" || testStats[[ts]] == "Gamma" || testStats[[ts]] == "Exponential" || testStats[[ts]] == "Poisson" ){
             x <- cpt.mean(data=data[[d]], method=methods[m],penalty=penalties[p], pen.value=cropspenval[[cr]], test.stat=testStats[[ts]], class=cl, param.estimates=pe)
-            
-            
+
+
             if(cl == TRUE){
               expect_that(x, is_a('cpt.range'))
             }
-            
-            
+
+
           }else{
-            expect_that(cpt.mean(data=data[[d]], method=methods[m],penalty=penalties[p], pen.value=cropspenval[[cr]], test.stat=testStats[[ts]], class=cl, param.estimates=pe), throws_error('Only Normal, Exponential, Gamma and Poisson are valid test statistics'))   
+            expect_that(cpt.mean(data=data[[d]], method=methods[m],penalty=penalties[p], pen.value=cropspenval[[cr]], test.stat=testStats[[ts]], class=cl, param.estimates=pe), throws_error('Only Normal, Exponential, Gamma and Poisson are valid test statistics'))
           }
         }
       })
       t=t+1
-      
+
     }
     #numeric return 'For CROPS, pen.value must be supplied'
-    #length return 'The length of pen.value must be 2'    
+    #length return 'The length of pen.value must be 2'
   }
 }
 
@@ -169,17 +169,17 @@ checkOtherPenalties <- function(methodLog){
   if(methodLog == TRUE){
     aqV <- QValues[[v]]
   }
-  
+
   test_that(paste0("Test #",t," :data=", d, "penalty=",penalties[p],", method=",methods[m],",class=",cl,", param=",pe,", test.stat=",testStats[ts]), {
-    x <- cpt.mean(data=data[[d]], penalty=penalties[p], method=methods[m], Q=aQv, test.stat=testStats[ts], class=cl, param.estimates=pe)
+    x <- suppressWarnings(cpt.mean(data=data[[d]], penalty=penalties[p], method=methods[m], Q=aQv, test.stat=testStats[ts], class=cl, param.estimates=pe))
     #                     if(length(data=data[[d]]) <= 2){
     #                       expect_that(cpt.mean(data[[d]], penalty=penalties[p], 0, method=methods[m], QValues[[v]], testStats[ts], class=cl, pe), throws_error())
     #                     }
-    
-    
-    
-    
-    
+
+
+
+
+
     ###Returns properly####
     if(cl == TRUE){
       if(methods[m] == "PELT" || methods[m] == "AMOC"){
@@ -190,8 +190,8 @@ checkOtherPenalties <- function(methodLog){
       }
       ######change this based on methods
       ####check some values for the class
-      
-      
+
+
     }else if(cl == FALSE && methodLog == TRUE){
       #  expect_that(x, is_a('list'))  #####this is now an integer in BINSEG.
     }else if(cl == FALSE && methodLog == FALSE){
@@ -200,43 +200,43 @@ checkOtherPenalties <- function(methodLog){
       }
       #                       }else if(methods[m] == "AMOC"){
       #                         #if(testStats[ts] == "CUSUM"){
-      #                           expect_that(x, is_a('numeric'))    
+      #                           expect_that(x, is_a('numeric'))
       #                         #}else if(testStats[ts] != "CUSUM"){
       #                         #  expect_that(x, is_a('integer'))
       #                         #}
       #                       }
-      
+
     }
     t = t + 1
-  })  
+  })
 }
 
 
 
 for(d in 1:length(data)){
   if(is.element(NA, data[[d]])){
-    test_that(paste0("Test #",t," :data=",d), {      
+    test_that(paste0("Test #",t," :data=",d), {
       expect_that(cpt.mean(data=data[[d]]),throws_error("Missing value: NA is not allowed in the data as changepoint methods are only sensible for regularly spaced data."))
       t = t + 1
     })
-    
+
   }else if(length(data[[d]]) < 2){
-    test_that(paste0("Test #",t," :data=",d), {      
+    test_that(paste0("Test #",t," :data=",d), {
       expect_that(cpt.mean(data=data[[d]]),throws_error())
       t = t + 1
-    }) 
+    })
   }else if(is.numeric(data[[d]]) == FALSE){
     test_that(paste0("Test #",t," :data=",d), {
       expect_that(cpt.mean(data=data[[d]]),throws_error("Only numeric data allowed"))
       t = t + 1
-    }) 
+    })
   }
   else{
     for(p in 1:length(penalties)){
         for(m in 1:length(methods)){
             for(ts in 1:length(testStats)){
           for(cl in class){
-            for(pe in param.estimates){ 
+            for(pe in param.estimates){
               Qv = 5
               #                               if(t == 1112){
               #                               browser()
@@ -249,7 +249,7 @@ for(d in 1:length(data)){
                 if(methods[m] == "BinSeg" || methods[m] == "SegNeigh"){
                   for(v in 1:length(QValues)){
                     test_that(paste0("Test #",t," :data=", d, "penalty=",penalties[p],", method=",methods[m],",class=",cl,", param=",pe,", test.stat=",testStats[ts],"QVal=",QValues[[v]]), {
-                      
+
                       if(is.numeric(QValues[[v]]) == FALSE){
                         expect_that(cpt.mean(data=data[[d]], penalty=penalties[p], method=methods[m], Q=QValues[[v]], test.stat=testStats[ts], class=cl, param.estimates=pe), throws_error())
                       }else if(QValues[[v]] < 0){
@@ -260,7 +260,7 @@ for(d in 1:length(data)){
                       }
                       t = t + 1
                     })
-                    
+
                     if(penalties[p] == "Manual" ){
                       checkManualPenalty(TRUE)
                     }else if(penalties[p] == "Asymptotic"){
@@ -273,13 +273,13 @@ for(d in 1:length(data)){
                       }
                     }else{
                       checkOtherPenalties(TRUE)
-                    }  
-                  } 
+                    }
+                  }
                 }else{
                   #Normal and Asymptotic penalty pen values
                   if(methods[m] == "PELT" && testStats[ts] == "CUSUM"){
                     test_that(paste0("Test #",t," :data=", d, "penalty=",penalties[p],", method=",methods[m],",class=",cl,", param=",pe,", test.stat=",testStats[ts],"QVal=",Qv), {
-                      expect_that(cpt.mean(data=data[[d]], penalty=penalties[p], method=methods[m], Q=Qv, test.stat=testStats[ts], class=cl, param.estimates=pe), throws_error("Invalid Method, must be AMOC, SegNeigh or BinSeg")) 
+                      expect_that(cpt.mean(data=data[[d]], penalty=penalties[p], method=methods[m], Q=Qv, test.stat=testStats[ts], class=cl, param.estimates=pe), throws_error("Invalid Method, must be AMOC, SegNeigh or BinSeg"))
                     })
                     t = t + 1
                   }else{
@@ -306,5 +306,5 @@ for(d in 1:length(data)){
       }
     }
   }
-} 
+}
 

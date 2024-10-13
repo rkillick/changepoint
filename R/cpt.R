@@ -38,12 +38,15 @@ cpt.mean=function(data,penalty="MBIC",pen.value=0,method="PELT",Q=5,test.stat="N
     }
   }
   else if(test.stat=="CUSUM"){
-    warning('Traditional penalty values are not appropriate for the CUSUM test statistic')
     if(method=="AMOC"){
-      return(single.mean.cusum(data,penalty,pen.value,class,param.estimates,minseglen))
+      tmp=single.mean.cusum(data,penalty,pen.value,class,param.estimates,minseglen)
+      warning('Traditional penalty values are not appropriate for the CUSUM test statistic')
+      return(tmp)
     }
     else if(method=="SegNeigh" || method=="BinSeg"){
-      return(multiple.mean.cusum(data,mul.method=method,penalty,pen.value,Q,class,param.estimates,minseglen))
+      tmp=multiple.mean.cusum(data,mul.method=method,penalty,pen.value,Q,class,param.estimates,minseglen)
+      warning('Traditional penalty values are not appropriate for the CUSUM test statistic')
+      return(tmp)
     }
     else{
       stop("Invalid Method, must be AMOC, SegNeigh or BinSeg")
@@ -129,7 +132,7 @@ cpt.meanvar=function(data,penalty="MBIC",pen.value=0,method="PELT",Q=5,test.stat
   if(minseglen<2){
     if(!(minseglen==1 & (test.stat=="Poisson"|test.stat=="Exponential"))){
       minseglen=2;warning('Minimum segment length for a change in mean and variance is 2, automatically changed to be 2.')}
-    }
+  }
   if(penalty == "CROPS"){
     if(is.numeric(pen.value)){
       if(length(pen.value) == 2){
