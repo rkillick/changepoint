@@ -668,12 +668,13 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	setMethod("plot","cpt.range",function(x,ncpts=NA,diagnostic=FALSE,cpt.col='red',cpt.width=1,cpt.style=1,...){
 	  if(diagnostic==TRUE){
 	    n.changepoints = apply(cpts.full(x), 1, function(x) sum(x > 0, na.rm = TRUE))
+	    n.changepoints=c(n.changepoints,n.changepoints[length(n.changepoints)]) # repeat the last value as this is also the number of changes for the upper pen.value tested
 	    penalty.values = pen.value.full(x)
 	    if (is.null(list(...)$type)) {
 	      # By default, the type of the diagnostic plots is "lines".
-	      plot(x = n.changepoints, y = penalty.values, xlab = 'Number of Changepoints', ylab = 'Penalty Value', type = "l", ...)
+	      plot(x = penalty.values, y = n.changepoints, type="s",ylab = 'Number of Changepoints', xlab = 'Penalty Value', ...)
 	    } else {
-	      plot(x = n.changepoints, y = penalty.values, xlab = 'Number of Changepoints', ylab = 'Penalty Value', ...)
+	      plot(x = penalty.values, y = n.changepoints,ylab = 'Number of Changepoints', xlab = 'Penalty Value', ...)
 	    }
 	    return(invisible(NULL))
 	  }
