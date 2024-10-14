@@ -158,10 +158,9 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    if(inherits(row,'try-error')){
 	      stop("Your input object doesn't have a segmentation with the requested number of changepoints.\n Possible ncpts are: ",paste(ncpts.full,collapse=','))
 	    }
-	    else{return(cpts.full(object)[row,])}
+	    else{return(cpts.full(object)[row,1:ncpts])}
 	  }
 	 })
-
 
 	if(!isGeneric("cpts.full")) {
 	  if (is.function("cpts.full")){
@@ -236,7 +235,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		if (is.function("seg.len")){
 			fun <- seg.len
 		}
-		else {fun <- function(object){
+		else {fun <- function(object,...){
 				standardGeneric("seg.len")
 			}
 		}
@@ -244,6 +243,11 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	}
 	setMethod("seg.len","cpt",function(object){object@cpts-c(0,object@cpts[-length(object@cpts)])})
 	setMethod("seg.len","cpt.reg",function(object){object@cpts-c(0,object@cpts[-length(object@cpts)])})
+  setMethod("seg.len","cpt.range",function(object,ncpts=NA){
+    if(is.na(ncpts)){return(object@cpts-c(0,object@cpts[-length(object@cpts)]))} # works with no cpts specified too
+    cpts=c(0,cpts(object,ncpts=ncpts),length(data.set(object)))
+    return(cpts[-1]-cpts[-length(cpts)])
+  })
 #i.e. if there is a changepoint in the data, return segment length. If not, return length of the data
 
   # nseg function
@@ -251,7 +255,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	  if (is.function("nseg")){
 	    fun <- nseg
 	  }
-	  else {fun <- function(object){
+	  else {fun <- function(object,...){
 	    standardGeneric("nseg")
 	  }
 	  }
@@ -259,6 +263,10 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	}
 	setMethod("nseg","cpt",function(object){ncpts(object)+1})
 	setMethod("nseg","cpt.reg",function(object){ncpts(object)+1})
+  setMethod("nseg","cpt.range",function(object,ncpts=NA){
+    if(is.na(ncpts)){return(ncpts(object)+1)}
+    return(ncpts+1)
+  })
 
 
 # replacement functions for slots
@@ -414,97 +422,24 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 # parameter functions
 	setGeneric("param", function(object,...) standardGeneric("param"))
 	setMethod("param", "cpt", function(object,shape,...) {
-		param.mean=function(object){
-			cpts=c(0,object@cpts)
-			#nseg=length(cpts)-1
-			data=data.set(object)
-			tmpmean=NULL
-			for(j in 1:nseg(object)){
-				tmpmean[j]=mean(data[(cpts[j]+1):(cpts[j+1])])
-			}
-			return(tmpmean)
-		}
-		param.var=function(object){
-			cpts=c(0,object@cpts)
-			#nseg=length(cpts)-1
-			data=data.set(object)
-			seglen=seg.len(object)
-			tmpvar=NULL
-			for(j in 1:nseg(object)){
-				tmpvar[j]=var(data[(cpts[j]+1):(cpts[j+1])])
-			}
-			tmpvar=tmpvar*(seglen-1)/seglen # correctly for the fact that the MLE estimate is /n but the var function is /n-1
-			return(tmpvar)
-		}
-		param.scale=function(object,shape){
-			cpts=c(0,object@cpts)
-			#nseg=length(cpts)-1
-			data=data.set(object)
-			y=c(0,cumsum(data))
-			tmpscale=NULL
-			for(j in 1:nseg(object)){
-				tmpscale[j]=(y[(cpts[j+1]+1)]-y[(cpts[j]+1)])/((cpts[j+1]-cpts[j])*shape)
-			}
-			return(tmpscale)
-		}
-		param.trend=function(object){
-		  cpts=c(0,object@cpts)
-		  seglen=seg.len(object)
-		  data=data.set(object)
-		  n=length(data)
-		  sumstat=cbind(cumsum(c(0,data)),cumsum(c(0,data*c(1:n))))
-		  cptsumstat=matrix(sumstat[object@cpts+1,]-sumstat[c(0,cpts(object))+1,],ncol=2)
-		  cptsumstat[,2]=cptsumstat[,2]-cptsumstat[,1]*c(0,cpts(object)) # i.e. creating newx3
-
-		  thetaS=(2*cptsumstat[,1]*(2*seglen + 1) - 6*cptsumstat[,2]) / (2*seglen*(2*seglen + 1) - 3*seglen*(seglen+1))
-		  thetaT=(6*cptsumstat[,2])/((seglen+1)*(2*seglen+1)) + (thetaS * (1-((3*seglen)/((2*seglen)+1))))
-		  return(cbind(thetaS,thetaT))
-		}
-		param.meanar=function(object){
-		  seglen=seg.len(object)
-		  data=data.set(object)
-		  n=length(data)-1
-		  sumstat=cbind(cumsum(c(0,data[-1])),cumsum(c(0,data[-(n+1)])),cumsum(c(0,data[-1]*data[-(n+1)])),cumsum(c(0,data[-1]^2)),cumsum(c(0,data[-(n+1)]^2)))
-		  cptsumstat=matrix(sumstat[object@cpts+1,]-sumstat[c(0,cpts(object))+1,],ncol=5)
-		  beta2=(2*seglen*cptsumstat[,3]-cptsumstat[,1]*cptsumstat[,2])/(2*seglen*cptsumstat[,5]*(1-cptsumstat[,2]^2));
-		  beta1=(2*cptsumstat[,1]-beta2*cptsumstat[,2])/(2*seglen);
-
-		  return(cbind(beta1,beta2))
-		}
-		param.trendar=function(object){
-		  seglen=seg.len(object)
-		  data=data.set(object)
-		  n=length(data)-1
-		  sumstat=cbind(cumsum(c(0,data[-1])),cumsum(c(0,data[-(n+1)])),cumsum(c(0,data[-1]*data[-(n+1)])),cumsum(c(0,data[-1]*c(1:n))),cumsum(c(0,data[-(n+1)]*c(0:(n-1)))),cumsum(c(0,data[-1]^2)),cumsum(c(0,data[-(n+1)]^2)))
-		  cptsumstat=matrix(sumstat[object@cpts+1,]-sumstat[c(0,cpts(object))+1,],ncol=7)
-		  cptsumstat[,4]=cptsumstat[,4]-cptsumstat[,1]*c(0,cpts(object)) # i.e. creating newx4
-		  cptsumstat[,5]=cptsumstat[,5]-cptsumstat[,2]*c(0,cpts(object)) # i.e. creating newx5
-		  betatop=seglen*(seglen-1)*(seglen*(seglen-1)*cptsumstat[,3] + 2*(2*seglen+1)*cptsumstat[,1]*(cptsumstat[,5]-seglen*cptsumstat[,2]) + 6*cptsumstat[,4]*(cptsumstat[,2]-cptsumstat[,5]))
-		  betabottom=seglen*(seglen-1)*cptsumstat[,7] + 2*(2*seglen+1)*cptsumstat[,2]*(seglen*cptsumstat[,2]-cptsumstat[,5]) + 6*cptsumstat[,5]*(cptsumstat[,5]-cptsumstat[,2]);
-		  beta=betatop/betabottom;
-		  thetajpo=(6*(seglen+2)*(cptsumstat[,4]-beta*cptsumstat[,5]))/((seglen+1)*(2*seglen+1)) - 2*(cptsumstat[,1]-beta*cptsumstat[,2])
-		  thetaj=(2*(2*seglen+1)*(cptsumstat[,1]-beta*cptsumstat[,2])-6*(cptsumstat[,4]-beta*cptsumstat[,5]))/(seglen-1)
-
-		  return(cbind(beta,thetajpo,thetaj))
-		}
 		if(cpttype(object)=="mean"){
-			param.est(object)<-list(mean=param.mean(object))
+			param.est(object)<-list(mean=fit.mean(object))
 		}
 		else if(cpttype(object)=="variance"){
-			param.est(object)<-list(variance=param.var(object))
+			param.est(object)<-list(variance=fit.var(object))
 		}
 		else if(cpttype(object)=="mean and variance"){
 			if(test.stat(object)=="Normal"){
-				param.est(object)<-list(mean=param.mean(object),variance=param.var(object))
+				param.est(object)<-list(mean=fit.mean(object),variance=fit.var(object))
 			}
 			else if(test.stat(object)=="Gamma"){
-				param.est(object)<-list(scale=param.scale(object,shape=shape),shape=shape)
+				param.est(object)<-list(scale=fit.scale(object,shape=shape),shape=shape)
 			}
 			else if(test.stat(object)=="Exponential"){
-				param.est(object)<-list(rate=1/param.mean(object))
+				param.est(object)<-list(rate=1/fit.mean(object))
 			}
 			else if(test.stat(object)=="Poisson"){
-			  param.est(object)<-list(lambda=param.mean(object))
+			  param.est(object)<-list(lambda=fit.mean(object))
 			}
 			else{
 				stop("Unknown test statistic for a change in mean and variance")
@@ -512,7 +447,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		}
 		else if(cpttype(object)=="trend"){
 		  if(test.stat(object)=="Normal"){
-		    tmp=param.trend(object)
+		    tmp=fit.trend(object)
 		    param.est(object)<-list(thetaS=tmp[,1],thetaT=tmp[,2])
 		  }
 		  else{
@@ -521,7 +456,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		}
 		else if(cpttype(object)=="trendar"){
 		  if(test.stat(object)=="Normal"){
-		    tmp=param.trendar(object)
+		    tmp=fit.trendar(object)
 		    param.est(object)<-list(beta=tmp[,1],thetajpo=tmp[,2],thetaj=tmp[,3])
 		  }
 		  else{
@@ -530,7 +465,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		}
 		else if(cpttype(object)=="meanar"){
 		  if(test.stat(object)=="Normal"){
-		    tmp=param.meanar(object)
+		    tmp=fit.meanar(object)
 		    param.est(object)<-list(beta1=tmp[,1],beta2=tmp[,2])
 		  }
 		  else{
@@ -549,102 +484,27 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    if(cpts[1]!=0){cpts=c(0,cpts)} # PELT derivatives don't include the 0
 	  }
 	  else{
-	    ncpts.full=apply(cpts.full(object),1,function(x){sum(x>0,na.rm=TRUE)})
-	    row=try(which(ncpts.full==ncpts),silent=TRUE)
-	    if(inherits(row,'try-error')){
-	      stop("Your input object doesn't have a segmentation with the requested number of changepoints.")
-	    }
-	    cpts=c(0,cpts.full(object)[row,1:ncpts],length(data.set(object)))
-	  }
-
-	 	param.mean=function(object,cpts){
-	 	  nseg=length(cpts)-1
-	    data=data.set(object)
-	    tmpmean=NULL
-	    for(j in 1:nseg){
-	      tmpmean[j]=mean(data[(cpts[j]+1):(cpts[j+1])])
-	    }
-	    return(tmpmean)
-	  }
-	  param.var=function(object,cpts){
-	    nseg=length(cpts)-1
-	    data=data.set(object)
-	    seglen=cpts[-1]-cpts[-length(cpts)]
-	    tmpvar=NULL
-	    for(j in 1:nseg){
-	      tmpvar[j]=var(data[(cpts[j]+1):(cpts[j+1])])
-	    }
-	    tmpvar=tmpvar*(seglen-1)/seglen
-	    return(tmpvar)
-	  }
-	  param.scale=function(object,cpts,shape){
-	    nseg=length(cpts)-1
-	    data=data.set(object)
-	    y=c(0,cumsum(data))
-	    tmpscale=NULL
-	    for(j in 1:nseg){
-	      tmpscale[j]=(y[(cpts[j+1]+1)]-y[(cpts[j]+1)])/((cpts[j+1]-cpts[j])*shape)
-	    }
-	    return(tmpscale)
-	  }
-	  param.trend=function(object,cpts){
-	    seglen=cpts[-1]-cpts[-length(cpts)]
-	    data=data.set(object)
-	    n=length(data)
-	    sumstat=cbind(cumsum(c(0,data)),cumsum(c(0,data*c(1:n))))
-	    cptsumstat=matrix(sumstat[object@cpts+1,]-sumstat[c(0,cpts(object))+1,],ncol=2)
-	    cptsumstat[,2]=cptsumstat[,2]-cptsumstat[,1]*c(0,cpts(object)) # i.e. creating newx3
-
-	    thetaS=(2*cptsumstat[,1]*(2*seglen + 1) - 6*cptsumstat[,2]) / (2*seglen*(2*seglen + 1) - 3*seglen*(seglen+1))
-	    thetaT=(6*cptsumstat[,2])/((seglen+1)*(2*seglen+1)) + (thetaS * (1-((3*seglen)/((2*seglen)+1))))
-	    return(cbind(thetaS,thetaT))
-	  }
-	  param.meanar=function(object,cpts){
-	    seglen=cpts[-1]-cpts[-length(cpts)]
-	    data=data.set(object)
-	    n=length(data)-1
-	    sumstat=cbind(cumsum(c(0,data[-1])),cumsum(c(0,data[-(n+1)])),cumsum(c(0,data[-1]*data[-(n+1)])),cumsum(c(0,data[-1]^2)),cumsum(c(0,data[-(n+1)]^2)))
-	    cptsumstat=matrix(sumstat[object@cpts+1,]-sumstat[c(0,cpts(object))+1,],ncol=5)
-	    beta2=(2*seglen*cptsumstat[,3]-cptsumstat[,1]*cptsumstat[,2])/(2*seglen*cptsumstat[,5]*(1-cptsumstat[,2]^2));
-	    beta1=(2*cptsumstat[,1]-beta2*cptsumstat[,2])/(2*seglen);
-
-	    return(cbind(beta1,beta2))
-	  }
-	  param.trendar=function(object,cpts){
-	    seglen=cpts[-1]-cpts[-length(cpts)]
-	    data=data.set(object)
-	    n=length(data)-1
-	    sumstat=cbind(cumsum(c(0,data[-1])),cumsum(c(0,data[-(n+1)])),cumsum(c(0,data[-1]*data[-(n+1)])),cumsum(c(0,data[-1]*c(1:n))),cumsum(c(0,data[-(n+1)]*c(0:(n-1)))))
-	    cptsumstat=matrix(sumstat[object@cpts+1,]-sumstat[c(0,cpts(object))+1,],ncol=7)
-	    cptsumstat[,4]=cptsumstat[,4]-cptsumstat[,1]*c(0,cpts(object)) # i.e. creating newx4
-	    cptsumstat[,5]=cptsumstat[,5]-cptsumstat[,2]*c(0,cpts(object)) # i.e. creating newx5
-	    betatop=seglen*(seglen-1)*(seglen*(seglen-1)*cptsumstat[,3] + 2*(2*seglen+1)*cptsumstat[,1]*(cptsumstat[,5]-seglen*cptsumstat[,2]) + 6*cptsumstat[,4]*(cptsumstat[,2]-cptsumstat[,5]))
-	    betabottom=seglen*(seglen-1)*cptsumstat[,7] + 2*(2*seglen+1)*cptsumstat[,2]*(seglen*cptsumstat[,2]-cptsumstat[,5]) + 6*cptsumstat[,5]*(cptsumstat[,5]-cptsumstat[,2]);
-	    beta=betatop/betabottom;
-	    thetajpo=(6*(seglen+2)*(cptsumstat[,4]-beta*cptsumstat[,5]))/((seglen+1)*(2*seglen+1)) - 2*(cptsumstat[,1]-beta*cptsumstat[,2])
-	    thetaj=(2*(2*seglen+1)*(cptsumstat[,1]-beta*cptsumstat[,2])-6*(cptsumstat[,4]-beta*cptsumstat[,5]))/(seglen-1)
-
-	    return(cbind(beta,thetajpo,thetaj))
+      cpts=c(0,cpts(object,ncpts),length(data.set(object))) # cpts returns without 0 and n
 	  }
 
 	  if(cpttype(object)=="mean"){
-	    param.est<-list(mean=param.mean(object,cpts))
+	    param.est<-list(mean=fit.mean(object,cpts))
 	  }
 	  else if(cpttype(object)=="variance"){
-	    param.est<-list(variance=param.var(object,cpts))
+	    param.est<-list(variance=fit.var(object,cpts))
 	  }
 	  else if(cpttype(object)=="mean and variance"){
 	    if(test.stat(object)=="Normal"){
-	      param.est<-list(mean=param.mean(object,cpts),variance=param.var(object,cpts))
+	      param.est<-list(mean=fit.mean(object,cpts),variance=fit.var(object,cpts))
 	    }
 	    else if(test.stat(object)=="Gamma"){
-	      param.est<-list(scale=param.scale(object,cpts,shape=shape),shape=shape)
+	      param.est<-list(scale=fit.scale(object,cpts,shape=shape),shape=shape)
 	    }
 	    else if(test.stat(object)=="Exponential"){
-	      param.est<-list(rate=1/param.mean(object,cpts))
+	      param.est<-list(rate=1/fit.mean(object,cpts))
 	    }
 	    else if(test.stat(object)=="Poisson"){
-	      param.est<-list(lambda=param.mean(object,cpts))
+	      param.est<-list(lambda=fit.mean(object,cpts))
 	    }
 	    else{
 	      stop("Unknown test statistic for a change in mean and variance")
@@ -652,7 +512,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	  }
 	  else if(cpttype(object)=="trend"){
 	    if(test.stat(object)=="Normal"){
-	      tmp=param.trend(object)
+	      tmp=fit.trend(object,cpts)
 	      param.est(object)<-list(thetaS=tmp[,1],thetaT=tmp[,2])
 	    }
 	    else{
@@ -661,7 +521,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	  }
 	  else if(cpttype(object)=="trendar"){
 	    if(test.stat(object)=="Normal"){
-	      tmp=param.trendar(object)
+	      tmp=fit.trendar(object,cpts)
 	      param.est(object)<-list(beta=tmp[,1],thetajpo=tmp[,2],thetaj=tmp[,3])
 	    }
 	    else{
@@ -670,7 +530,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	  }
 	  else if(cpttype(object)=="meanar"){
 	    if(test.stat(object)=="Normal"){
-	      tmp=param.meanar(object)
+	      tmp=fit.meanar(object,cpts)
 	      param.est(object)<-list(beta1=tmp[,1],beta2=tmp[,2])
 	    }
 	    else{
@@ -686,32 +546,13 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	  }
 	  out=new('cpt.range')
 	  param.est(out)=param.est
+	  cpts(out)=cpts[-1] # keeps the n, not the 0
 	  return(out)
 	})
 
 	setMethod("param", "cpt.reg", function(object,shape,...) {
-		param.norm=function(object){
-			cpts=c(0,object@cpts)
-		#	nseg=length(cpts)-1 #nseg(object)
-			data=data.set(object)
-			p=ncol(data)-1
-			tmpbeta=matrix(NA,ncol=p,nrow=nseg(object))
-			tmpsigma=rep(NA,nseg(object))
-			for(j in 1:nseg(object)){
-			  formula=paste('-1+data[',cpts[j]+1,':',cpts[j+1],',2]',sep='')
-			  if(p>1){
-			    for(i in 2:p){
-			      formula=paste(formula,'+data[',(cpts[j]+1),':',cpts[j+1],',',i+1,']',sep='')
-			    }
-			  }
-			  tmpfit=eval(parse(text=paste('lm(data[',(cpts[j]+1),':',cpts[j+1],',1]~',formula,')',sep='')))
-			  tmpbeta[j,]=tmpfit$coefficients
-			  tmpsigma[j]=sum(tmpfit$residuals^2)/(length(tmpfit$residuals)-length(tmpfit$coefficients)) ##var(tmpfit$residuals)
-			}
-			return(list(beta=tmpbeta,sig2=tmpsigma))
-		}
 		if(test.stat(object)=="Normal"){
-			param.est(object)<-param.norm(object)
+			param.est(object)<-fit.reg(object)
 		}
 		else{
 			stop("Unknown test statistic, must be 'Normal'")
@@ -845,12 +686,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    param.est=x
 	  }
 	  else{
-	    ncpts.full=apply(cpts.full(x),1,function(x){sum(x>0,na.rm=TRUE)})
-	    row=which(ncpts.full==ncpts)
-	    if(length(row)==0){
-	      stop(paste("Your input object doesn't have a segmentation with the requested number of changepoints.\n Possible ncpts are: "),paste(ncpts.full,collapse=','))
-	    }
-	    cpts.to.plot=cpts.full(x)[row,1:ncpts]
+	    cpts.to.plot=cpts(x,ncpts=ncpts)
 	    if(test.stat(x)=="Gamma"){
 	      param.est=param(x,ncpts,shape=param.est(x)$shape)
 	    }

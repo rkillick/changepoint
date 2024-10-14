@@ -7,12 +7,15 @@ Generic Function - nseg
 Generic function
 }
 \usage{
-nseg(object)
+nseg(object,...)
 }
 \arguments{
   \item{object}{
 	Depending on the class of \code{object} depends on the method used (and if one exists)
 }
+  \item{...}{
+    Other optional arguments used by some methods.
+  }
 }
 \details{
 	Generic Function

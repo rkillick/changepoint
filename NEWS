@@ -2,6 +2,9 @@ Version 2.3
 ===========
 
 * Added cpt.reg() function for changes in regression. Thanks to Harjit Hullait who coded the C backend for this whilst at the STOR-i doctoral training centre at Lancaster University. Thanks also to Simon Taylor who updated the documentation for cpt.reg() from an earlier version.
+* Added some generics for cpt.range that were missing before; nseg, seg.len.  Previously these inherited from cpt, but now these can be called on the @cpts slot (default) or optionally with a ncpts argument for the specified number of changepoints.
+* Moved the fit functions outside of the param functions.  Previously these were unnecessarily repeated across cpt, cpt.reg and cpt.range classes.  This necessitated the adding of the generics that we missing for cpt.range so it worked seamlessly across classes.
+* Repeated code to calculate the cpts from a ncpts argument in cpt.range methods was removed.
 
 Version 2.2.5
 =============
