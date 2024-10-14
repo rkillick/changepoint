@@ -778,9 +778,9 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    penalty.values = pen.value.full(x)
 	    if (is.null(list(...)$type)) {
 	      # By default, the type of the diagnostic plots is "lines".
-	      plot(x = penalty.values, y = n.changepoints, type="s",ylab = 'Number of Changepoints', xlab = 'Penalty Value', ...)
+	      plot(x = n.changepoints, y = penalty.values, type="s",xlab = 'Number of Changepoints', ylab = 'Penalty Value', ...)
 	    } else {
-	      plot(x = penalty.values, y = n.changepoints,ylab = 'Number of Changepoints', xlab = 'Penalty Value', ...)
+	      plot(x = n.changepoints, y = penalty.values,xlab = 'Number of Changepoints', ylab = 'Penalty Value', ...)
 	    }
 	    return(invisible(NULL))
 	  }
