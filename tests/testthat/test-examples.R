@@ -48,7 +48,7 @@ truth=matrix(NA,ncol=7,nrow=7); truth[1:6,1]=50;truth[1:5,2]=c(96,96,100,100,150
 truth[1:4,3]=c(100,100,133,150);truth[1:3,4]=c(133,133,150);truth[1:2,5]=c(150,150)
 truth[1,6]=159;truth[1,7]=180
 test_that('crops1',expect_equivalent(cpts.full(out),truth))
-truth=c(4.000000,   4.332496,   4.385247,   4.684254 ,559.366988, 646.962719,1311.335695)
+truth=c(4.000000,   4.332496,   4.385247,   4.684254 ,559.366988, 646.962719,1311.335695,1500.000000)
 test_that('crops2',expect_equal(pen.value.full(out),truth,tolerance=1e-6))
 
 # Example multiple datasets where the first row has multiple changes in mean and the second row has
@@ -89,7 +89,7 @@ truth=matrix(NA,ncol=9,nrow=6);truth[1:5,1]=c(rep(15,2),rep(50,3));truth[1:4,2]=
 truth[1:4,3]=c(22,22,133,150);truth[1:3,4]=c(44,50,151);truth[1:2,5]=c(46,100)
 truth[1:2,6]=c(50,133);truth[1:2,7]=c(100,151);truth[1,8]=133;truth[1,9]=151
 test_that('crops3',expect_equal(cpts.full(out),truth))
-truth=c(10.59663,  10.68431,  11.31088, 11.38307,  119.78669, 191.42622)
+truth=c(10.59663,  10.68431,  11.31088, 11.38307,  119.78669, 191.42622,529.83174)
 test_that('crops4',expect_equal(pen.value.full(out),truth,tolerance=1e-6))
 
 # Example multiple datasets where the first row has multiple changes in mean and variance and the
@@ -198,7 +198,7 @@ out=cpt.var(x,pen.value=c(log(length(x)),100*log(length(x))),penalty="CROPS",met
 truth=matrix(NA,ncol=7,nrow=7);truth[1:6,1]=50;truth[1:5,2]=c(77,rep(99,3),150);truth[1:4,3]=c(79,114,140,150)
 truth[1:3,4]=c(99,133,150);truth[1:2,5]=c(114,150);truth[1,6]=133;truth[1,7]=150
 test_that('var5',expect_equivalent(cpts.full(out),truth))
-truth=c(5.298317,5.548538,6.149305,7.083099,26.592259,142.417161,145.146279)
+truth=c(5.298317,5.548538,6.149305,7.083099,26.592259,142.417161,145.146279,529.831737)
 test_that('var6',expect_equivalent(pen.value.full(out),truth))
 
 # Example multiple datasets where the first row has multiple changes in variance and the second row
