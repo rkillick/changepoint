@@ -676,7 +676,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	  return(data.set(object)-fitted(object))
 	})
 	setMethod("residuals","cpt.reg",function(object){
-	  return(data.set(object)-fitted(object))
+	  return(data.set(object)[,1]-fitted(object))
 	})
 	setMethod("residuals","cpt.range",function(object,ncpts=NA){
 	  return(data.set(object)-fitted(object,ncpts))
