@@ -1,6 +1,6 @@
 penalty_decision = function(penalty, pen.value, n, diffparam, asymcheck, method){
-  
-  
+
+
   if((penalty=="SIC0") || (penalty=="BIC0")){
     pen.return=diffparam*log(n)
   }
@@ -45,12 +45,12 @@ penalty_decision = function(penalty, pen.value, n, diffparam, asymcheck, method)
       pen.return=pen.value
     }
   }
-  
+
   if((penalty=="Manual")&&(is.numeric(pen.value)==TRUE)){
     pen.return=pen.value
   }
-  
-  
+
+
   if(penalty=="Asymptotic"){
     if((pen.value <= 0) || (pen.value > 1)){
       stop('Asymptotic penalty values must be > 0 and <= 1')
@@ -63,7 +63,7 @@ penalty_decision = function(penalty, pen.value, n, diffparam, asymcheck, method)
       alogn=(2*log(log(n)))^(-(1/2))
       blogn=(alogn^(-1))+(1/2)*alogn*log(log(log(n)))
       pen.return=(-alogn*log(log((1-alpha+exp(-2*(pi^(1/2))*exp(blogn/alogn)))^(-1/(2*(pi^(1/2))))))+blogn)^2
-    }else if(asymcheck == "var.norm"){ 
+    }else if(asymcheck == "var.norm"){
       alpha=pen.value
       alogn=sqrt(2*log(log(n)))
       blogn=2*log(log(n))+ (log(log(log(n))))/2 - log(gamma(1/2))

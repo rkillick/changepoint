@@ -10,7 +10,7 @@ decision<-function(tau,null,alt=NA,penalty="MBIC",n=0,diffparam=1,pen.value=0){
 		}
 	}
 	single.decision=function(tau,null,alt,n=0,diffparam=1,pen.value=0){
-		if(is.na(alt)){teststat=null}
+		if(is.na(alt)|!is.finite(alt)){teststat=null}
 		else{teststat=null-alt}
 		if(teststat>=pen.value){return(tau)}
 		else{return(n)}

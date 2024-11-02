@@ -1,3 +1,14 @@
+Version 2.3
+===========
+
+* Added cpt.reg() function for changes in regression. Thanks to Harjit Hullait who coded the C backend for this whilst at the STOR-i doctoral training centre at Lancaster University. Thanks also to Simon Taylor who updated the documentation for cpt.reg() from an earlier version.
+* Added some generics for cpt.range that were missing before; nseg, seg.len.  Previously these inherited from cpt, but now these can be called on the @cpts slot (default) or optionally with a ncpts argument for the specified number of changepoints.
+* Moved the fit functions outside of the param functions.  Previously these were unnecessarily repeated across cpt, cpt.reg and cpt.range classes.  This necessitated the adding of the generics that we missing for cpt.range so it worked seamlessly across classes.
+* Repeated code to calculate the cpts from a ncpts argument in cpt.range methods was removed.
+* The diagnostic plot for cpt.range objects (plot(object,diagnostic=TRUE)) has been changed to be more informative.  The axes have been swapped and instead of a line graph, a stepped graph is used which better reflects that you can't get fractional numbers of changepoints (type="s").  This can be overridden with another type if preferred.  Reworded the man file for plot-methods to reflect this change.
+* Added the upper bound on the tested penalty values to the pen.value.full slot for CROPS output.  Previously this was automatically removed and so you needed the original function call to know the upper bound that was tested.
+* Added fitted and residuals methods for cpt, cpt.reg, cpt.range classes.
+
 Version 2.2.5
 =============
 * Thanks to Toby Hocking for highlighting that when pen=0, BinSeg doesn't need to warn that ncpts=Q as this is by design. Warning for pen=0 removed.

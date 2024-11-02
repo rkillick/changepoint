@@ -7,7 +7,7 @@ Identifying Changes in Mean
 Calculates the optimal positioning and (potentially) number of changepoints for data using the user specified method.
 }
 \usage{
-cpt.mean(data,penalty="MBIC",pen.value=0,method="AMOC",Q=5,test.stat="Normal",class=TRUE,
+cpt.mean(data,penalty="MBIC",pen.value=0,method="PELT",Q=5,test.stat="Normal",class=TRUE,
 param.estimates=TRUE,minseglen=1)
 }
 \arguments{
@@ -18,10 +18,10 @@ param.estimates=TRUE,minseglen=1)
 	Choice of "None", "SIC", "BIC", "MBIC", AIC", "Hannan-Quinn", "Asymptotic", "Manual" and "CROPS" penalties.  If Manual is specified, the manual penalty is contained in the pen.value parameter. If Asymptotic is specified, the theoretical type I error is contained in the pen.value parameter.  If CROPS is specified, the penalty range is contained in the pen.value parameter; note this is a vector of length 2 which contains the minimum and maximum penalty value.  Note CROPS can only be used if the method is "PELT". The predefined penalties listed DO count the changepoint as a parameter, postfix a 0 e.g."SIC0" to NOT count the changepoint as a parameter.
 }
   \item{pen.value}{
-	The theoretical type I error e.g.0.05 when using the Asymptotic penalty.  A vector of length 2 (min,max) if using the CROPS penalty.  The value of the penalty when using the Manual penalty option - this can be a numeric value or text giving the formula to use.  Available variables are, n=length of original data, null=null likelihood, alt=alternative likelihood, tau=proposed changepoint, diffparam=difference in number of alternatve and null parameters.  
+	The theoretical type I error e.g.0.05 when using the Asymptotic penalty.  A vector of length 2 (min,max) if using the CROPS penalty.  The value of the penalty when using the Manual penalty option - this can be a numeric value or text giving the formula to use.  Available variables are, n=length of original data, null=null likelihood, alt=alternative likelihood, tau=proposed changepoint, diffparam=difference in number of alternatve and null parameters.
 }
   \item{method}{
-	Choice of "AMOC", "PELT", "SegNeigh" or "BinSeg".
+	Choice of "AMOC", "PELT", "SegNeigh" or "BinSeg". Default is "PELT" (from 2.3).
 }
   \item{Q}{
 	The maximum number of changepoints to search for using the "BinSeg" method.  The maximum number of segments (number of changepoints + 1) to search for using the "SegNeigh" method.
@@ -93,31 +93,31 @@ set.seed(1)
 x=c(rnorm(100,0,1),rnorm(100,10,1))
 cpt.mean(x,penalty="SIC",method="AMOC",class=FALSE) # returns 100 to show that the null hypothesis
 #was rejected and the change in mean is at 100 and the confidence level is 1.
-ans=cpt.mean(x,penalty="Asymptotic",pen.value=0.01,method="AMOC") 
+ans=cpt.mean(x,penalty="Asymptotic",pen.value=0.01,method="AMOC")
 cpts(ans)# returns 100 to show that the null hypothesis was rejected, the change in mean is at 100
 #and we are 99% confident of this result
-cpt.mean(x,penalty="Manual",pen.value=0.8,method="AMOC",test.stat="CUSUM") 
-# returns 101 as the changepoint location 
+cpt.mean(x,penalty="Manual",pen.value=0.8,method="AMOC",test.stat="CUSUM")
+# returns 101 as the changepoint location
 
 
 # Example of multiple changes in mean at 50,100,150 in simulated normal data
 set.seed(1)
 x=c(rnorm(50,0,1),rnorm(50,5,1),rnorm(50,10,1),rnorm(50,3,1))
-cpt.mean(x,penalty="Manual",pen.value="2*log(n)",method="BinSeg",Q=5,class=FALSE) 
+cpt.mean(x,penalty="Manual",pen.value="2*log(n)",method="BinSeg",Q=5,class=FALSE)
 # returns optimal number of changepoints is 3, locations are 50,100,150.
 
 # Example of using the CROPS penalty in data set above
 set.seed(1)
 x=c(rnorm(50,0,1),rnorm(50,5,1),rnorm(50,10,1),rnorm(50,3,1))
-out=cpt.mean(x, pen.value = c(4,1500),penalty = "CROPS",method = "PELT") 
-cpts.full(out)  # returns 7 segmentations for penalty values between 4 and 1500.  
-# We find segmentations with 7, 5, 4, 3, 2, 1 and 0 changepoints. 
+out=cpt.mean(x, pen.value = c(4,1500),penalty = "CROPS",method = "PELT")
+cpts.full(out)  # returns 7 segmentations for penalty values between 4 and 1500.
+# We find segmentations with 7, 5, 4, 3, 2, 1 and 0 changepoints.
 # Note that the empty final row indicates no changepoints.
 pen.value.full(out) # gives associated penalty transition points
 # CROPS does not give an optimal set of changepoints thus we may wish to explore further
-plot(out,diagnostic=TRUE) 
+plot(out,diagnostic=TRUE)
 # looks like the segmentation with 3 changepoints, 50,100,150 is the most appropriate
-plot(out,ncpts=3) 
+plot(out,ncpts=3)
 
 
 # Example multiple datasets where the first row has multiple changes in mean and the second row has
@@ -129,7 +129,7 @@ z=rbind(x,y)
 cpt.mean(z,penalty="Asymptotic",pen.value=0.01,method="SegNeigh",Q=5,class=FALSE) # returns list
 #that has two elements, the first has 3 changes in mean and variance at 50,100,150 and the second
 #has no changes in variance
-ans=cpt.mean(z,penalty="Asymptotic",pen.value=0.01,method="PELT") 
+ans=cpt.mean(z,penalty="Asymptotic",pen.value=0.01,method="PELT")
 cpts(ans[[1]]) # same results as for the SegNeigh method.
 cpts(ans[[2]]) # same results as for the SegNeigh method.
 }
