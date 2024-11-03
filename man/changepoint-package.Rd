@@ -13,7 +13,7 @@ Implements various mainstream and specialised changepoint methods for finding si
 Package: \tab changepoint\cr
 Type: \tab Package\cr
 Version: \tab 2.3 \cr
-Date: \tab 2024-10-12\cr
+Date: \tab 2024-11-02\cr
 License: \tab GPL\cr
 LazyLoad: \tab yes\cr
 }

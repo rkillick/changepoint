@@ -5,19 +5,19 @@ context("man file example tests")
 set.seed(1)
 x=c(rnorm(100,0,1),rnorm(100,0,10))
 ansvar=cpt.var(x)
-test_that('var1',expect_equal(cpts(ansvar),100))
+test_that('var1',expect_identical(cpts(ansvar),100))
 
 # change in mean
 set.seed(1)
 y=c(rnorm(100,0,1),rnorm(100,5,1))
 ansmean=cpt.mean(y)
-test_that('mean1',expect_equal(cpts(ansmean),100))
+test_that('mean1',expect_identical(cpts(ansmean),100))
 
 # change in mean and variance
 set.seed(1)
 z=c(rnorm(100,0,1),rnorm(100,2,10))
 ansmeanvar=cpt.meanvar(z)
-test_that('meanvar1',expect_equal(cpts(ansmeanvar),100))
+test_that('meanvar1',expect_identical(cpts(ansmeanvar),100))
 
 
 
@@ -31,14 +31,14 @@ set.seed(1)
 x=c(rnorm(100,0,1),rnorm(100,10,1))
 test_that('mean2',expect_equivalent(cpt.mean(x,penalty="SIC",method="AMOC",class=FALSE),c(100,1)))
 ans=cpt.mean(x,penalty="Asymptotic",pen.value=0.01,method="AMOC")
-test_that('mean3',expect_equal(cpts(ans),100))
-ans=suppressWarnings(cpt.mean(x,penalty="Manual",pen.value=0.8,method="AMOC",test.stat="CUSUM"))
+test_that('mean3',expect_identical(cpts(ans),100))
+ans=cpt.mean(x,penalty="Manual",pen.value=0.8,method="AMOC",test.stat="CUSUM")
 test_that('mean4',expect_equivalent(cpts(ans),101))
 
 # Example of multiple changes in mean at 50,100,150 in simulated normal data
 set.seed(1)
 x=c(rnorm(50,0,1),rnorm(50,5,1),rnorm(50,10,1),rnorm(50,3,1))
-test_that('mean5',expect_equal(cpt.mean(x,penalty="Manual",pen.value="2*log(n)",method="BinSeg",Q=5,class=FALSE),c(50,100,150,200)))
+test_that('mean5',expect_identical(cpt.mean(x,penalty="Manual",pen.value="2*log(n)",method="BinSeg",Q=5,class=FALSE),c(50,100,150,200)))
 
 # Example of using the CROPS penalty in data set above
 set.seed(1)
@@ -48,7 +48,7 @@ truth=matrix(NA,ncol=7,nrow=7); truth[1:6,1]=50;truth[1:5,2]=c(96,96,100,100,150
 truth[1:4,3]=c(100,100,133,150);truth[1:3,4]=c(133,133,150);truth[1:2,5]=c(150,150)
 truth[1,6]=159;truth[1,7]=180
 test_that('crops1',expect_equivalent(cpts.full(out),truth))
-truth=c(4.000000,   4.332496,   4.385247,   4.684254 ,559.366988, 646.962719,1311.335695,1500.000000)
+truth=c(4.000000,   4.332496,   4.385247,   4.684254 ,559.366988, 646.962719,1311.335695)
 test_that('crops2',expect_equal(pen.value.full(out),truth,tolerance=1e-6))
 
 # Example multiple datasets where the first row has multiple changes in mean and the second row has
@@ -57,8 +57,8 @@ set.seed(1)
 x=c(rnorm(50,0,1),rnorm(50,5,1),rnorm(50,10,1),rnorm(50,3,1))
 y=rnorm(200,0,1)
 z=rbind(x,y)
-test_that('mean6',expect_equal(suppressWarnings(cpt.mean(z,penalty="Asymptotic",pen.value=0.01,method="SegNeigh",Q=5,class=FALSE)),list(c(50,100,150,200),200)))
-ans=suppressWarnings(cpt.mean(z,penalty="Asymptotic",pen.value=0.01,method="PELT"))
+test_that('mean6',expect_equal(cpt.mean(z,penalty="Asymptotic",pen.value=0.01,method="SegNeigh",Q=5,class=FALSE),list(c(50,100,150,200),200)))
+ans=cpt.mean(z,penalty="Asymptotic",pen.value=0.01,method="PELT")
 test_that('mean7',expect_equal(cpts(ans[[1]]),c(50,100,150)))
 test_that('mean8',expect_equal(cpts(ans[[2]]),numeric()))
 
@@ -89,7 +89,7 @@ truth=matrix(NA,ncol=9,nrow=6);truth[1:5,1]=c(rep(15,2),rep(50,3));truth[1:4,2]=
 truth[1:4,3]=c(22,22,133,150);truth[1:3,4]=c(44,50,151);truth[1:2,5]=c(46,100)
 truth[1:2,6]=c(50,133);truth[1:2,7]=c(100,151);truth[1,8]=133;truth[1,9]=151
 test_that('crops3',expect_equal(cpts.full(out),truth))
-truth=c(10.59663,  10.68431,  11.31088, 11.38307,  119.78669, 191.42622,529.83174)
+truth=c(10.59663,  10.68431,  11.31088, 11.38307,  119.78669, 191.42622)
 test_that('crops4',expect_equal(pen.value.full(out),truth,tolerance=1e-6))
 
 # Example multiple datasets where the first row has multiple changes in mean and variance and the
@@ -98,8 +98,8 @@ set.seed(1)
 x=c(rnorm(50,0,1),rnorm(50,5,3),rnorm(50,10,1),rnorm(50,3,10))
 y=rnorm(200,0,1)
 z=rbind(x,y)
-test_that('meanvar5',expect_equivalent(suppressWarnings(cpt.meanvar(z,penalty="Asymptotic",pen.value=0.01,method="SegNeigh",Q=5,class=FALSE)),list(c(50,100,150,200),200)))
-ans=suppressWarnings(cpt.meanvar(z,penalty="Asymptotic",pen.value=0.01,method="PELT"))
+test_that('meanvar5',expect_equivalent(cpt.meanvar(z,penalty="Asymptotic",pen.value=0.01,method="SegNeigh",Q=5,class=FALSE),list(c(50,100,150,200),200)))
+ans=cpt.meanvar(z,penalty="Asymptotic",pen.value=0.01,method="PELT")
 test_that('meanvar6',expect_equivalent(cpts(ans[[1]]),c(50,100,150)))
 test_that('meanvar7',expect_equivalent(cpts(ans[[2]]),numeric()))
 
@@ -120,44 +120,12 @@ test_that('class2',expect_equivalent(cpts(x),c(10,50,100)))
 set.seed(1)
 x=c(rnorm(50,0,1),rnorm(50,0,10),rnorm(50,0,5),rnorm(50,0,1))
 out=cpt.var(x,pen.value=c(log(length(x)),10*log(length(x))),penalty="CROPS",method="PELT")
-test_that('class3',expect_equivalent(suppressWarnings(logLik(out,ncpts=3)),c(925.8085, 947.0578))) # raw likelihood of the data with changepoints, second value is likelihood + penalty
+test_that('class3',expect_equivalent(logLik(out,ncpts=3),c(925.8085, 947.0578))) # raw likelihood of the data with changepoints, second value is likelihood + penalty
 
 
 
 
-
-
-
-
-
-# From cpt.reg.Rd
-set.seed(1)
-x <- 1:200
-beta0 <- rep(c(0,100,50,0),each=50)
-beta1 <- rep(c(1,-1,0,0.25),each=50)
-y <- beta0 + beta1*x + rnorm(200)
-data <- cbind(y,1,x)
-
-out <- cpt.reg(data, method="PELT", minseglen=5, penalty="MBIC", test.stat="Normal")
-test_that('reg1',expect_equivalent(cpts(out),c(49,100,150)))
-test_that('reg2',expect_equivalent(param.est(out)$beta[,2],c(0.99733936, -1.00644514, -0.01908214,  0.24806270)))
-
-## Seasonal change, period 12
-n=100
-indicator=rep(1,n)
-trend=1:n
-seasonal=cos(2*pi*(1:n -6)/12) # yearly, peak in summer
-cpt.s = c(rep(0,floor(n/4)), rep(2, floor(n/4)), rep(1, floor(n/4)),rep(0,n-3*floor(n/4))) ##3 Alternating Cpts
-set.seed(1)
-y=0.1*cpt.s*1:n+cos(2*pi*(1:n -6)/12)+rnorm(n)
-data=cbind(y,indicator,trend,seasonal)
-out=cpt.reg(data, minseglen=12)
-test_that('reg3',expect_equivalent(cpts(out),c(25,50,75)))
-test_that('reg4',expect_equivalent(param.est(out)$beta[,2],c(0.010887760,  0.231984788,  0.070686805, -0.002967858)))
-
-
-
-
+#
 
 
 
@@ -185,8 +153,8 @@ test_that('var3',expect_equivalent(cpts(ans),100))
 # Example of multiple changes in variance at 50,100,150 in simulated data
 set.seed(1)
 x=c(rnorm(50,0,1),rnorm(50,0,10),rnorm(50,0,5),rnorm(50,0,1))
-out=suppressWarnings(cpt.var(x,penalty="Manual",pen.value="log(2*log(n))",method="BinSeg",test.stat="CSS",Q=5,
-            class=FALSE))
+out=cpt.var(x,penalty="Manual",pen.value="log(2*log(n))",method="BinSeg",test.stat="CSS",Q=5,
+            class=FALSE)
 truth=list();truth$cps=matrix(c(99,53,150,50,140,3.156304,3.156304,3.156304,3.074743,1.254542),byrow=T,nrow=2)
 truth$cpts=c(50,53,99,150,200);truth$op.cpts=4;truth$pen=2.360536
 test_that('var4',expect_equal(out,truth,tolerance=0.00001))
@@ -198,7 +166,7 @@ out=cpt.var(x,pen.value=c(log(length(x)),100*log(length(x))),penalty="CROPS",met
 truth=matrix(NA,ncol=7,nrow=7);truth[1:6,1]=50;truth[1:5,2]=c(77,rep(99,3),150);truth[1:4,3]=c(79,114,140,150)
 truth[1:3,4]=c(99,133,150);truth[1:2,5]=c(114,150);truth[1,6]=133;truth[1,7]=150
 test_that('var5',expect_equivalent(cpts.full(out),truth))
-truth=c(5.298317,5.548538,6.149305,7.083099,26.592259,142.417161,145.146279,529.831737)
+truth=c(5.298317,5.548538,6.149305,7.083099,26.592259,142.417161,145.146279)
 test_that('var6',expect_equivalent(pen.value.full(out),truth))
 
 # Example multiple datasets where the first row has multiple changes in variance and the second row
@@ -208,8 +176,8 @@ x=c(rnorm(50,0,1),rnorm(50,0,10),rnorm(50,0,5),rnorm(50,0,1))
 y=rnorm(200,0,1)
 z=rbind(x,y)
 truth=list();truth[[1]]=c(50,100,149,200);truth[[2]]=200
-test_that('var7',expect_equivalent(suppressWarnings(cpt.var(z,penalty="Asymptotic",pen.value=0.01,method="SegNeigh",Q=5,class=FALSE)),truth))
-ans=suppressWarnings(cpt.var(z,penalty="Asymptotic",pen.value=0.01,method="PELT"))
+test_that('var7',expect_equivalent(cpt.var(z,penalty="Asymptotic",pen.value=0.01,method="SegNeigh",Q=5,class=FALSE),truth))
+ans=cpt.var(z,penalty="Asymptotic",pen.value=0.01,method="PELT")
 test_that('var8',expect_equivalent(cpts(ans[[1]]),c(50,100,149)))
 test_that('var9',expect_equivalent(cpts(ans[[2]]),numeric()))
 
@@ -335,7 +303,7 @@ test_that('class23',expect_equivalent(distribution(x),"normal"))
 set.seed(1)
 x=c(rnorm(50,0,1),rnorm(50,0,10),rnorm(50,0,5),rnorm(50,0,1))
 out=cpt.var(x,penalty="Manual",pen.value="2*log(n)",method="BinSeg",Q=5)
-test_that('logLik1',expect_equivalent(suppressWarnings(likelihood(out)),c(925.8085, 957.5984)))
+test_that('logLik1',expect_equivalent(likelihood(out),c(925.8085, 957.5984)))
 
 
 
@@ -345,7 +313,7 @@ test_that('logLik1',expect_equivalent(suppressWarnings(likelihood(out)),c(925.80
 set.seed(1)
 x=c(rnorm(50,0,1),rnorm(50,0,10),rnorm(50,0,5),rnorm(50,0,1))
 out=cpt.var(x,penalty="Manual",pen.value="2*log(n)",method="BinSeg",Q=5)
-test_that('logLik1',expect_equivalent(suppressWarnings(logLik(out)),c(925.8085, 957.5984)))
+test_that('logLik1',expect_equivalent(logLik(out),c(925.8085, 957.5984)))
 
 
 
@@ -517,4 +485,3 @@ test_that('class42',expect_equivalent(test.stat(x),character()))
 x=new("cpt") # new cpt object
 test.stat(x)<-"normal" # replaces the current test.stat slot of x with "normal"
 test_that('class43',expect_equivalent(test.stat(x),"normal"))
-

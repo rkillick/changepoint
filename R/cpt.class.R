@@ -1165,7 +1165,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    sigmas=param.est(object)$sig2
 	    rss=NULL
 	    for(i in 1:length(seglen)){
-	      rss[i]=sum((data[(cpts[i]+1):cpts[i+1],1]-data[(cpts[i]+1):cpts[i+1],-1,drop=FALSE]%*%beta[i,,drop=FALSE])^2)
+	      rss[i]=sum((data[(cpts[i]+1):cpts[i+1],1]-data[(cpts[i]+1):cpts[i+1],-1,drop=FALSE]%*%t(beta[i,,drop=FALSE]))^2)
 	    }
       like=sum(seglen*log(2*pi*sigmas))+sum(rss/sigmas)
       if(pen.type(object)=="MBIC"){

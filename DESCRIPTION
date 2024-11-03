@@ -2,7 +2,7 @@ Package: changepoint
 Type: Package
 Title: Methods for Changepoint Detection
 Version: 2.3
-Date: 2024-10-14
+Date: 2024-11-02
 Authors@R: c(person("Rebecca", "Killick",
         role=c("aut","cre"),email="r.killick@lancs.ac.uk"),
 				person("Kaylea", "Haynes", role="ctb"),        
@@ -18,10 +18,10 @@ Depends: R(>= 3.2), methods, stats, zoo(>= 0.9-1)
 Suggests: testthat, vdiffr
 License: GPL
 LazyData: true
-Packaged: 2024-10-14 14:14:13 UTC; killick
+Packaged: 2024-11-02 14:14:13 UTC; killick
 NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2024-10-14 15:50:02 UTC
+Date/Publication: 2024-11-02 15:50:02 UTC
 Author: Rebecca Killick [aut, cre],
   Kaylea Haynes [ctb],
   Harjit Hullait [ctb],
