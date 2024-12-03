@@ -580,7 +580,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
       else if(test.stat(object)=="Gamma"){
         means=param.est(object)$scale*param.est(object)$shape
       }
-      else if(test.stat(object)=="Eobjectponential"){
+      else if(test.stat(object)=="Exponential"){
         means=1/param.est(object)$rate
       }
       else if(test.stat(object)=="Poisson"){
@@ -630,7 +630,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    else if(test.stat(object)=="Gamma"){
 	      means=param.est(object)$scale*param.est(object)$shape
 	    }
-	    else if(test.stat(object)=="Eobjectponential"){
+	    else if(test.stat(object)=="Exponential"){
 	      means=1/param.est(object)$rate
 	    }
 	    else if(test.stat(object)=="Poisson"){
