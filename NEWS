@@ -1,3 +1,8 @@
+Version 2.3.1
+=============
+
+* Added "PoissonProcess" as an option to cpt.meanvar.  This takes a vector of event times (including start and end of monitoring time) and returns the changepoint locations within this.  The changepoint locations can either be immediately before an event, or at an event.  Thus the minimum segment length is counting in this "changepoint time" rather than event times.  So a minimum segment length of 2 (the smallest valid) counts "immediately before event i" and "at event i" as two separate potential changepoint times.  Thus a minimum segment length of 2 indicates there must be at least one event in the segment.  A minimum segment length of 3 means either 1 or 2 events per segment (depending on whether the start of the segment is at an event or just before) and a minimum segment length of 4 means at least two events per segment.
+
 Version 2.3
 ===========
 
