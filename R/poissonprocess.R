@@ -83,17 +83,17 @@ single.meanvar.pp<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.est
   else{
     tmp=single.meanvar.poisson.calc(data,extrainf=TRUE,minseglen)
     if(penalty=="MBIC"){
-      tmp[,3]=tmp[,3]+log(tmp[,1])+log(n-2-tmp[,1]+1) # -2 for start and end
+      tmp[,3]=tmp[,3]+log(tmp[,1])+log(nevents-tmp[,1]+1)
       # this may not be correct if each dimension has a different n (but matrix input),
       # need to add a caveat to the documentation to cover this case and suggest lapply instead
     }
-    ans=decision(tmp[,1],tmp[,2],tmp[,3],penalty,n-2,diffparam=1,pen.value) # -2 for start and end
+    ans=decision(tmp[,1],tmp[,2],tmp[,3],penalty,nevents,diffparam=1,pen.value)
     if(class==TRUE){
       rep=nrow(data)
       out=list()
       for(i in 1:rep){
         # RK: need to change class_input for PP and include/not include cpt
-        out[[i]]=class_input(data[i,], cpttype="mean and variance", method="AMOC", test.stat="Poisson", penalty=penalty, pen.value=ans$pen, minseglen=minseglen, param.estimates=param.estimates, out=c(0,ans$cpt[i]))
+        out[[i]]=class_input(data[i,], cpttype="mean and variance", method="AMOC", test.stat="Poisson", penalty=penalty, pen.value=ans$pen, minseglen=minseglen, param.estimates=param.estimates, out=c(coredata(data[i,1]),ans$cpt[i]))
       }
       return(out)
     }
