@@ -184,7 +184,12 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		}
 		setGeneric("cpts.ts", fun)
 	}
-	setMethod("cpts.ts","cpt",function(object) index(data.set.ts(object))[cpts(object)] )
+	setMethod("cpts.ts","cpt",function(object){
+	  if(test.stat(object)=="Poisson Process"){
+	    return(data.set(object)[cpts(object)]) # return the observation times of the changepoints rather than the index
+	  }
+	  else{return(index(data.set.ts(object))[cpts(object)])}
+	})
 
 	if(!isGeneric("ncpts.max")) {
 		if (is.function("ncpts.max")){
