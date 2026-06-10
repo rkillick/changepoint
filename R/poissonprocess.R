@@ -68,7 +68,7 @@ single.meanvar.pp<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.est
 
   pen.value = penalty_decision(penalty, pen.value, nevents, diffparam=1, asymcheck="meanvar.pp", method="AMOC")
   if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
-    tmp=single.meanvar.poisson.calc(coredata(data),extrainf=TRUE,minseglen)
+    tmp=single.meanvar.pp.calc(coredata(data),extrainf=TRUE,minseglen)
     if(penalty=="MBIC"){
       tmp[3]=tmp[3]+log(tmp[1])+log(nevents-tmp[1]+1)
     }
@@ -81,7 +81,7 @@ single.meanvar.pp<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.est
     else{ return(ans$cpt)}
   }
   else{
-    tmp=single.meanvar.poisson.calc(data,extrainf=TRUE,minseglen)
+    tmp=single.meanvar.pp.calc(data,extrainf=TRUE,minseglen)
     if(penalty=="MBIC"){
       tmp[,3]=tmp[,3]+log(tmp[,1])+log(nevents-tmp[,1]+1)
       # this may not be correct if each dimension has a different n (but matrix input),
@@ -93,7 +93,7 @@ single.meanvar.pp<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.est
       out=list()
       for(i in 1:rep){
         # RK: need to change class_input for PP and include/not include cpt
-        out[[i]]=class_input(data[i,], cpttype="mean and variance", method="AMOC", test.stat="Poisson", penalty=penalty, pen.value=ans$pen, minseglen=minseglen, param.estimates=param.estimates, out=c(coredata(data[i,1]),ans$cpt[i]))
+        out[[i]]=class_input(data[i,], cpttype="mean and variance", method="AMOC", test.stat="Poisson Process", penalty=penalty, pen.value=ans$pen, minseglen=minseglen, param.estimates=param.estimates, out=c(coredata(data[i,1]),ans$cpt[i]))
       }
       return(out)
     }
@@ -102,31 +102,37 @@ single.meanvar.pp<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.est
 }
 
 
-segneigh.meanvar.poisson=function(data,Q=5,pen=0){
-  n=length(data)
-  if(n<4){stop('Data must have atleast 2 events (plus the start and end observation times) to fit a changepoint model.')}
-  if(Q>(n-2)){stop(paste('Q is larger than the maximum number of segments',n-2))}
-  all.seg=matrix(0,ncol=n,nrow=n)
-  for(i in 1:n){
-    sumx=0
-    for(j in i:n){
-      len=j-i+1
-      all.seg[i,j]=2*(j-i)*(1-log(j-i) + log(data[j]-data[i]))
+segneigh.meanvar.pp=function(data,Q=5,pen=0){
+  nevents=length(data)-2
+  end=length(data)
+  extendend=2*end-2 # -2 because we don't repeat the first and last value as these are no observations
+  ntime=data[length(data)]
+
+  if(nevents<2){stop('Data must have atleast 2 events (plus the start and end observation times) to fit a changepoint model.')}
+  if(Q>nevents){stop(paste('Q is larger than the maximum number of segments',nevents))}
+  all.seg=matrix(0,ncol=extendend,nrow=extendend)
+  for(i in 1:(extendend-minseglen)){
+    sumevent=0
+    for(j in (i+minseglen):extendend){
+      startind=floor(i/2)+1  # +1 here so that 1 maps to 1 and not 0
+      endind=floor(j/2)+1  # +1 here so that 1 maps to 1 and not 0
+      neventsseg=floor((j-1)/2)-floor((i-1)/2)
+      all.seg[i,j]=2*neventsseg*(1-log(neventsseg) + log(data[endind]-data[startind]))
       # 2* #events (1-log(#events)+log(time))
     }
   }
-  like.Q=matrix(0,ncol=n,nrow=Q)
+  like.Q=matrix(0,ncol=extendend,nrow=Q)
   like.Q[1,]=all.seg[1,]
-  cp=matrix(NA,ncol=n,nrow=Q)
+  cp=matrix(NA,ncol=extendend,nrow=Q)
   for(q in 2:Q){
-    for(j in q:n){
+    for(j in (q*minseglen):extendend){
       like=NULL
-      if((j-2-q)<0){v=q}
-      else{v=(q):(j-2)}
+      if((j-2*minseglen-q)<0){v=q*minseglen}
+      else{v=(q*minseglen):(j-2)}
       like=like.Q[q-1,v]+all.seg[v+1,j]
 
       like.Q[q,j]= max(like,na.rm=TRUE)
-      cp[q,j]=which(like==max(like,na.rm=TRUE))[1]+(q-1)
+      cp[q,j]=which(like==max(like,na.rm=TRUE))[1]+(q*minseglen-1)
     }
 
   }
@@ -151,29 +157,28 @@ segneigh.meanvar.poisson=function(data,Q=5,pen=0){
 }
 
 
-multiple.meanvar.poisson=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,Q=5,class=TRUE,param.estimates=TRUE,minseglen){
-  if((sum(data<0)>0)){stop('Poisson test statistic requires positive data')}
-  if(sum(as.integer(data)==data)!=length(data)){stop('Poisson test statistic requires integer data')}
+multiple.meanvar.pp=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,Q=5,class=TRUE,param.estimates=TRUE,minseglen){
   if(!((mul.method=="PELT")||(mul.method=="BinSeg")||(mul.method=="SegNeigh"))){
     stop("Multiple Method is not recognised")
   }
-  costfunc = "meanvar.poisson"
+  costfunc = "meanvar.pp"
   if(penalty=="MBIC"){
     if(mul.method=="SegNeigh"){
       stop('MBIC penalty not implemented for SegNeigh method, please choose an alternative penalty')
     }
-    costfunc = "meanvar.poisson.mbic"
+    costfunc = "meanvar.pp.mbic"
   }
 
   diffparam=1
   if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
-    n=length(data)
+    nevents=length(data)-2
   }
   else{
-    n=ncol(data)
+    nevents=ncol(data)-2
   }
-  if(n<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
+  if(nevents<2){stop('Data must have atleast 2 events (plus the start and end observation times) to fit a changepoint model.')}
+  if(nevents<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
 
   pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck=costfunc, method=mul.method)
   if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
@@ -181,9 +186,9 @@ multiple.meanvar.poisson=function(data,mul.method="PELT",penalty="MBIC",pen.valu
     out = data_input(data=data,method=mul.method,pen.value=pen.value,costfunc=costfunc,minseglen=minseglen,Q=Q)
 
     if(class==TRUE){
-      return(class_input(data, cpttype="mean and variance", method=mul.method, test.stat="Poisson", penalty=penalty, pen.value=pen.value, minseglen=minseglen, param.estimates=param.estimates, out=out, Q=Q))
+      return(class_input(data, cpttype="mean and variance", method=mul.method, test.stat="Poisson Process", penalty=penalty, pen.value=pen.value, minseglen=minseglen, param.estimates=param.estimates, out=out, Q=Q))
     }
-    else{ return(out[[2]])}
+    else{return(out[[2]])}
   }
   else{
     rep=nrow(data)
@@ -197,7 +202,7 @@ multiple.meanvar.poisson=function(data,mul.method="PELT",penalty="MBIC",pen.valu
     if(class==TRUE){
       ans=list()
       for(i in 1:rep){
-        ans[[i]]=class_input(data[i,], cpttype="mean and variance", method=mul.method, test.stat="Poisson", penalty=penalty, pen.value=pen.value, minseglen=minseglen, param.estimates=param.estimates, out=out[[i]], Q=Q)
+        ans[[i]]=class_input(data[i,], cpttype="mean and variance", method=mul.method, test.stat="Poisson Process", penalty=penalty, pen.value=pen.value, minseglen=minseglen, param.estimates=param.estimates, out=out[[i]], Q=Q)
       }
       return(ans)
     }

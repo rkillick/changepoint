@@ -61,7 +61,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	setMethod("method","cpt",function(object) object@method)
 	setMethod("method","cpt.reg",function(object) object@method)
 
-	# distribution remains for backwards compatability, changed to test.stat version 1.0
+	# distribution remains for backwards compatibility, changed to test.stat version 1.0
 	if(!isGeneric("distribution")) {
 	  if (is.function("distribution")){
 	    fun <- distribution
