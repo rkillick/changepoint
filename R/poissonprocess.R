@@ -20,13 +20,12 @@ single.meanvar.pp.calc <-
       taulike=tmp[tau]
 
       if(extrainf==TRUE){
-        # correcting for centering to zero
-        out=c(floor(taustar[tau]/2 +1)+start,null,taulike,taustar[tau]%%2)# gives tau index on original scale
+        out=c(floor(taustar[tau]/2 +1),null,taulike,taustar[tau]%%2)
         names(out)=c('cpt','null','alt','include event at cpt')
         return(out)
-      }
+      } # cpt is data index in the original data, NOT the event time, cpts.ts returns the event time if needed
       else{
-        return(floor(taustar[tau]/2 +1)+start)
+        return(floor(taustar[tau]/2 +1))
       }
     }
 
@@ -75,8 +74,7 @@ single.meanvar.pp<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.est
     ans=decision(tmp[1],tmp[2],tmp[3],penalty,nevents,diffparam=1,pen.value)
     ans$includecpt=tmp[4]
     if(class==TRUE){
-      # RK: need to change class_input for PP and include/not include cpt
-      return(class_input(data, cpttype="mean and variance", method="AMOC", test.stat="Poisson Process", penalty=penalty, pen.value=ans$pen, minseglen=minseglen, param.estimates=param.estimates, out=c(coredata(data)[1],ans$cpt)))
+      return(class_input(data, cpttype="mean and variance", method="AMOC", test.stat="Poisson Process", penalty=penalty, pen.value=ans$pen, minseglen=minseglen, param.estimates=param.estimates, out=c(coredata(data)[1],ans$cpt),shape=ans$includecpt))
     }
     else{ return(ans$cpt)}
   }
@@ -88,12 +86,12 @@ single.meanvar.pp<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.est
       # need to add a caveat to the documentation to cover this case and suggest lapply instead
     }
     ans=decision(tmp[,1],tmp[,2],tmp[,3],penalty,nevents,diffparam=1,pen.value)
+    ans$includecpt=tmp[,4]
     if(class==TRUE){
       rep=nrow(data)
       out=list()
       for(i in 1:rep){
-        # RK: need to change class_input for PP and include/not include cpt
-        out[[i]]=class_input(data[i,], cpttype="mean and variance", method="AMOC", test.stat="Poisson Process", penalty=penalty, pen.value=ans$pen, minseglen=minseglen, param.estimates=param.estimates, out=c(coredata(data[i,1]),ans$cpt[i]))
+        out[[i]]=class_input(data[i,], cpttype="mean and variance", method="AMOC", test.stat="Poisson Process", penalty=penalty, pen.value=ans$pen, minseglen=minseglen, param.estimates=param.estimates, out=c(coredata(data[i,1]),ans$cpt[i]),shape=ans$includecpt)
       }
       return(out)
     }
@@ -180,15 +178,24 @@ multiple.meanvar.pp=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,Q
   if(nevents<2){stop('Data must have atleast 2 events (plus the start and end observation times) to fit a changepoint model.')}
   if(nevents<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
 
-  pen.value = penalty_decision(penalty, pen.value, n, diffparam=1, asymcheck=costfunc, method=mul.method)
+  pen.value = penalty_decision(penalty, pen.value, 2*nevents+1, # 2*nevents because n here is the "length" of the data considered,
+                               # so each event can have a change just before or at the change, then +1 because we include the final data point
+                               diffparam=1, asymcheck=costfunc, method=mul.method)
   if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     out = data_input(data=data,method=mul.method,pen.value=pen.value,costfunc=costfunc,minseglen=minseglen,Q=Q)
+    # all cpts returned on the longer data length so need transforming back to the original scale
+    out[[2]]=floor(out[[2]]/2 +1) # replace the long cpts with the original scale cpts
+    inc.event=out[[2]]%%2 # 0 is don't include, 1 is include
 
     if(class==TRUE){
-      return(class_input(data, cpttype="mean and variance", method=mul.method, test.stat="Poisson Process", penalty=penalty, pen.value=pen.value, minseglen=minseglen, param.estimates=param.estimates, out=out, Q=Q))
+      return(out.prep=class_input(data, cpttype="mean and variance", method=mul.method, test.stat="Poisson Process",
+            penalty=penalty, pen.value=pen.value, minseglen=minseglen, param.estimates=param.estimates, out=out, Q=Q,
+            shape=inc.event))
     }
-    else{return(out[[2]])}
+    else{
+      return(list(cpts=out[[2]],include.event=inc.event))
+    }
   }
   else{
     rep=nrow(data)
@@ -199,10 +206,16 @@ multiple.meanvar.pp=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,Q
 
     cpts=lapply(out, '[[', 2)
 
+    # all cpts returned on the longer data length so need transforming back to the original scale
+    inc.event=lapply(cpts,FUN=function(x){x%%2}) # 0 is don't include, 1 is include
+    cpts=lapply(cpts,FUN=function(x){floor(x/2 +1)}) # replace the long cpts with the original scale cpts
+
     if(class==TRUE){
       ans=list()
       for(i in 1:rep){
-        ans[[i]]=class_input(data[i,], cpttype="mean and variance", method=mul.method, test.stat="Poisson Process", penalty=penalty, pen.value=pen.value, minseglen=minseglen, param.estimates=param.estimates, out=out[[i]], Q=Q)
+        ans[[i]]=class_input(data[i,], cpttype="mean and variance", method=mul.method, test.stat="Poisson Process",
+              penalty=penalty, pen.value=pen.value, minseglen=minseglen, param.estimates=param.estimates, out=out[[i]],
+              Q=Q,shape=inc.event)
       }
       return(ans)
     }

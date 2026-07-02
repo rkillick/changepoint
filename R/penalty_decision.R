@@ -100,6 +100,8 @@ penalty_decision = function(penalty, pen.value, n, diffparam, asymcheck, method)
       if(alpha==1){pen.return=1.42417} # value of 1 gives log(0), this is alpha=0.99999999999999993
     }else if(asymcheck == "meanvar.poisson"){
       stop('Asymptotic penalties for the Poisson test statistic are not available yet, please choose an alternative penalty type')
+    } else if(asymcheck == "meanvar.pp"){
+      stop('Asymptotic penalties for the Poisson Process test statistic are not available yet, please choose an alternative penalty type')
     }
   }
 #if(method=="AMOC"){

@@ -11,13 +11,19 @@ fit.mean=function(object,cpts=NULL){
 fit.var=function(object,cpts=NULL){
   if(is.null(cpts)){cpts=c(0,object@cpts)}
   data=data.set(object)
-  seglen=diff(cpts) # not using seg.len as needs ncpts for cpt.range, might aswell use diff(cpts) as less flops
+  seglen=diff(cpts) # not using seg.len as needs ncpts for cpt.range, might as well use diff(cpts) as less flops
   tmpvar=NULL
   for(j in 1:length(seglen)){
     tmpvar[j]=var(data[(cpts[j]+1):(cpts[j+1])])
   }
   tmpvar=tmpvar*(seglen-1)/seglen # correctly for the fact that the MLE estimate is /n but the var function is /n-1
   return(tmpvar)
+}
+fit.pp=function(object, cpts=NULL){
+  if(is.null(cpts)){cpts=c(0,object@cpts)}
+  seglen=data.set(object)[cpts[-1]]-data.set(object)[cpts[-length(cpts)]+1]
+  numevents=diff(cpts) # RK: change this for flag whether the event at the change is included before or after
+  return(numevents/seglen)
 }
 fit.scale=function(object,shape,cpts=NULL){
   if(is.null(cpts)){cpts=c(0,object@cpts)}

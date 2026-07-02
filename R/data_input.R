@@ -4,14 +4,24 @@ data_input <- function(data, method, pen.value, costfunc, minseglen, Q, var=0, s
   }else{
   mu <- mean(data)
   }
-  sumstat=cbind(c(0,cumsum(coredata(data))),c(0,cumsum(coredata(data)^2)),cumsum(c(0,(coredata(data)-mu)^2)))
+  if(costfunc=="meanvar.pp" || costfunc=="meanvar.pp.mbic"){
+    # Need to use different summary statistics for the Poisson Process
+    # Data is the event times + start and end of observation window
+    longdata=rep(coredata(data),each=2)[-1]
+    longdata=longdata[-length(longdata)] # first and last entries shouldn't be repeated
+    sumstat=cbind(cumsum(longdata),cumsum(rep(0:(length(coredata(data))-2),each=2)),rep(0,length(longdata)))
+    # last is zeroes as not needed but need the memory stored for access in C so we don't potentially get a memory access error
+  }
+  else{
+    sumstat=cbind(c(0,cumsum(coredata(data))),c(0,cumsum(coredata(data)^2)),cumsum(c(0,(coredata(data)-mu)^2)))
+  }
   if(method=="PELT"){
     #out=PELT.meanvar.norm(coredata(data),pen.value)
-    out=PELT(sumstat,pen=pen.value,cost_func = costfunc,minseglen=minseglen, shape=shape)  ## K NEW ##
+    out=PELT(sumstat,pen=pen.value,cost_func = costfunc,minseglen=minseglen, shape=shape)
     #cpts=out[[2]]
   }
   else if(method=="BinSeg"){
-    out=BINSEG(sumstat,pen=pen.value,cost_func = costfunc,minseglen=minseglen,Q=Q, shape=shape)  ## K NEW ##
+    out=BINSEG(sumstat,pen=pen.value,cost_func = costfunc,minseglen=minseglen,Q=Q, shape=shape)
     #cpts=out[[2]]
     #   		out=binseg.meanvar.norm(coredata(data),Q,pen.value)
     # 			if(out$op.cpts==0){cpts=n}
@@ -25,5 +35,5 @@ data_input <- function(data, method, pen.value, costfunc, minseglen, Q, var=0, s
 #     else{cpts=c(sort(out$cps[out$op.cpts+1,][out$cps[out$op.cpts+1,]>0]),n)}
   }
   return(out)
-  
+
 }

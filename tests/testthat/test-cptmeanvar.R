@@ -334,3 +334,41 @@ for(d in 1:length(data)){
     }
   }
 }
+
+
+
+# Reza added
+#devtools::install_github( "rkillick/changepoint", ref = "PoissonProcess")
+#library(changepoint)
+
+set.seed(1)
+# Point process data
+t_start = 0
+t_end = 30
+tau=15
+n1 <- rpois(1, 7 * (tau-t_start))
+n2 <- rpois(1, 12 * (t_end-tau))
+SingCPT__Poisson_NoBoundaryPoints = c(sort(runif(n1, min = t_start, max = tau)) ,
+                                    sort(runif(n2, min = tau, max = t_end)))
+
+SingCPT_Poisson <- c(t_start , SingCPT__Poisson_NoBoundaryPoints , t_end)
+cpt  <- cpt.meanvar(data = SingCPT_Poisson, method="AMOC",minseglen = 2,test.stat="Poisson Process")
+c(n1,cpt)
+plot(SingCPT__Poisson_NoBoundaryPoints , 1:length(SingCPT__Poisson_NoBoundaryPoints),type="s")
+rug(SingCPT__Poisson_NoBoundaryPoints)
+abline(v=c(SingCPT_Poisson[cpt[1]] , tau) , col=c("red" , "green"), lty=2)
+
+
+#100*alpha% missing data
+NA_SingCPT_Poisson<- SingCPT__Poisson_NoBoundaryPoints
+alpha = 0.05
+rn <- sample(1:length(NA_SingCPT_Poisson), round(alpha*length(NA_SingCPT_Poisson)), replace=F)
+NA_SingCPT_Poisson_NoBoundary <- NA_SingCPT_Poisson[-rn]
+NA_SingCPT_Poisson = c(t_start , NA_SingCPT_Poisson_NoBoundary , t_end)
+cpt  <- cpt.meanvar(data = NA_SingCPT_Poisson, minseglen = 2,method="AMOC",test.stat="Poisson Process")
+data.frame(CorrectCpt = n1-sum(rn<=tau) , Identifiedcpt=cpts(cpt), NAs =length(rn), NAbeforeCpt = sum(rn<=n1), NAafterCpt= sum(rn>n1))
+plot(NA_SingCPT_Poisson,1:length(NA_SingCPT_Poisson),type="s")
+rug(NA_SingCPT_Poisson_NoBoundary)
+abline(v=c(NA_SingCPT_Poisson[cpts(cpt)] , tau) , col=c("red" , "green"), lty=2)
+
+

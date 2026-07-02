@@ -10,7 +10,7 @@ class_input <- function(data, cpttype, method, test.stat, penalty, pen.value, mi
     cpts(ans)=out[[2]]
 
     if(param.estimates==TRUE){
-      if(test.stat == "Gamma"){
+      if(test.stat == "Gamma" || test.stat=="Poisson Process"){
       ans=param(ans, shape)
       }else{
       ans=param(ans)

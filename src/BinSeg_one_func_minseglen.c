@@ -39,12 +39,14 @@ void binseg(char** cost_func, //Descibe the cost function used i.e. norm.mean.co
   double mll_meanvar_exp(double, double, double, int, double); 
   double mll_meanvar_gamma(double, double, double, int, double); 
   double mll_meanvar_poisson(double, double, double, int, double); 
+  double mll_meanvar_pp(double, double, double, int, double); 
   double mbic_var(double, double, double, int, double); 
   double mbic_mean(double, double, double, int, double); 
   double mbic_meanvar(double, double, double, int, double); 
   double mbic_meanvar_exp(double, double, double, int, double); 
   double mbic_meanvar_gamma(double, double, double, int, double); 
   double mbic_meanvar_poisson(double, double, double, int, double); 
+  double mbic_meanvar_pp(double, double, double, int, double); 
 
   double (*costfunction)(double, double, double, int, double);
   if (strcmp(*cost_func,"var.norm")==0){
@@ -65,6 +67,9 @@ void binseg(char** cost_func, //Descibe the cost function used i.e. norm.mean.co
   else if (strcmp(*cost_func,"meanvar.poisson")==0){
     costfunction = &mll_meanvar_poisson;
   }
+  else if (strcmp(*cost_func,"meanvar.pp")==0){
+    costfunction = &mll_meanvar_pp;
+  }
   else if (strcmp(*cost_func,"mean.norm.mbic")==0){
     costfunction = &mbic_mean;
   }
@@ -82,6 +87,9 @@ void binseg(char** cost_func, //Descibe the cost function used i.e. norm.mean.co
   }
   else if (strcmp(*cost_func,"meanvar.poisson.mbic")==0){
     costfunction = &mbic_meanvar_poisson;
+  } 
+  else if (strcmp(*cost_func,"meanvar.pp.mbic")==0){
+    costfunction = &mbic_meanvar_pp;
   } 
 
   void max_which(double*, int, double*, int*);

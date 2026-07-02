@@ -446,6 +446,10 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 			else if(test.stat(object)=="Poisson"){
 			  param.est(object)<-list(lambda=fit.mean(object))
 			}
+		  else if(test.stat(object)=="Poisson Process"){
+		    # abusing the existence of shape here to use it to store whether the event is included or not
+		    param.est(object)<-list(lambda=fit.pp(object),include.event=shape)
+		  }
 			else{
 				stop("Unknown test statistic for a change in mean and variance")
 			}
@@ -510,6 +514,9 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    }
 	    else if(test.stat(object)=="Poisson"){
 	      param.est<-list(lambda=fit.mean(object,cpts))
+	    }
+	    else if(test.stat(object)=="Poisson Process"){
+	      param.est<-list(lambda=fit.pp(object,cpts),include.event=shape)
 	    }
 	    else{
 	      stop("Unknown test statistic for a change in mean and variance")
@@ -588,7 +595,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
       else if(test.stat(object)=="Exponential"){
         means=1/param.est(object)$rate
       }
-      else if(test.stat(object)=="Poisson"){
+      else if((test.stat(object)=="Poisson")||(test.stat(object)=="Poisson Process")){
         means=param.est(object)$lambda
       }
       else{
@@ -638,7 +645,7 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 	    else if(test.stat(object)=="Exponential"){
 	      means=1/param.est(object)$rate
 	    }
-	    else if(test.stat(object)=="Poisson"){
+	    else if((test.stat(object)=="Poisson")||(test.stat(object)=="Poisson Process")){
 	      means=param.est(object)$lambda
 	    }
 	    else{
@@ -996,7 +1003,29 @@ setClass("cpt",slots=list(data.set="ts", cpttype="character", method="character"
 		    }
 		  }
 		}
-		else{stop("logLik is only valid for distributional assumptions, not CUSUM or CSS")}
+	  else if(test.stat(object)=="Poisson Poisson"){
+	    if(cpttype(object)!="mean and variance"){
+	      stop("Unknown changepoint type for test.stat='Poisson', must be 'mean and variance'")
+	    }
+	    else{
+	      mll.meanvarp=function(x,n){
+	        return(2*n*(1-log(n)+log(y))) # n=#events, x=segment length (in time)
+	      }
+	      y=cumsum(data.set(object)) # first observation is start time, last is end time
+	      cpts=c(0,object@cpts)
+	      #nseg=length(cpts)-1
+	      tmplike=0
+	      for(j in 1:nseg(object)){
+	        tmplike=tmplike+mll.meanvarp(y[cpts[j+1]+1]-y[cpts[j]+1],cpts[j+1]-cpts[j])
+	      }
+	      if(pen.type(object)=="MBIC"){
+	        like=c(tmplike, tmplike+(nseg(object)-2)*pen.value(object)+sum(log(seg.len(object))))
+	      }else{
+	        like=c(tmplike,tmplike+(nseg(object)-1)*pen.value(object))
+	      }
+	    }
+	  }
+	  else{stop("logLik is only valid for distributional assumptions, not CUSUM or CSS")}
 	  names(like)=c("-2*logLik","-2*Loglike+pen")
 	  return(like)
 	})
