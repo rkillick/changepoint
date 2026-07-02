@@ -353,10 +353,9 @@ SingCPT__Poisson_NoBoundaryPoints = c(sort(runif(n1, min = t_start, max = tau)) 
 
 SingCPT_Poisson <- c(t_start , SingCPT__Poisson_NoBoundaryPoints , t_end)
 cpt  <- cpt.meanvar(data = SingCPT_Poisson, method="AMOC",minseglen = 2,test.stat="Poisson Process")
-c(n1,cpt)
 plot(SingCPT__Poisson_NoBoundaryPoints , 1:length(SingCPT__Poisson_NoBoundaryPoints),type="s")
 rug(SingCPT__Poisson_NoBoundaryPoints)
-abline(v=c(SingCPT_Poisson[cpt[1]] , tau) , col=c("red" , "green"), lty=2)
+abline(v=c(cpts.ts(cpt) , tau) , col=c("red" , "green"), lty=2)
 
 
 #100*alpha% missing data
@@ -369,6 +368,6 @@ cpt  <- cpt.meanvar(data = NA_SingCPT_Poisson, minseglen = 2,method="AMOC",test.
 data.frame(CorrectCpt = n1-sum(rn<=tau) , Identifiedcpt=cpts(cpt), NAs =length(rn), NAbeforeCpt = sum(rn<=n1), NAafterCpt= sum(rn>n1))
 plot(NA_SingCPT_Poisson,1:length(NA_SingCPT_Poisson),type="s")
 rug(NA_SingCPT_Poisson_NoBoundary)
-abline(v=c(NA_SingCPT_Poisson[cpts(cpt)] , tau) , col=c("red" , "green"), lty=2)
+abline(v=c(cpts.ts(cpt) , tau) , col=c("red" , "green"), lty=2)
 
 
