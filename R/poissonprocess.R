@@ -71,7 +71,7 @@ single.meanvar.pp<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.est
     if(penalty=="MBIC"){
       tmp[3]=tmp[3]+log(tmp[1])+log(nevents-tmp[1]+1)
     }
-    ans=decision(tmp[1],tmp[2],tmp[3],penalty,nevents,diffparam=1,pen.value)
+    ans=decision(tmp[1],tmp[2],tmp[3],penalty,nevents+2,diffparam=1,pen.value)
     ans$includecpt=tmp[4]
     if(class==TRUE){
       return(class_input(data, cpttype="mean and variance", method="AMOC", test.stat="Poisson Process", penalty=penalty, pen.value=ans$pen, minseglen=minseglen, param.estimates=param.estimates, out=c(coredata(data)[1],ans$cpt),shape=ans$includecpt))
@@ -85,7 +85,7 @@ single.meanvar.pp<-function(data,penalty="MBIC",pen.value=0,class=TRUE,param.est
       # this may not be correct if each dimension has a different n (but matrix input),
       # need to add a caveat to the documentation to cover this case and suggest lapply instead
     }
-    ans=decision(tmp[,1],tmp[,2],tmp[,3],penalty,nevents,diffparam=1,pen.value)
+    ans=decision(tmp[,1],tmp[,2],tmp[,3],penalty,nevents+2,diffparam=1,pen.value)
     ans$includecpt=tmp[,4]
     if(class==TRUE){
       rep=nrow(data)
