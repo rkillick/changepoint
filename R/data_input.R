@@ -9,7 +9,7 @@ data_input <- function(data, method, pen.value, costfunc, minseglen, Q, var=0, s
     # Data is the event times + start and end of observation window
     longdata=rep(coredata(data),each=2)[-1]
     longdata=longdata[-length(longdata)] # first and last entries shouldn't be repeated
-    sumstat=cbind(cumsum(longdata),cumsum(rep(0:(length(coredata(data))-2),each=2)),rep(0,length(longdata)))
+    sumstat=cbind(longdata,rep(0:(length(coredata(data))-2),each=2),rep(0,length(longdata)))
     # last is zeroes as not needed but need the memory stored for access in C so we don't potentially get a memory access error
   }
   else{

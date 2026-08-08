@@ -186,7 +186,9 @@ multiple.meanvar.pp=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,Q
     out = data_input(data=data,method=mul.method,pen.value=pen.value,costfunc=costfunc,minseglen=minseglen,Q=Q)
     # all cpts returned on the longer data length so need transforming back to the original scale
     out[[2]]=floor(out[[2]]/2 +1) # replace the long cpts with the original scale cpts
+    out[[2]][length(out[[2]])]=out[[2]][length(out[[2]])]+1 # Need to add 1 to the final value so it is the end point and not the last observation
     inc.event=out[[2]]%%2 # 0 is don't include, 1 is include
+    inc.event[length(inc.event)]=0 # as the final value isn't an event
 
     if(class==TRUE){
       return(out.prep=class_input(data, cpttype="mean and variance", method=mul.method, test.stat="Poisson Process",
