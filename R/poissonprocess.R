@@ -180,8 +180,9 @@ multiple.meanvar.pp=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,Q
 
   pen.value = penalty_decision(penalty, pen.value, nevents,
                                diffparam=1, asymcheck=costfunc, method=mul.method)
-  if(penalty=="MBIC"){pen.value=pen.value+2*log(2)}
+  if(penalty=="MBIC"){pen.value=pen.value-log(nevents)+2*log(2)}
   # adding the 2*log(2) because we can have changepoints at 2*nevents places, not nevents so we get an extra 2mlog(2) in total coming out different to the BIC penalty and specific to PP, see paper for derivation
+  # minus the log(nevents) because the penalty_decision for all other models has an extra log(n) for the MBIC but for PP we don't
 
   if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
