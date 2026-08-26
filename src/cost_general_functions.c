@@ -79,7 +79,7 @@ double mbic_meanvar_poisson(double x, double x2, double x3, int n, double shape)
 
 double mbic_meanvar_pp(double x, double x2, double x3, int n, double shape){
   if(x==0){return(0);}
-  else{return(2*x2*(1-log(x2)+log(x))+log(x2));} /* x is time, x2 is num of events in the segment */
+  else{return(2*x2*(1-log(x2)+log(x))+log(x2)/2 - log(x));} /* x is time, x2 is num of events in the segment */
 }
 
 

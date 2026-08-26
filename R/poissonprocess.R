@@ -178,9 +178,11 @@ multiple.meanvar.pp=function(data,mul.method="PELT",penalty="MBIC",pen.value=0,Q
   if(nevents<2){stop('Data must have atleast 2 events (plus the start and end observation times) to fit a changepoint model.')}
   if(nevents<(2*minseglen)){stop('Minimum segment legnth is too large to include a change in this data')}
 
-  pen.value = penalty_decision(penalty, pen.value, 2*nevents+1, # 2*nevents because n here is the "length" of the data considered,
-                               # so each event can have a change just before or at the change, then +1 because we include the final data point
+  pen.value = penalty_decision(penalty, pen.value, nevents,
                                diffparam=1, asymcheck=costfunc, method=mul.method)
+  if(penalty=="MBIC"){pen.value=pen.value+2*log(2)}
+  # adding the 2*log(2) because we can have changepoints at 2*nevents places, not nevents so we get an extra 2mlog(2) in total coming out different to the BIC penalty and specific to PP, see paper for derivation
+
   if(is.null(dim(data))==TRUE || length(dim(data)) == 1){
     # single dataset
     out = data_input(data=data,method=mul.method,pen.value=pen.value,costfunc=costfunc,minseglen=minseglen,Q=Q)
